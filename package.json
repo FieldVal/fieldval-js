@@ -1,0 +1,23 @@
+{
+    "name": "fieldval-js",
+    "version": "0.0.0",
+    "description": "fieldval-js ===========",
+    "main": "index.js",
+    "directories": {
+        "example": "examples",
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/FieldVal/fieldval-js.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/FieldVal/fieldval-js/issues"
+    },
+    "homepage": "https://github.com/FieldVal/fieldval-js"
+}
