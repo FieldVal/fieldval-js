@@ -1,6 +1,7 @@
 var Validator = require('../lib/fieldval');
+
+//BasicVal provides simple single operators
 var bval = require('../lib/fieldval').BasicVal;
-var ival = require('../lib/fieldval').ChainVal;
 
 console.log('=============\n\
 This example shows chaining usage of FieldVal.js. By default an error thrown by an\n\
@@ -22,8 +23,6 @@ console.log(JSON.stringify(my_data, null, 2));
 // Create a new FieldVal Validator for my_data
 var validator = new Validator(my_data);
 
-
-
 console.log("'a_number' if it is an integer and is less than or equal to 30, but also at least 60:")
 console.log(
 	validator.get(
@@ -31,7 +30,7 @@ console.log(
 		'integer',
 		true,
 		bval.maximum(30),
-		bval.minimum(60)//Intentionally impossible
+		bval.minimum(60)//Intentionally impossible combination
 	)
 );
 
@@ -42,8 +41,8 @@ console.log(
 		'a_second_number',
 		'integer',
 		true,
-		bval.maximum(30,false),//This boolean
-		bval.minimum(60)//Intentionally impossible
+		bval.maximum(30,{stop_on_error:false}),//Continue onto the next operator, even on error 
+		bval.minimum(60)//Intentionally impossible combination
 	)
 );
 
@@ -55,10 +54,10 @@ console.log(validator.get('a_string', 'string', true, bval.min_length(20)));
 console.log("'an_array' if it is an array and every value is an integer greater than 40:")
 console.log(validator.get('an_array', 'array', true, bval.each(function(val,index){
 	
-	var error = ival.is_type('integer')(val); 
+	var error = bval.is_type('integer')(val); 
 	if(error)return error;
 
-	return ival.minimum(40)(val);
+	return bval.minimum(40)(val);
 })));
 
 
