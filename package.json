@@ -1,8 +1,8 @@
 {
     "name": "fieldval-js",
     "version": "0.0.0",
-    "description": "fieldval-js ===========",
-    "main": "index.js",
+    "description": "fieldval-js",
+    "main": "lib/fieldval.js",
     "directories": {
         "example": "examples",
         "test": "tests"

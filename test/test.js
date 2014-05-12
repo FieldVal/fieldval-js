@@ -3,7 +3,7 @@ var assert = require("assert")
 
 describe('Validator', function() {
     describe('constructor', function() {
-        it('should return an object', function() {
+        it('should return an object if constructed with an empty object', function() {
             assert.equal("object", typeof new Validator({}));
         })
     })
