@@ -16,42 +16,42 @@ describe('Validator', function() {
     describe('get()', function() {
         it('should return value when the value is present', function() {
             var my_validator = new Validator({
-                "My Value": 13
+                "my_value": 13
             })
-            assert.equal(13, my_validator.get("My Value", bval.integer(true)));
+            assert.equal(13, my_validator.get("my_value", bval.integer(true)));
         })
 
         it('should return value when an optional value is present', function() {
             var my_validator = new Validator({
-                "My Value": 17
+                "my_value": 17
             })
-            assert.equal(17, my_validator.get("My Value", bval.integer(false)));
+            assert.equal(17, my_validator.get("my_value", bval.integer(false)));
         })
 
         it('should return an integer when an integer is requested and the value is an integer string', function() {
             var my_validator = new Validator({
-                "My Integer": "26"
+                "my_integer": "26"
             })
-            assert.equal(26, my_validator.get("My Integer", bval.integer(true)));
+            assert.equal(26, my_validator.get("my_integer", bval.integer(true)));
         })
 
         it('should return a float when an float is requested and the value is a float string', function() {
             var my_validator = new Validator({
-                "My Float": "43.5"
+                "my_float": "43.5"
             })
-            assert.equal(43.5, my_validator.get("My Float", bval.float(true)));
+            assert.equal(43.5, my_validator.get("my_float", bval.float(true)));
         })
 
         it('should return null when the value is the wrong type', function() {
             var my_validator = new Validator({
-                "My String": 13
+                "my_string": 13
             })
-            assert.equal(null, my_validator.get("My String", bval.string(true)));
+            assert.equal(null, my_validator.get("my_string", bval.string(true)));
         })
 
         it('should return null when the requested value is not present', function() {
             var my_validator = new Validator({
-                "My String": 13
+                "my_string": 13
             })
             assert.equal(null, my_validator.get("Non-existant", bval.string(true)));
         })
@@ -75,16 +75,16 @@ describe('Validator', function() {
         })
     })
     describe('invalid()', function() {
-        it('end() should return an error with the invalid key if an invalid field is added', function() {
+        it('end() should return an error with the invalid key if an_invalid_field is added', function() {
             var my_validator = new Validator({});
             var invalidDetails = {
                 error: 1000,
                 error_message: 'My custom error'
             }
-            my_validator.invalid("An Invalid Field", invalidDetails);
+            my_validator.invalid("an_invalid_field", invalidDetails);
             var expected = {
                 invalid: {
-                    'An Invalid Field': invalidDetails
+                    'an_invalid_field': invalidDetails
                 },
                 error_message: 'One or more errors.',
                 error: 0
@@ -108,10 +108,10 @@ describe('Validator', function() {
     describe('end()', function() {
         it('should return a valid structure if a required field wasn\'t present', function() {
             var my_validator = new Validator({});
-            my_validator.get("My Integer", bval.integer(true))
+            my_validator.get("my_integer", bval.integer(true))
             var expected = {
                 missing: {
-                    "My Integer": {
+                    "my_integer": {
                         error_message: "Field missing.",
                         error: 1
                     }
@@ -124,7 +124,7 @@ describe('Validator', function() {
         })
         it('should return null if only optional fields aren\'t present', function() {
             var my_validator = new Validator({});
-            my_validator.get("My Integer", bval.integer(false))
+            my_validator.get("my_integer", bval.integer(false))
             assert.equal(null, my_validator.end());
         })
     })
