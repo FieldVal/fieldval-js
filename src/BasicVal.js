@@ -1,5 +1,5 @@
-module.exports = {
-    required: function(required,stop_if_error){//required defaults to true
+Validator.BasicVal = {
+    required: function(required, flags){//required defaults to true
         var operator = function(value) {
             if (value==null) {
                 if(required || required===undefined){
@@ -9,14 +9,23 @@ module.exports = {
                 }
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    is_type: function(desired_type, stop_if_error) {
+    type: function(desired_type, required, flags) {
+
+        if((typeof required)==="object"){
+            flags = required;
+            required = typeof flags.required !== 'undefined' ? flags.required : true;
+        }
 
         var operator = function(value, emit) {
+
+            var required_error = Validator.BasicVal.required(required)(value); 
+            if(required_error) return required_error;
+
             var value_and_type = Validator.get_value_and_type(value, desired_type);
 
             desired_type = value_and_type.desired_type;
@@ -32,56 +41,68 @@ module.exports = {
                 };
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    min_length: function(min_len, stop_if_error) {
+    integer: function(required,flags){
+        return Validator.BasicVal.type("integer",required,flags);
+    },
+    array: function(required,flags){
+        return Validator.BasicVal.type("array",required,flags);
+    },
+    float: function(required,flags){
+        return Validator.BasicVal.type("float",required,flags);
+    },
+    string: function(required,flags){
+        return Validator.BasicVal.type("string",required,flags);
+    },
+    min_length: function(min_len, flags) {
         var operator = function(value) {
             if (value.length < min_len) {
                 return Validator.BasicErrors.too_short(min_len)
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    max_length: function(max_len, stop_if_error) {
+    max_length: function(max_len, flags) {
         var operator = function(value) {
             if (value.length > max_len) {
                 return Validator.BasicErrors.too_long(max_len);
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    minimum: function(min_val, stop_if_error) {
+    minimum: function(min_val, flags) {
         var operator = function(value) {
             if (value < min_val) {
                 return Validator.BasicErrors.too_small(min_val);
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    maximum: function(max_val, stop_if_error) {
+    maximum: function(max_val, flags) {
         var operator = function(value) {
             if (value > max_val) {
                 return Validator.BasicErrors.too_large(max_val);
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    range: function(min_val, max_val, stop_if_error) {
+    range: function(min_val, max_val, flags) {
         //Effectively combines minimum and maximum
         var operator = function(value){
             if (value < min_val) {
@@ -90,23 +111,23 @@ module.exports = {
                 return Validator.BasicErrors.too_large(max_val);
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    is_one_of: function(array, stop_if_error) {
+    one_of: function(array, flags) {
         var operator = function(value) {
             if (array.indexOf(value) === -1) {
                 return Validator.BasicErrors.not_in_list();
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    not_empty: function(trim, stop_if_error) {
+    not_empty: function(trim, flags) {
         var operator = function(value) {
             if (trim) {
                 if (value.trim().length === 0) {
@@ -118,12 +139,12 @@ module.exports = {
                 }
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    prefix: function(prefix, stop_if_error) {
+    prefix: function(prefix, flags) {
         var operator = function(value) {
             if (value.length >= prefix.length) {
                 if (value.substring(0, prefix.length) != prefix) {
@@ -133,12 +154,12 @@ module.exports = {
                 return Validator.BasicErrors.no_prefix(prefix);
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     },
-    each: function(on_each, stop_if_error) {
+    each: function(on_each, flags) {
         var operator = function(array, stop) {
             var validator = new Validator(null);
             for (var i = 0; i < array.length; i++) {
@@ -154,8 +175,8 @@ module.exports = {
                 return error;
             }
         }
-        if(stop_if_error===false){
-            return [operator,stop_if_error];
+        if(flags!==undefined){
+            return [operator,flags];
         }
         return operator;
     }

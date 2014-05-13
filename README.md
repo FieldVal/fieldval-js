@@ -14,6 +14,13 @@ To use in the browser, download and include the ```fieldval.min.js``` file.
 Basic Usage
 =============
 ```javascript
+
+//Import FieldVal
+var Validator = require('fieldval');
+
+//Get a reference to BasicVal - FieldVal's built-in validators
+var bval = Validator.BasicVal;
+
 //Have some data to validate
 var data = {
     my_number: "clearly not a number"
@@ -23,7 +30,7 @@ var data = {
 var validator = new Validator(data);
 
 //Get values using validator.get(field_name, field_type, required)
-var my_number = validator.get("my_number", "integer", true);
+var my_number = validator.get("my_number", bval.integer(true));
 
 //Create an error for the validation (null if no errors)
 var error = validator.end();
@@ -43,4 +50,11 @@ The ```error``` in this instance will be:
   "error_message": "One or more errors.",
   "error": 0
 }
+```
+
+Development
+=============
+```bash
+npm install
+gulp js
 ```

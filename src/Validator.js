@@ -75,8 +75,8 @@ Validator.prototype = {
                 var this_operator_function;
                 if((typeof this_operator)!=="function"){
                     this_operator_function = this_operator[0];
-                    stop_if_error = this_operator[1];
-                    if(stop_if_error==null){
+                    flags = this_operator[1];
+                    if(flags!=null && flags.stop_if_error){
                         stop_if_error = true;
                     }
                 } else {
@@ -227,8 +227,8 @@ Validator.Error = function(number, message, data) {
     return obj;
 }
 
-Validator.BasicVal = require('./BasicVal');
-Validator.BasicErrors = require('./BasicErrors');
+@import("BasicVal.js");
+@import("BasicErrors.js");
 
 if (typeof module != 'undefined') {
     module.exports = Validator;

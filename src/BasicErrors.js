@@ -1,4 +1,4 @@
-module.exports = {
+Validator.BasicErrors = {
     too_short: function(min_len) {
         return {
             error: 100,

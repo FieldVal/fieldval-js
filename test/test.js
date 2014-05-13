@@ -1,4 +1,5 @@
-var Validator = require('../lib/fieldval');
+var Validator = require('../fieldval');
+var bval = require('../fieldval').BasicVal;
 var assert = require("assert")
 
 describe('Validator', function() {
@@ -17,42 +18,42 @@ describe('Validator', function() {
             var my_validator = new Validator({
                 "My Value": 13
             })
-            assert.equal(13, my_validator.get("My Value", "integer", true));
+            assert.equal(13, my_validator.get("My Value", bval.integer(true)));
         })
 
         it('should return value when an optional value is present', function() {
             var my_validator = new Validator({
                 "My Value": 17
             })
-            assert.equal(17, my_validator.get("My Value", "integer", false));
+            assert.equal(17, my_validator.get("My Value", bval.integer(false)));
         })
 
         it('should return an integer when an integer is requested and the value is an integer string', function() {
             var my_validator = new Validator({
                 "My Integer": "26"
             })
-            assert.equal(26, my_validator.get("My Integer", "integer", true));
+            assert.equal(26, my_validator.get("My Integer", bval.integer(true)));
         })
 
         it('should return a float when an float is requested and the value is a float string', function() {
             var my_validator = new Validator({
                 "My Float": "43.5"
             })
-            assert.equal(43.5, my_validator.get("My Float", "float", true));
+            assert.equal(43.5, my_validator.get("My Float", bval.float(true)));
         })
 
         it('should return null when the value is the wrong type', function() {
             var my_validator = new Validator({
                 "My String": 13
             })
-            assert.equal(null, my_validator.get("My String", "string", true));
+            assert.equal(null, my_validator.get("My String", bval.string(true)));
         })
 
         it('should return null when the requested value is not present', function() {
             var my_validator = new Validator({
                 "My String": 13
             })
-            assert.equal(null, my_validator.get("Non-existant", "string", true));
+            assert.equal(null, my_validator.get("Non-existant", bval.string(true)));
         })
     })
     describe('missing()', function() {
@@ -107,7 +108,7 @@ describe('Validator', function() {
     describe('end()', function() {
         it('should return a valid structure if a required field wasn\'t present', function() {
             var my_validator = new Validator({});
-            my_validator.get("My Integer", "integer", true)
+            my_validator.get("My Integer", bval.integer(true))
             var expected = {
                 missing: {
                     "My Integer": {
@@ -123,7 +124,7 @@ describe('Validator', function() {
         })
         it('should return null if only optional fields aren\'t present', function() {
             var my_validator = new Validator({});
-            my_validator.get("My Integer", "integer", false)
+            my_validator.get("My Integer", bval.integer(false))
             assert.equal(null, my_validator.end());
         })
     })

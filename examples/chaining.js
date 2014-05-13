@@ -1,4 +1,4 @@
-var Validator = require('../lib/fieldval');
+var Validator = require('../fieldval');
 var bval = Validator.BasicVal;
 
 console.log('=============\n\
@@ -25,8 +25,7 @@ console.log("'a_number' if it is an integer and is less than or equal to 30, but
 console.log(
 	validator.get(
 		'a_number',
-		bval.required(true),
-		bval.is_type('integer'),
+		bval.integer(true),
 		bval.maximum(30),
 		bval.minimum(60)//Intentionally impossible combination
 	)
@@ -37,8 +36,7 @@ console.log("'a_second_number' if it is an integer and is less than or equal to 
 console.log(
 	validator.get(
 		'a_second_number',
-		bval.required(true),
-		bval.is_type('integer'),
+		bval.integer(true),
 		bval.maximum(30,{stop_on_error:false}),//Continue onto the next operator, even on error 
 		bval.minimum(60)//Intentionally impossible combination
 	)
@@ -47,8 +45,7 @@ console.log(
 console.log("'a_string' if it is a string of at least 20 characters:")
 console.log(
 	validator.get('a_string',
-		bval.required(true),
-		bval.is_type('integer'),
+		bval.integer(true),
 		bval.min_length(20)
 	)
 );
@@ -58,10 +55,9 @@ console.log("'an_array' if it is an array and every value is an integer greater 
 console.log(
 	validator.get(
 		'an_array',
-		bval.required(true),
-		bval.is_type('array'),
+		bval.array(true),
 		bval.each(function(val,index){
-			var error = bval.is_type('integer')(val); 
+			var error = bval.integer()(val); 
 			if(error)return error;
 
 			return bval.minimum(40)(val);
