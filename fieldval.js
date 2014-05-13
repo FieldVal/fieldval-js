@@ -281,8 +281,14 @@ Validator.BasicVal = {
     array: function(required,flags){
         return Validator.BasicVal.type("array",required,flags);
     },
+    object: function(required,flags){
+        return Validator.BasicVal.type("object",required,flags);
+    },
     float: function(required,flags){
         return Validator.BasicVal.type("float",required,flags);
+    },
+    boolean: function(required,flags){
+        return Validator.BasicVal.type("boolean",required,flags);
     },
     string: function(required,flags){
         return Validator.BasicVal.type("string",required,flags);
