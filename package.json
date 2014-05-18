@@ -15,7 +15,7 @@
         "url": "https://github.com/FieldVal/fieldval-js.git"
     },
     "dependencies": {
-        
+        "tracer" : "*"
     },
     "devDependencies": {
         "gulp-imports" : "git+ssh://git@github.com/MarcusLongmuir/gulp-imports.git",

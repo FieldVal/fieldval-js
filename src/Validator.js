@@ -1,3 +1,5 @@
+var logger = require('tracer').console();
+
 Validator = function(validating) {
     var fv = this;
 
@@ -54,7 +56,22 @@ Validator.get_value_and_type = function(value, desired_type) {
 
 Validator.prototype = {
 
-    get: function(field_name, desired_type, required) {
+    default: function(default_value){
+        var fv = this;
+
+        return {
+            get: function(field_name){
+                var get_result = fv.get.apply(fv,arguments);
+                if((typeof get_result) !== 'undefined'){
+                    return get_result;
+                }
+                //No value. Return the default
+                return default_value;
+            }
+        }
+    },
+
+    get: function(field_name) {//Additional arguments are operators
         var fv = this;
 
         var value = fv.validating[field_name];
@@ -64,14 +81,24 @@ Validator.prototype = {
         if (arguments.length > 1) {
             //Additional checks
 
-            var should_stop = false;
             var had_error = false;
-            var stop = function(){
-                should_stop = true;
-            }
-            for (var i = 1; i < arguments.length; i++) {
-                var stop_if_error;
-                var this_operator = arguments[i];
+            var stop = false;
+
+            var use_operator = function(this_operator){
+                if((typeof this_operator) === 'object'){
+                    if(this_operator.toString()==='[object array]'){
+                        for(var i = 0; i < this_operator.length; i++){
+                            use_operator(this_operator[i]);
+                            if(stop){
+                                break;
+                            }
+                        }
+                        return;
+                    } else if(this_operator.length==0){
+                        //Empty array
+                        return;
+                    }
+                }
                 var this_operator_function;
                 if((typeof this_operator)!=="function"){
                     this_operator_function = this_operator[0];
@@ -98,12 +125,20 @@ Validator.prototype = {
                         had_error = true;
                     }
                     if(stop_if_error){
-                        break;
+                        stop = true;
                     }
                 }
             }
+
+            for (var i = 1; i < arguments.length; i++) {
+                var this_operator = arguments[i];
+                use_operator(this_operator);
+                if(stop){
+                    break;
+                }
+            }
             if (had_error) {
-                return null;
+                return undefined;
             }
         }
 
