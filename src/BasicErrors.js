@@ -26,7 +26,7 @@ Validator.BasicErrors = {
     not_in_list: function() {
         return {
             error: 104,
-            error_message: "Value is not in the allowed list"
+            error_message: "Value is not a valid choice"
         }
     },
     cannot_be_empty: function() {

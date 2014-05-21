@@ -10,7 +10,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -42,12 +43,16 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
     integer: function(required,flags){
         return Validator.BasicVal.type("integer",required,flags);
+    },
+    number: function(required,flags){
+        return Validator.BasicVal.type("number",required,flags);
     },
     array: function(required,flags){
         return Validator.BasicVal.type("array",required,flags);
@@ -71,7 +76,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -82,7 +88,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -93,7 +100,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -104,7 +112,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -118,7 +127,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -129,7 +139,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -146,7 +157,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -161,7 +173,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -182,7 +195,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     }

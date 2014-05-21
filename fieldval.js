@@ -85,8 +85,10 @@ Validator.prototype = {
             var stop = false;
 
             var use_operator = function(this_operator){
+
+                var this_operator_function;
                 if((typeof this_operator) === 'object'){
-                    if(this_operator.toString()==='[object array]'){
+                    if(Object.prototype.toString.call(this_operator)==='[object Array]'){
                         for(var i = 0; i < this_operator.length; i++){
                             use_operator(this_operator[i]);
                             if(stop){
@@ -97,14 +99,12 @@ Validator.prototype = {
                     } else if(this_operator.length==0){
                         //Empty array
                         return;
-                    }
-                }
-                var this_operator_function;
-                if((typeof this_operator)!=="function"){
-                    this_operator_function = this_operator[0];
-                    flags = this_operator[1];
-                    if(flags!=null && flags.stop_if_error){
-                        stop_if_error = true;
+                    } else {
+                        flags = this_operator;
+                        this_operator_function = flags.operator;
+                        if(flags!=null && flags.stop_if_error){
+                            stop_if_error = true;
+                        }
                     }
                 } else {
                     this_operator_function = this_operator;
@@ -274,7 +274,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -306,12 +307,16 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
     integer: function(required,flags){
         return Validator.BasicVal.type("integer",required,flags);
+    },
+    number: function(required,flags){
+        return Validator.BasicVal.type("number",required,flags);
     },
     array: function(required,flags){
         return Validator.BasicVal.type("array",required,flags);
@@ -335,7 +340,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -346,7 +352,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -357,7 +364,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -368,7 +376,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -382,7 +391,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -393,7 +403,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -410,7 +421,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -425,7 +437,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     },
@@ -446,7 +459,8 @@ Validator.BasicVal = {
             }
         }
         if(flags!==undefined){
-            return [operator,flags];
+            flags.operator = operator;
+            return flags
         }
         return operator;
     }
@@ -479,7 +493,7 @@ Validator.BasicErrors = {
     not_in_list: function() {
         return {
             error: 104,
-            error_message: "Value is not in the allowed list"
+            error_message: "Value is not a valid choice"
         }
     },
     cannot_be_empty: function() {
