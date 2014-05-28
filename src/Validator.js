@@ -1,4 +1,7 @@
-var logger = require('tracer').console();
+var logger;
+if((typeof require) === 'function'){
+    logger = require('tracer').console();
+}
 
 Validator = function(validating) {
     var fv = this;
@@ -52,6 +55,58 @@ Validator.get_value_and_type = function(value, desired_type) {
         desired_type: desired_type,
         value: value
     };
+}
+
+Validator.required = function(required, flags){//required defaults to true
+    var operator = function(value) {
+        if (value==null) {
+            if(required || required===undefined){
+                return Validator.REQUIRED_ERROR;
+            } else {
+                return Validator.NOT_REQUIRED_BUT_MISSING;
+            }
+        }
+    }
+    if(flags!==undefined){
+        flags.operator = operator;
+        return flags
+    }
+    return operator;
+};
+
+
+Validator.type = function(desired_type, required, flags) {
+
+    if((typeof required)==="object"){
+        flags = required;
+        required = typeof flags.required !== 'undefined' ? flags.required : true;
+    }
+
+    var operator = function(value, emit) {
+
+        var required_error = Validator.required(required)(value); 
+        if(required_error) return required_error;
+
+        var value_and_type = Validator.get_value_and_type(value, desired_type);
+
+        desired_type = value_and_type.desired_type;
+        var type = value_and_type.type;
+        var value = value_and_type.value;
+
+        if (type !== desired_type) {
+            return {
+                error_message: "Incorrect field type. Expected " + desired_type + ".",
+                error: Validator.INCORRECT_FIELD_TYPE,
+                expected: desired_type,
+                received: type
+            };
+        }
+    }
+    if(flags!==undefined){
+        flags.operator = operator;
+        return flags
+    }
+    return operator;
 }
 
 Validator.prototype = {
@@ -261,9 +316,6 @@ Validator.Error = function(number, message, data) {
     }
     return obj;
 }
-
-@import("BasicVal.js");
-@import("BasicErrors.js");
 
 if (typeof module != 'undefined') {
     module.exports = Validator;

@@ -1,5 +1,5 @@
 var Validator = require('../fieldval');
-var bval = Validator.BasicVal;
+var Validator = require('../fieldval');
 
 console.log('=============\n\
 This example shows custom operator usage of FieldVal.js\n\

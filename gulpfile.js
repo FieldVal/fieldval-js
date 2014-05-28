@@ -16,6 +16,9 @@ gulp.task('js', function(){
     .pipe(gulpImports())
     .pipe(concat('fieldval.js'))
     .pipe(gulp.dest('./'))
+    .pipe(uglify())
+    .pipe(concat('fieldval.min.js'))
+    .pipe(gulp.dest('./'))
     .on('error', gutil.log);
 })
 

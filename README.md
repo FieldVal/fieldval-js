@@ -2,14 +2,27 @@ Overview
 ==============
 The FieldVal library allows you to easily validate objects and provide readable and structured error reports.
 
-How to use
+FieldVal modules:
+* FieldVal (This repository)
+
+   The core of FieldVal - provides basic validation functionality such as getting keys from an object and allows chaining of operators.
+   
+* FieldVal-BasicVal-js
+
+   Basic operators and errors for required fields, type checking, length and numeric rules.
+   
+* FieldVal-UI
+
+   A companion library that creates forms that parse and display FieldVal error structures.
+   
+
+How to use in NodeJS
 =============
-The FieldVal library works both as a node package and via the browser. To install the node package, run:
+The FieldVal library works both as a node package and via the browser. To install the node packages, run:
 ```bash
 npm install fieldval
+npm install fieldval-basicval
 ```
-
-To use in the browser, download and include the ```fieldval.min.js``` file.
 
 Basic Usage
 =============
@@ -18,8 +31,8 @@ Basic Usage
 //Import FieldVal
 var Validator = require('fieldval');
 
-//Get a reference to BasicVal - FieldVal's built-in validators
-var bval = Validator.BasicVal;
+//Import FieldVal-BasicVal - some simple validators
+var bval = require('fieldval-basicval');
 
 //Have some data to validate
 var data = {
@@ -51,6 +64,10 @@ The ```error``` in this instance will be:
   "error": 0
 }
 ```
+
+How to use in the browser
+=============
+To use in the browser, download and include the ```fieldval.min.js``` file from this repository and ```fieldval-basicval.min.js``` from [https://github.com/FieldVal/fieldval-basicval-js/](https://github.com/FieldVal/fieldval-basicval-js/).
 
 Development
 =============
