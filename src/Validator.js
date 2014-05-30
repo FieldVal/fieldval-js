@@ -14,6 +14,9 @@ Validator = function(validating) {
     fv.unrecognized_keys = {};
     fv.unrecognized_count = 0;
     fv.recognized_keys = {};
+
+    //Top level errors - added using .error() 
+    fv.errors = [];
 }
 
 Validator.REQUIRED_ERROR = "required";
@@ -200,6 +203,15 @@ Validator.prototype = {
         return value;
     },
 
+    //Top level error - something that cannot be assigned to a particular key
+    error: function(error){
+        var fv = this;
+
+        fv.errors.push(error);
+
+        return fv;
+    },
+
     invalid: function(field_name, error) {
         var fv = this;
 
@@ -219,7 +231,7 @@ Validator.prototype = {
             fv.invalid_keys[field_name] = error;
             fv.invalid_count++;
         }
-        return this;
+        return fv;
     },
 
     missing: function(field_name) {
@@ -230,7 +242,7 @@ Validator.prototype = {
             error: Validator.FIELD_MISSING
         };
         fv.missing_count++;
-        return this;
+        return fv;
     },
 
     unrecognized: function(field_name) {
@@ -241,13 +253,15 @@ Validator.prototype = {
             error: Validator.FIELD_UNRECOGNIZED
         };
         fv.unrecognized_count++;
-        return this;
+        return fv;
     },
 
     recognized: function(field_name){
         var fv = this;
 
         fv.recognized_keys[field_name] = true;
+
+        return fv;
     },
 
     //Exists to allow processing of remaining keys after known keys are checked
@@ -291,7 +305,28 @@ Validator.prototype = {
         if (has_error) {
             returning.error_message = "One or more errors.";
             returning.error = Validator.ONE_OR_MORE_ERRORS;
-            return returning;
+
+            if(fv.errors.length===0){
+                return returning;
+            } else {
+                fv.errors.push(returning);
+            }
+        }
+
+        if(fv.errors.length!==0){
+            //Have top level errors
+            
+            if(fv.errors.length===1){
+                //Only 1 error, just return it
+                return fv.errors[0];
+            } else {
+                //Return a "multiple errors" error
+                return {
+                    error: Validator.MULTIPLE_ERRORS,
+                    error_message: "Multiple errors.",
+                    errors: fv.errors
+                }
+            }
         }
 
         return null;
