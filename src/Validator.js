@@ -92,17 +92,20 @@ Validator.type = function(desired_type, required, flags) {
 
         var value_and_type = Validator.get_value_and_type(value, desired_type);
 
-        desired_type = value_and_type.desired_type;
+        var inner_desired_type = value_and_type.desired_type;
         var type = value_and_type.type;
         var value = value_and_type.value;
 
-        if (type !== desired_type) {
+        if (type !== inner_desired_type) {
             return {
-                error_message: "Incorrect field type. Expected " + desired_type + ".",
+                error_message: "Incorrect field type. Expected " + inner_desired_type + ".",
                 error: Validator.INCORRECT_FIELD_TYPE,
-                expected: desired_type,
+                expected: inner_desired_type,
                 received: type
             };
+        }
+        if(emit){
+            emit(value);
         }
     }
     if(flags!==undefined){
