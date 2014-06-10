@@ -13,7 +13,7 @@ FieldVal modules:
    
 * FieldVal-UI
 
-   A companion library that creates forms that parse and display FieldVal error structures.
+   A companion library that creates customizable forms that parse and display FieldVal error structures.
    
 
 How to use in NodeJS

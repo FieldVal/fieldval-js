@@ -60,6 +60,82 @@ Validator.get_value_and_type = function(value, desired_type) {
     };
 }
 
+Validator.use_operators = function(value, operators, validator, field_name){
+    var had_error = false;
+    var stop = false;
+
+    var use_operator = function(this_operator){
+
+        var this_operator_function;
+        if((typeof this_operator) === 'object'){
+            if(Object.prototype.toString.call(this_operator)==='[object Array]'){
+                for(var i = 0; i < this_operator.length; i++){
+                    use_operator(this_operator[i]);
+                    if(stop){
+                        break;
+                    }
+                }
+                return;
+            } else if(this_operator.length==0){
+                //Empty array
+                return;
+            } else {
+                flags = this_operator;
+                this_operator_function = flags.operator;
+                if(flags!=null && flags.stop_if_error){
+                    stop_if_error = true;
+                }
+            }
+        } else {
+            this_operator_function = this_operator;
+            stop_if_error = true;//defaults to true
+        }
+
+        var check = this_operator_function(value, function(new_value){
+            value = new_value;
+        });
+        if (check != null){
+            if(validator){
+                if(check===Validator.REQUIRED_ERROR){
+                    if(field_name){
+                        validator.missing(field_name);   
+                    } else {
+                        validator.error({
+                            error_message: "Field missing.",
+                            error: Validator.FIELD_MISSING
+                        })
+                    }
+                } else if(check===Validator.NOT_REQUIRED_BUT_MISSING){
+                    //Don't process proceeding operators, but don't throw an error
+                } else {
+                    if(field_name){
+                        validator.invalid(field_name, check);
+                    } else {
+                        validator.error(check);
+                    }
+                }
+            }
+            had_error = true;
+            if(stop_if_error){
+                stop = true;
+            }
+        }
+    }
+
+    for (var i = 0; i < operators.length; i++) {
+        var this_operator = operators[i];
+        use_operator(this_operator);
+        if(stop){
+            break;
+        }
+    }
+    if (had_error) {
+        return undefined;
+    }
+
+    return value;
+}
+
 Validator.required = function(required, flags){//required defaults to true
     var operator = function(value) {
         if (value==null) {
@@ -142,65 +218,8 @@ Validator.prototype = {
         if (arguments.length > 1) {
             //Additional checks
 
-            var had_error = false;
-            var stop = false;
-
-            var use_operator = function(this_operator){
-
-                var this_operator_function;
-                if((typeof this_operator) === 'object'){
-                    if(Object.prototype.toString.call(this_operator)==='[object Array]'){
-                        for(var i = 0; i < this_operator.length; i++){
-                            use_operator(this_operator[i]);
-                            if(stop){
-                                break;
-                            }
-                        }
-                        return;
-                    } else if(this_operator.length==0){
-                        //Empty array
-                        return;
-                    } else {
-                        flags = this_operator;
-                        this_operator_function = flags.operator;
-                        if(flags!=null && flags.stop_if_error){
-                            stop_if_error = true;
-                        }
-                    }
-                } else {
-                    this_operator_function = this_operator;
-                    stop_if_error = true;//defaults to true
-                }
-
-                var check = this_operator_function(value, function(new_value){
-                    value = new_value;
-                });
-                if (check != null) {
-                    if(check===Validator.REQUIRED_ERROR){
-                        fv.missing(field_name);   
-                        had_error = true;
-                    } else if(check===Validator.NOT_REQUIRED_BUT_MISSING){
-                        had_error = true;//Don't process proceeding operators, but don't throw an error
-                    } else {
-                        fv.invalid(field_name, check);
-                        had_error = true;
-                    }
-                    if(stop_if_error){
-                        stop = true;
-                    }
-                }
-            }
-
-            for (var i = 1; i < arguments.length; i++) {
-                var this_operator = arguments[i];
-                use_operator(this_operator);
-                if(stop){
-                    break;
-                }
-            }
-            if (had_error) {
-                return undefined;
-            }
+            var operators = Array.prototype.slice.call(arguments,1);
+            value = Validator.use_operators(value, operators, fv, field_name);
         }
 
         return value;
