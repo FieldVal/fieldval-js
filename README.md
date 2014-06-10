@@ -1,13 +1,14 @@
 Overview
 ==============
-The FieldVal library allows you to easily validate objects and provide readable and structured error reports.
+The FieldVal-JS library allows you to easily validate objects and provide readable and structured error reports.
 
 FieldVal modules:
-* FieldVal (This repository)
+
+* FieldVal-JS (This repository)
 
    The core of FieldVal - provides basic validation functionality such as getting keys from an object and allows chaining of operators.
    
-* FieldVal-BasicVal-js
+* FieldVal-BasicVal-JS
 
    Basic operators and errors for required fields, type checking, length and numeric rules.
    
@@ -67,11 +68,15 @@ The ```error``` in this instance will be:
 
 How to use in the browser
 =============
-To use in the browser, download and include the ```fieldval.min.js``` file from this repository and ```fieldval-basicval.min.js``` from [https://github.com/FieldVal/fieldval-basicval-js/](https://github.com/FieldVal/fieldval-basicval-js/).
+To use in the browser, download and include the ```fieldval.js``` file from this repository and ```fieldval-basicval.js``` from [https://github.com/FieldVal/fieldval-basicval-js/](https://github.com/FieldVal/fieldval-basicval-js/).
 
 Development
 =============
+
+This project uses [gulp.js](http://gulpjs.com/) to build and [mocha](http://visionmedia.github.io/mocha/) to test.
+
 ```bash
 npm install
 gulp js
+mocha test/test
 ```
