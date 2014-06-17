@@ -1,21 +1,21 @@
 var logger = require("tracer").console();
-var Validator = require('../fieldval');
+var FieldVal = require('fieldval');
 var assert = require("assert")
 
-describe('Validator', function() {
+describe('FieldVal', function() {
     describe('constructor', function() {
         it('should return an object if constructed with an empty object', function() {
-            assert.equal("object", typeof new Validator({}));
+            assert.equal("object", typeof new FieldVal({}));
         })
     })
     describe('constructor', function() {
         it('should return an object if constructed with a null parameter', function() {
-            assert.equal("object", typeof new Validator(null));
+            assert.equal("object", typeof new FieldVal(null));
         })
     })
     describe('get()', function() {
         it('should return value when the value is present', function() {
-            var my_validator = new Validator({
+            var my_validator = new FieldVal({
                 "my_value": 13
             })
             assert.equal(13, my_validator.get("my_value"));
@@ -23,7 +23,7 @@ describe('Validator', function() {
     })
     describe('missing()', function() {
         it('end() should return an error with the missing key if missing field is added', function() {
-            var my_validator = new Validator({});
+            var my_validator = new FieldVal({});
             my_validator.missing("A Missing Field");
             var expected = {
                 missing: {
@@ -41,7 +41,7 @@ describe('Validator', function() {
     })
     describe('invalid()', function() {
         it('end() should return an error with the invalid key if an_invalid_field is added', function() {
-            var my_validator = new Validator({});
+            var my_validator = new FieldVal({});
             var invalidDetails = {
                 error: 1000,
                 error_message: 'My custom error'
@@ -60,20 +60,20 @@ describe('Validator', function() {
     })
     describe('end()', function() {
         it('should return null if constructed with a null parameter', function() {
-            var my_validator = new Validator(null);
+            var my_validator = new FieldVal(null);
             assert.equal(null, my_validator.end());
         })
     })
     describe('end()', function() {
         it('should return null if constructed with an empty object', function() {
-            var my_validator = new Validator({});
+            var my_validator = new FieldVal({});
             assert.equal(null, my_validator.end());
         })
     })
     describe('end()', function() {
         it('should return a valid structure if a required field wasn\'t present', function() {
-            var my_validator = new Validator({});
-            my_validator.get("my_integer", Validator.required(true))
+            var my_validator = new FieldVal({});
+            my_validator.get("my_integer", FieldVal.required(true))
             var expected = {
                 missing: {
                     "my_integer": {
@@ -88,7 +88,7 @@ describe('Validator', function() {
             assert.deepEqual(expected, actual);
         })
         it('should return null if only optional fields aren\'t present', function() {
-            var my_validator = new Validator({});
+            var my_validator = new FieldVal({});
             my_validator.get("my_integer")
             assert.equal(null, my_validator.end());
         })

@@ -1,5 +1,5 @@
-var Validator = require('../fieldval');
-var bval = Validator.BasicVal;
+var FieldVal = require('fieldval');
+var bval = require('fieldval-basicval');
 
 console.log('=============\n\
 This example shows simple usage of FieldVal.js\n\
@@ -20,8 +20,8 @@ console.log(JSON.stringify(my_data, null, 2));
 
 
 
-// Create a new FieldVal Validator for my_data
-var validator = new Validator(my_data);
+// Create a new FieldVal FieldVal for my_data
+var validator = new FieldVal(my_data);
 
 
 

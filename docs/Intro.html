@@ -1,0 +1,43 @@
+<h1 id="introduction-to-fieldval">Introduction to FieldVal</h1>
+<h1 id="checks">Checks</h1>
+<p>FieldVal validation is based on chaining checks to validate a value. </p>
+<p>A &quot;check&quot; is a function that takes a value and returns an error if the value was invalid, otherwise it returns nothing (undefined).</p>
+<p><a href="https://github.com/FieldVal/fieldval-basicval-js/">bval</a> is a collection of basic checks such as types and numeric limits.</p>
+<p>The intended use case of FieldVal is validating objects containing keys. FieldVal allows the chaining of checks in the .get() function to validate the requested key.</p>
+<p>The .get() function will return the value for the key if no errors were found, otherwise it will add errors to the validator, so that they can be output later.</p>
+<p>E.g.</p>
+<pre><code class="lang-javascript">var my_integer = validator.get(&quot;my_integer&quot;, bval.integer(true), bval.minimum(50), bval.maximum(100));
+</code></pre>
+<p>Given that <code>validator</code> is an instance of <code>FieldVal</code>, this line will check that the &quot;my_integer&quot; key is first an integer, then if it has a minimum of 50 and finally if it has a maximum of 100.</p>
+<p>The boolean parameter to bval.integer() specifies whether or not the field is required. If a field is not required, no error will be thrown if it is not found, but if it is present then it will be processed as normal (subsequent errors aren&#39;t ignored just because a field is not required).</p>
+<h1 id="custom-checks">Custom Checks</h1>
+<p>Each check is a function that takes a value and an optional emit function.</p>
+<pre><code class="lang-javascript">var my_custom_check = function(value,emit){
+    var checks = [
+        bval.string(true),//Must be a string
+        bval.prefix(&quot;ABC&quot;),//Must start with &quot;ABC&quot;
+        bval.length(6)//Must be 6 characters in length
+    ]
+    var error = FieldVal.use_checks(value,checks);
+    if(error)return error;
+
+    var suffix = value.substring(3);
+    var number;
+    var error = bval.integer(true, {parse:true}).check(suffix,function(int_value){
+        number = int_value;
+    }); if(error)return error;
+    var error = bval.minimum(0)(number); if(error) return error;
+
+    emit(number);//Output the numeric value of the suffix of the string
+}
+</code></pre>
+<p>The my_custom_check function above checks the following:</p>
+<ul>
+<li>The value is a string</li>
+<li>The string has the prefix &quot;ABC&quot;</li>
+<li>The string is 6 characters long</li>
+<li>The suffix is an integer</li>
+<li>The integer is at least 0</li>
+</ul>
+<p>Then the check uses the emit callback to output the integer suffix as the new value. This does not modify the original value, but allows the subsequent checks to operate on this new value.</p>
+<p>Anything returned by a check is considered to be an error and is inserted into the validator using validator.invalid();</p>
