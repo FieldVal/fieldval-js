@@ -76,6 +76,8 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
         validator = new FieldVal();
     }
 
+    var return_missing = false;//Used to escape from check list if a check returns a FieldVal.REQUIRED_ERROR error.
+
     var use_check = function(this_check){
 
         var this_check_function;
@@ -121,10 +123,8 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
                             error: FieldVal.FIELD_MISSING
                         })
                     } else {
-                        validator.error({
-                            error_message: "Field missing.",
-                            error: FieldVal.FIELD_MISSING
-                        })
+                        return_missing = true;
+                        return;
                     }
                 }
             } else if(check===FieldVal.NOT_REQUIRED_BUT_MISSING){
@@ -150,6 +150,9 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
     for (var i = 0; i < checks.length; i++) {
         var this_check = checks[i];
         use_check(this_check);
+        if(return_missing){
+            return FieldVal.REQUIRED_ERROR;
+        }
         if(stop){
             break;
         }
@@ -386,6 +389,19 @@ FieldVal.prototype.end = function() {
     }
 
     return null;
+}
+
+FieldVal.create_error = function(default_error, flags){
+    if(!flags){
+        return default_error.call(null, Array.prototype.slice.call(arguments,2));
+    }
+    if((typeof flags.error) === 'function'){
+        return flags.error.call(null, Array.prototype.slice.call(arguments,2));
+    } else if((typeof flags.error) === 'object'){
+        return flags.error;
+    }
+
+    return default_error.call(null, Array.prototype.slice.call(arguments,2));
 }
 
 FieldVal.Error = function(number, message, data) {
