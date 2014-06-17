@@ -19,6 +19,15 @@ FieldVal = function(validating) {
     fv.errors = [];
 }
 
+FieldVal.INCORRECT_TYPE_ERROR = function(expected_type, type){
+    return {
+        error_message: "Incorrect field type. Expected " + expected_type + ".",
+        error: FieldVal.INCORRECT_FIELD_TYPE,
+        expected: expected_type,
+        received: type
+    };
+}
+
 FieldVal.REQUIRED_ERROR = "required";
 FieldVal.NOT_REQUIRED_BUT_MISSING = "notrequired";
 
@@ -210,12 +219,7 @@ FieldVal.type = function(desired_type, required, flags) {
         var value = value_and_type.value;
 
         if (type !== inner_desired_type) {
-            return {
-                error_message: "Incorrect field type. Expected " + inner_desired_type + ".",
-                error: FieldVal.INCORRECT_FIELD_TYPE,
-                expected: inner_desired_type,
-                received: type
-            };
+            return FieldVal.create_error(FieldVal.INCORRECT_TYPE_ERROR, flags, inner_desired_type, type);
         }
         if(emit){
             emit(value);
@@ -393,15 +397,15 @@ FieldVal.prototype.end = function() {
 
 FieldVal.create_error = function(default_error, flags){
     if(!flags){
-        return default_error.call(null, Array.prototype.slice.call(arguments,2));
+        return default_error.apply(null, Array.prototype.slice.call(arguments,2));
     }
     if((typeof flags.error) === 'function'){
-        return flags.error.call(null, Array.prototype.slice.call(arguments,2));
+        return flags.error.apply(null, Array.prototype.slice.call(arguments,2));
     } else if((typeof flags.error) === 'object'){
         return flags.error;
     }
 
-    return default_error.call(null, Array.prototype.slice.call(arguments,2));
+    return default_error.apply(null, Array.prototype.slice.call(arguments,2));
 }
 
 FieldVal.Error = function(number, message, data) {
