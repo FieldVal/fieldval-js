@@ -89,7 +89,7 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
 
     var use_check = function(this_check){
 
-        var this_check_function;
+        var this_check_function, stop_if_error;
         if((typeof this_check) === 'object'){
             if(Object.prototype.toString.call(this_check)==='[object Array]'){
                 for(var i = 0; i < this_check.length; i++){
