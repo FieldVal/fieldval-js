@@ -58,6 +58,26 @@ describe('FieldVal', function() {
             assert.deepEqual(expected, actual);
         })
     })
+    describe('unrecognized', function(){
+        it('should return null when the requested value is not present', function() {
+            var my_validator = new FieldVal({
+                "my_string": 13
+            })
+            assert.deepEqual(
+                my_validator.end(),
+                {
+                    "unrecognized":{
+                        "my_string":{
+                            "error_message":"Unrecognized field.",
+                            "error":3
+                        }
+                    },
+                    "error_message":"One or more errors.",
+                    "error":0
+                }
+            );
+        })
+    })
     describe('end()', function() {
         it('should return null if constructed with a null parameter', function() {
             var my_validator = new FieldVal(null);
@@ -75,14 +95,14 @@ describe('FieldVal', function() {
             var my_validator = new FieldVal({});
             my_validator.get("my_integer", FieldVal.required(true))
             var expected = {
-                missing: {
+                "missing": {
                     "my_integer": {
-                        error_message: "Field missing.",
-                        error: 1
+                        "error_message": "Field missing.",
+                        "error": 1
                     }
                 },
-                error_message: "One or more errors.",
-                error: 0
+                "error_message": "One or more errors.",
+                "error": 0
             };
             var actual = my_validator.end();
             assert.deepEqual(expected, actual);

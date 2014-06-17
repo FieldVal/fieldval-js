@@ -60,3 +60,36 @@ The my_custom_check function above checks the following:
 Then the check uses the emit callback to output the integer suffix as the new value. This does not modify the original value, but allows the subsequent checks to operate on this new value.
 
 Anything returned by a check is considered to be an error and is inserted into the validator using validator.invalid();
+
+Parameters for Custom Checks
+========
+A check function must take a value and return an error. To make reusable checks that can be configured for each use you must create a wrapper for the check.
+
+Below is a function that performs the same action as bval.minimum.
+```javascript```
+var minimum = function(min_val, flags) {
+    var check = function(value) {
+        if (value < min_val) {
+            return {
+	            error: 1000,
+	            error_message: "Value was below "+min_val
+	        }
+        }
+    }
+    if(flags){
+        flags.check = check;
+        return flags
+    }
+    return check;
+}
+
+var check = minimum(14);
+```
+
+```check``` is now a function that will return an error if the value is less than 14. This is because minimum is a wrapper that creates a function with access to the configuration parameters (14 in this case).
+
+The ```flags``` parameter is an optional object used to pass parameters to both the check and the FieldVal validator that will use the check.
+
+If flags is set then the check becomes a property of the flags object. The FieldVal library can use both an object that contains a ```check``` function and also a function directly.
+
+More info about flags can be found [here](Flags.html)

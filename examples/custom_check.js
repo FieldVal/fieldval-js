@@ -1,3 +1,4 @@
+var logger = require('tracer').console();
 var FieldVal = require('fieldval');
 var bval = require('fieldval-basicval');
 
@@ -10,9 +11,10 @@ This example shows custom check usage of FieldVal.js\n\
 
 // The data to be validated (my_data) contains 3 keys.
 var my_data = {
-    a_custom_string: 'ABC123',
-    a_custom_string2: 'ABC-12',
-    a_custom_string3: 'DEF1234',
+    string_one: 'ABC123',
+    string_two: 'ABC-12',
+    string_three: 'DEF1234',
+    string_four: 'ABC550',
 }
 console.log('\nmy_data:');
 console.log(JSON.stringify(my_data, null, 2));
@@ -46,24 +48,37 @@ var my_custom_check = function(value,emit){
 //Create a new object to hold the validate values
 var values = {};
 
-values.a_custom_string = validator.get(
-	"a_custom_string",
+
+//string_one, string_two and string_three are invalid
+values.string_one = validator.get(
+	"string_one",
 	my_custom_check,//This is just passing the function in, not calling it as per the standard bval functions
 	bval.minimum(500)//This is a check against the numeric value that was emitted in my_custom_check
 )
-console.log("a_custom_string: "+values.a_custom_string);
+console.log("string_one: "+values.string_one);
 
-values.a_custom_string2 = validator.get(
-	"a_custom_string2",
-	my_custom_check
+values.string_two = validator.get(
+	"string_two",
+	my_custom_check,
+	bval.minimum(500)
 )
-console.log("a_custom_string2: "+values.a_custom_string2);
+console.log("string_two: "+values.string_two);
 
-values.a_custom_string3 = validator.get(
-	"a_custom_string3",
-	my_custom_check
+values.string_three = validator.get(
+	"string_three",
+	my_custom_check,
+	bval.minimum(500)
 )
-console.log("a_custom_string3: "+values.a_custom_string3);
+console.log("string_three: "+values.string_three);
+
+
+//The only valid string
+values.string_four = validator.get(
+	"string_four",
+	my_custom_check,
+	bval.minimum(500)
+)
+console.log("string_four: "+values.string_four);
 
 
 
