@@ -1,5 +1,6 @@
 var logger = require("tracer").console();
 var FieldVal = require('fieldval');
+var bval = require('fieldval-basicval');
 var assert = require("assert")
 
 describe('FieldVal', function() {
@@ -19,6 +20,88 @@ describe('FieldVal', function() {
                 "my_value": 13
             })
             assert.equal(13, my_validator.get("my_value"));
+        })
+    })
+    describe('custom missing errors', function(){
+        it('should return the custom missing error if a required field is requested #1', function(){
+            var my_validator = new FieldVal({});
+            my_validator.get(
+                'required_string',
+                bval.string({
+                    required:true, 
+                    missing_error: {
+                        error_message: "I'm a custom missing error!",
+                        error: 1000
+                    }
+                })
+            );
+
+            var expected = {
+                missing: {
+                    'required_string': {
+                        error_message: "I'm a custom missing error!",
+                        error: 1000
+                    }
+                },
+                error_message: 'One or more errors.',
+                error: 0
+            };
+            var actual = my_validator.end();
+            assert.deepEqual(expected, actual);
+        })
+
+        it('should return the custom missing error if a required field is requested #2', function(){
+            var my_validator = new FieldVal({});
+            my_validator.get(
+                'required_string',
+                bval.string(true, {
+                    missing_error: {
+                        error_message: "I'm a custom missing error!",
+                        error: 1000
+                    }
+                })
+            );
+
+            var expected = {
+                missing: {
+                    'required_string': {
+                        error_message: "I'm a custom missing error!",
+                        error: 1000
+                    }
+                },
+                error_message: 'One or more errors.',
+                error: 0
+            };
+            var actual = my_validator.end();
+            assert.deepEqual(expected, actual);
+        })
+
+        it('should return the custom missing error if a required field is requested #3', function(){
+            var my_validator = new FieldVal({});
+            my_validator.get(
+                'required_integer',
+                bval.integer(true, {
+                    missing_error: function(){
+                        return {
+                            error_message: "I'm a custom missing error (for an integer), provided via a function!",
+                            error: 1000
+                        }
+                    }
+                })
+            );
+
+            var expected = {
+                missing: {
+                    'required_integer': {
+                        error_message: "I'm a custom missing error (for an integer), provided via a function!",
+                        error: 1000
+                    }
+                },
+                error_message: 'One or more errors.',
+                error: 0
+            };
+            var actual = my_validator.end();
+            assert.deepEqual(expected, actual);
         })
     })
     describe('missing()', function() {
