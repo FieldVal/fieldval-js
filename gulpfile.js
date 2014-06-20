@@ -35,11 +35,3 @@ gulp.task('docs', function() {
     .pipe(markdown())
     .pipe(gulp.dest('./docs/'))
 });
-
-
-gulp.task('nodemon', function () {
-  nodemon({ script: 'mocha test/test.js', ext: 'js', ignore: ['src/'] })
-    .on('restart', function () {
-      console.log('restarted!')
-    })
-})

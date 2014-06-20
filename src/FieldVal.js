@@ -28,6 +28,13 @@ FieldVal.INCORRECT_TYPE_ERROR = function(expected_type, type){
     };
 }
 
+FieldVal.MISSING_ERROR = function(){
+    return {
+        error_message: "Field missing.",
+        error: FieldVal.FIELD_MISSING
+    };
+}
+
 FieldVal.REQUIRED_ERROR = "required";
 FieldVal.NOT_REQUIRED_BUT_MISSING = "notrequired";
 
@@ -89,7 +96,9 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
 
     var use_check = function(this_check){
 
-        var this_check_function, stop_if_error;
+        var this_check_function;
+        var stop_on_error = true;//Default to true
+        var flags = {};
         if((typeof this_check) === 'object'){
             if(Object.prototype.toString.call(this_check)==='[object Array]'){
                 for(var i = 0; i < this_check.length; i++){
@@ -105,13 +114,13 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
             } else {
                 flags = this_check;
                 this_check_function = flags.check;
-                if(flags!=null && flags.stop_if_error){
-                    stop_if_error = true;
+                if(flags!=null && (flags.stop_on_error!==undefined)){
+                    stop_on_error = flags.stop_on_error;
                 }
             }
         } else {
             this_check_function = this_check;
-            stop_if_error = true;//defaults to true
+            stop_on_error = true;//defaults to true
         }
 
         var check = this_check_function(value, function(new_value){
@@ -121,16 +130,15 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
             if(check===FieldVal.REQUIRED_ERROR){
                 if(field_name){
                     if(existing_validator){
-                        existing_validator.missing(field_name);
+                        existing_validator.missing(field_name, flags);
                     } else {
                         return check;
                     }
                 } else {
                     if(existing_validator){
-                        existing_validator.error({
-                            error_message: "Field missing.",
-                            error: FieldVal.FIELD_MISSING
-                        })
+                        existing_validator.error(
+                            FieldVal.create_error(FieldVal.MISSING_ERROR, flags)
+                        )
                     } else {
                         return_missing = true;
                         return;
@@ -150,7 +158,7 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
                 }
             }
             had_error = true;
-            if(stop_if_error){
+            if(stop_on_error){
                 stop = true;
             }
         }
@@ -200,12 +208,9 @@ FieldVal.required = function(required, flags){//required defaults to true
 };
 
 
-FieldVal.type = function(desired_type, required, flags) {
+FieldVal.type = function(desired_type, flags) {
 
-    if((typeof required)==="object"){
-        flags = required;
-        required = typeof flags.required !== 'undefined' ? flags.required : true;
-    }
+    var required = (flags.required !== undefined) ? flags.required : true;
 
     var check = function(value, emit) {
 
@@ -297,13 +302,10 @@ FieldVal.prototype.invalid = function(field_name, error) {
     return fv;
 },
 
-FieldVal.prototype.missing = function(field_name) {
+FieldVal.prototype.missing = function(field_name, flags) {
     var fv = this;
 
-    fv.missing_keys[field_name] = {
-        error_message: "Field missing.",
-        error: FieldVal.FIELD_MISSING
-    };
+    fv.missing_keys[field_name] = FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
     fv.missing_count++;
     return fv;
 },
@@ -399,10 +401,18 @@ FieldVal.create_error = function(default_error, flags){
     if(!flags){
         return default_error.apply(null, Array.prototype.slice.call(arguments,2));
     }
-    if((typeof flags.error) === 'function'){
-        return flags.error.apply(null, Array.prototype.slice.call(arguments,2));
-    } else if((typeof flags.error) === 'object'){
-        return flags.error;
+    if(default_error===FieldVal.MISSING_ERROR){
+        if((typeof flags.missing_error) === 'function'){
+            return flags.missing_error.apply(null, Array.prototype.slice.call(arguments,2));
+        } else if((typeof flags.missing_error) === 'object'){
+            return flags.missing_error;
+        }
+    } else {
+        if((typeof flags.error) === 'function'){
+            return flags.error.apply(null, Array.prototype.slice.call(arguments,2));
+        } else if((typeof flags.error) === 'object'){
+            return flags.error;
+        }
     }
 
     return default_error.apply(null, Array.prototype.slice.call(arguments,2));

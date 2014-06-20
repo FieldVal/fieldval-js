@@ -33,7 +33,9 @@ var values = {};
 values.some_text = validator.get('some_text', bval.string(true));
 console.log("some_text: "+values.some_text);
 
-values.another_string = validator.get('another_string', bval.string({required:false}));
+values.another_string = validator.get('another_string', bval.string({missing_error: {
+	error_message: "I'm a custom missing error!"
+}}));
 console.log("another_string: "+values.another_string);
 
 values.a_number = validator.get('a_number', bval.integer(true));

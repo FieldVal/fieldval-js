@@ -10,7 +10,7 @@ to false in the flags object (the last parameter by convention).\n\
 // The data to be validated (my_data) contains 3 keys.
 var my_data = {
     a_number: 57,
-    a_second_number: 57,
+    a_second_number: 58,
     a_string: 'This is a string',
     an_array: [13,41,'a wild string appeared']
 }
@@ -26,7 +26,10 @@ console.log(
 	validator.get(
 		'a_number',
 		bval.integer(true),
-		bval.maximum(30),
+		bval.maximum(30, {error: {
+			error: 50,
+			error_message: "This is a custom error!"
+		}}),
 		bval.minimum(60)//Intentionally impossible combination
 	)
 );
