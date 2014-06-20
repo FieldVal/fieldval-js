@@ -103,6 +103,29 @@ describe('FieldVal', function() {
             var actual = my_validator.end();
             assert.deepEqual(expected, actual);
         })
+
+         it('should return the custom missing error if a required field is requested #4', function(){
+            var my_validator = new FieldVal({});
+            my_validator.get(
+                'required_integer',
+                bval.integer(true, {
+                    missing_error: "I'm a custom missing error (for an integer), provided as a string!"
+                })
+            );
+
+            var expected = {
+                missing: {
+                    'required_integer': {
+                        error_message: "I'm a custom missing error (for an integer), provided as a string!"
+                        //No error code
+                    }
+                },
+                error_message: 'One or more errors.',
+                error: 0
+            };
+            var actual = my_validator.end();
+            assert.deepEqual(expected, actual);
+        })
     })
     describe('missing()', function() {
         it('end() should return an error with the missing key if missing field is added', function() {

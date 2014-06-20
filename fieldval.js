@@ -406,12 +406,20 @@ FieldVal.create_error = function(default_error, flags){
             return flags.missing_error.apply(null, Array.prototype.slice.call(arguments,2));
         } else if((typeof flags.missing_error) === 'object'){
             return flags.missing_error;
+        } else if((typeof flags.missing_error) === 'string'){
+            return {
+                error_message: flags.missing_error
+            }
         }
     } else {
         if((typeof flags.error) === 'function'){
             return flags.error.apply(null, Array.prototype.slice.call(arguments,2));
         } else if((typeof flags.error) === 'object'){
             return flags.error;
+        } else if((typeof flags.error) === 'string'){
+            return {
+                error_message: flags.error
+            }
         }
     }
 
