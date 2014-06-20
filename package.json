@@ -1,35 +1,30 @@
 {
-    "name": "fieldval",
-    "version": "0.0.0",
-    "description": "fieldval",
-    "main": "fieldval.js",
-    "directories": {
-        "example": "examples",
-        "test": "tests"
-    },
-    "scripts": {
-        "test": "mocha test/test.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/FieldVal/fieldval-js.git"
-    },
-    "dependencies": {
-        "tracer" : "*"
-    },
-    "devDependencies": {
-        "gulp-imports" : "git+ssh://git@github.com/MarcusLongmuir/gulp-imports.git",
-        "gulp-util": "^2.2.14",
-        "gulp": "^3.6.1",
-        "gulp-nodemon" : "*",
-        "gulp-watch": "^0.6.2",
-        "gulp-uglify": "^0.2.1",
-        "gulp-concat": "^2.2.0"
-    },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/FieldVal/fieldval-js/issues"
-    },
-    "homepage": "https://github.com/FieldVal/fieldval-js"
+  "name": "fieldval",
+  "version": "0.0.1",
+  "description": "fieldval",
+  "main": "fieldval.js",
+  "scripts": {
+    "test": "mocha test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FieldVal/fieldval-js.git"
+  },
+  "dependencies": {
+    "tracer": "*"
+  },
+  "devDependencies": {
+    "fieldval-basicval": "*",
+    "gulp": "^3.6.1",
+    "gulp-concat": "^2.2.0",
+    "gulp-imports": "MarcusLongmuir/gulp-imports",
+    "gulp-markdown": "^0.1.2",
+    "gulp-marked": "^0.2.0",
+    "gulp-nodemon": "*",
+    "gulp-rename": "*",
+    "gulp-uglify": "^0.2.1",
+    "gulp-util": "^2.2.14",
+    "gulp-watch": "^0.6.2",
+    "markdown": "^0.5.0"
+  }
 }
