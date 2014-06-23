@@ -1,0 +1,21 @@
+<h1 id="checks">Checks</h1>
+<p>A check is a function that has the following signature:</p>
+<pre><code class="lang-javascript">var my_check = function(value, emit){
+
+}
+</code></pre>
+<ul>
+<li><code>value</code> is the value that this check is being asked to validate.</li>
+<li><code>emit</code> is a function that the check can use to change the value for subsequent checks. (more info below)</li>
+</ul>
+<h1 id="emit">emit</h1>
+<p>The <code>emit</code> function allows a check to not just validate a value, but also modify the value for subsequent checks - a potential use case is shown below:</p>
+<pre><code class="lang-javascript">var my_value = validator.get(&quot;my_value&quot;, bval.float(true, {parse: true}), function(value, emit){
+    if(value&lt;500){
+        emit(Math.floor(value));
+    } else {
+        emit(Math.ceil(value));
+    }
+}, bval.minimum(100))
+</code></pre>
+<p>In the above example, the check performs the following:</p>

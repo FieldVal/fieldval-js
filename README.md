@@ -1,3 +1,6 @@
+FieldVal-JS
+========
+
 The FieldVal-JS library allows you to easily validate objects and provide readable and structured error reports.
 
 ```javascript
@@ -7,25 +10,24 @@ var bval = require('fieldval-basicval');
 
 //Have some data to validate
 var data = {
-    my_number: "clearly not a number"
+    my_integer: "clearly not an integer"
 }
 
 //Create a FieldVal instance using the data
 var validator = new FieldVal(data);
 
 //Get values using validator.get(field_name, field_type, required)
-var my_number = validator.get("my_number", bval.integer(true));
+var my_integer = validator.get("my_integer", bval.integer(true));
 
 //Log the result of the validation (null if no errors)
 console.log(validator.end());
-
 ```
 
 Output:
 ```json
 {
     "invalid": {
-        "my_number": {
+        "my_integer": {
             "error_message": "Incorrect field type. Expected integer.",
             "error": 2,
             "expected": "integer",
@@ -38,13 +40,28 @@ Output:
 
 ```
 
+
+Chaining
+========
+```javascript
+validator.get("my_integer", bval.integer(true))
+```
+
+checks that the value is an integer and indicates that it is required (```true```).
+
+```javascript
+validator.get("my_integer", bval.integer(true), bval.minimum(42))
+```
+
+now also checks that the integer is at least ```42```. You can add as many checks as you like from [here](https://github.com/FieldVal/fieldval-basicval-js/), or just write your own - they're just functions that return errors.
+
 FieldVal Modules
 ============
 * FieldVal-JS (This repository)
 
    The core of FieldVal - provides basic validation functionality such as getting keys from an object and allows chaining of checks.
    
-* FieldVal-BasicVal-JS
+* [FieldVal-BasicVal-JS](https://github.com/FieldVal/fieldval-basicval-js/)
 
    Basic checks and errors for required fields, type checking, length and numeric rules.
    
