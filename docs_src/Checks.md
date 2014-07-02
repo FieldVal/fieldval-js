@@ -3,9 +3,7 @@ Checks
 A check is a function that has the following signature:
 
 ```javascript
-var my_check = function(value, emit){
-	
-}
+var my_check = function(value, emit){}
 ```
 
 * ```value``` is the value that this check is being asked to validate.

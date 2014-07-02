@@ -349,9 +349,25 @@ FieldVal.prototype.end = function() {
 
     var has_error = false;
 
-    var unrecognized = fv.get_unrecognized();
-    for(var key in unrecognized){
-        fv.unrecognized(unrecognized[key]);
+    var returning_unrecognized = {};
+    var returning_unrecognized_count = 0;
+
+    //Iterate through manually unrecognized keys
+    for(var key in fv.unrecognized){
+        returning_unrecognized[key] = fv.unrecognized[key];
+        returning_unrecognized_count++;
+    }
+
+    var auto_unrecognized = fv.get_unrecognized();
+    for(var i = 0; i < auto_unrecognized.length; i++){
+        var key = auto_unrecognized[i];
+        if(!returning_unrecognized[key]){
+            returning_unrecognized[key] = {
+                error_message: "Unrecognized field.",
+                error: FieldVal.FIELD_UNRECOGNIZED
+            }
+            returning_unrecognized_count++;
+        }
     }
 
     if(fv.missing_count !== 0) {
@@ -362,8 +378,8 @@ FieldVal.prototype.end = function() {
         returning.invalid = fv.invalid_keys;
         has_error = true;
     }
-    if(fv.unrecognized_count !== 0) {
-        returning.unrecognized = fv.unrecognized_keys;
+    if(returning_unrecognized_count !== 0) {
+        returning.unrecognized = returning_unrecognized;
         has_error = true;
     }
 
