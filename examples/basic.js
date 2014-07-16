@@ -19,10 +19,8 @@ console.log(JSON.stringify(my_data, null, 2));
 
 
 
-
 // Create a new FieldVal FieldVal for my_data
 var validator = new FieldVal(my_data);
-
 
 
 
@@ -38,7 +36,7 @@ values.another_string = validator.get('another_string', bval.string({required:tr
 }}));
 console.log("another_string: "+values.another_string);
 
-values.a_number = validator.get('a_number', bval.integer(true));
+values.a_number = validator.get('a_number', bval.integer(true), bval.minimum(70));
 console.log("a_number: "+values.a_number);
 
 

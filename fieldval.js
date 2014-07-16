@@ -3,6 +3,12 @@ if((typeof require) === 'function'){
     logger = require('tracer').console();
 }
 
+if(!Array.isArray){
+    Array.isArray = function(value){
+        return Object.prototype.toString.call(value)==='[object Array]';
+    }
+}
+
 FieldVal = function(validating) {
     var fv = this;
 
@@ -35,8 +41,8 @@ FieldVal.MISSING_ERROR = function(){
     };
 }
 
-FieldVal.REQUIRED_ERROR = "required";
-FieldVal.NOT_REQUIRED_BUT_MISSING = "notrequired";
+FieldVal.REQUIRED_ERROR = {};
+FieldVal.NOT_REQUIRED_BUT_MISSING = {};
 
 FieldVal.ONE_OR_MORE_ERRORS = 0;
 FieldVal.FIELD_MISSING = 1;
@@ -100,7 +106,7 @@ FieldVal.use_checks = function(value, checks, existing_validator, field_name, em
         var stop_on_error = true;//Default to true
         var flags = {};
         if((typeof this_check) === 'object'){
-            if(Object.prototype.toString.call(this_check)==='[object Array]'){
+            if(Array.isArray(this_check)){
                 for(var i = 0; i < this_check.length; i++){
                     use_check(this_check[i]);
                     if(stop){
