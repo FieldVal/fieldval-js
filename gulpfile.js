@@ -6,9 +6,12 @@ var uglify = require('gulp-uglify');
 var watch = require('gulp-watch');
 var gulpImports = require('gulp-imports');
 var nodemon = require('gulp-nodemon');
-var rename = require('gulp-rename');
 var path = require('path');
-var markdown = require('gulp-markdown');
+
+var mocha = require('gulp-mocha');
+var jslint = require('gulp-jslint');
+
+var docs_to_json = require('sa-docs-to-json');
 
 gulp.task('js', function(){
 
@@ -25,13 +28,34 @@ gulp.task('js', function(){
 })
 
 
+gulp.task('test', function(){
+    return gulp.src(['test/test.js'])
+    .pipe(mocha());
+});
+
+gulp.task('jslint', function () {
+    return gulp.src(['src/**/*.js'])
+    .pipe(jslint({
+        node: true,
+        plusplus: true,
+        vars: true,
+        reporter: 'default',
+        errorsOnly: false
+    }))
+    .on('error', function (error) {
+        console.error(String(error));
+    });
+});
+
 gulp.task('default', function(){
-    gulp.watch(['src/**/*.js'], ['js']);
-    gulp.watch(['docs_src/**/*.md'], ['docs']);
+    gulp.start('js','test','jslint');
+    gulp.watch(['src/**/*.js'], ['js','test','jslint']);
+    gulp.watch(['test/**/*.js'], ['test']);
+    gulp.watch(['docs_src/**/*'], ['docs']);
 });
 
 gulp.task('docs', function() {
-  gulp.src('./docs_src/**/*.md')
-    .pipe(markdown())
+    return gulp.src('./docs_src/*.json')
+    .pipe(docs_to_json())
     .pipe(gulp.dest('./docs/'))
 });
