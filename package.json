@@ -14,15 +14,16 @@
     "tracer": "*"
   },
   "devDependencies": {
-    "gulp-imports": "MarcusLongmuir/gulp-imports",
-    "gulp-util": "^2.2.14",
     "gulp": "^3.6.1",
+    "gulp-concat": "^2.2.0",
+    "gulp-imports": "MarcusLongmuir/gulp-imports",
+    "gulp-istanbul": "^0.2.2",
+    "gulp-jshint": "^1.8.4",
     "gulp-mocha": "^1.0.0",
     "gulp-nodemon": "*",
     "gulp-uglify": "^0.2.1",
+    "gulp-util": "^2.2.14",
     "gulp-watch": "^0.6.2",
-    "gulp-jslint": "*",
-    "gulp-concat": "^2.2.0",
     "sa-docs-to-json": "*"
   }
 }

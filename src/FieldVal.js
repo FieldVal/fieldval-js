@@ -1,10 +1,6 @@
 "use strict";
 
-var logger;
-if ((typeof require) === 'function') {
-    logger = require('tracer').console();
-}
-
+/* istanbul ignore if */
 if (!Array.isArray) {
     Array.isArray = function (value) {
         return (Object.prototype.toString.call(value) === '[object Array]');
@@ -43,8 +39,11 @@ FieldVal.MISSING_ERROR = function () {
     };
 };
 
-FieldVal.REQUIRED_ERROR = {};
-FieldVal.NOT_REQUIRED_BUT_MISSING = {};
+/* Global namespaces (e.g. Math.sqrt) are used as constants 
+ * to prevent multiple instances of FieldVal (due to being 
+ * a dependency) having not-strictly-equal constants. */
+FieldVal.REQUIRED_ERROR = Math.sqrt;
+FieldVal.NOT_REQUIRED_BUT_MISSING = Math.floor;
 
 FieldVal.ONE_OR_MORE_ERRORS = 0;
 FieldVal.FIELD_MISSING = 1;
@@ -66,9 +65,9 @@ FieldVal.get_value_and_type = function (value, desired_type, flags) {
                 desired_type = parsed_int;
                 desired_type = "number";
             }
-        } else if (desired_type === "float") {
+        } else if (desired_type === "float" || desired_type === "number") {
             var parsed_float = parseFloat(value, 10);
-            if (!isNaN(parsed_float)) {
+            if (!isNaN(parsed_float) && (parsed_float.toString()).length === (value.toString()).length) {
                 value = parsed_float;
                 desired_type = "number";
             }
@@ -79,7 +78,7 @@ FieldVal.get_value_and_type = function (value, desired_type, flags) {
 
     if (type === "object") {
         //typeof on Array returns "object", do check for an array
-        if (Object.prototype.toString.call(value) === '[object Array]') {
+        if (Array.isArray(value)) {
             type = "array";
         }
     }
@@ -130,16 +129,17 @@ FieldVal.use_checks = function (value, checks, existing_validator, field_name, e
             stop_on_error = true;//defaults to true
         }
 
-        var check = this_check_function(value, function (new_value) {
+        var check_response = this_check_function(value, function (new_value) {
             value = new_value;
         });
-        if (check !== null && check !== undefined) {
-            if (check === FieldVal.REQUIRED_ERROR) {
+        if (check_response !== null && check_response !== undefined) {
+            if (check_response === FieldVal.REQUIRED_ERROR) {
                 if (field_name) {
                     if (existing_validator) {
                         existing_validator.missing(field_name, flags);
                     } else {
-                        return check;
+                        validator.missing(field_name, flags);
+                        return validator.end();
                     }
                 } else {
                     if (existing_validator) {
@@ -151,16 +151,16 @@ FieldVal.use_checks = function (value, checks, existing_validator, field_name, e
                         return;
                     }
                 }
-            } else if (check !== FieldVal.NOT_REQUIRED_BUT_MISSING) {
+            } else if (check_response !== FieldVal.NOT_REQUIRED_BUT_MISSING) {
                 //NOT_REQUIRED_BUT_MISSING means "don't process proceeding checks, but don't throw an error"
                 if (existing_validator) {
                     if (field_name) {
-                        existing_validator.invalid(field_name, check);
+                        existing_validator.invalid(field_name, check_response);
                     } else {
-                        existing_validator.error(check);
+                        existing_validator.error(check_response);
                     }
                 } else {
-                    validator.error(check);
+                    validator.error(check_response);
                 }
             }
             had_error = true;
@@ -170,15 +170,17 @@ FieldVal.use_checks = function (value, checks, existing_validator, field_name, e
         }
     };
 
-    var i, this_check;
-    for (i = 0; i < checks.length; i++) {
-        this_check = checks[i];
-        use_check(this_check);
-        if (return_missing) {
-            return FieldVal.REQUIRED_ERROR;
-        }
-        if (stop) {
-            break;
+    if(checks){
+        var i, this_check;
+        for (i = 0; i < checks.length; i++) {
+            this_check = checks[i];
+            use_check(this_check);
+            if (return_missing) {
+                return FieldVal.REQUIRED_ERROR;
+            }
+            if (stop) {
+                break;
+            }
         }
     }
 
@@ -216,7 +218,7 @@ FieldVal.required = function (required, flags) {//required defaults to true
 
 FieldVal.type = function (desired_type, flags) {
 
-    var required = (flags.required !== undefined) ? flags.required : true;
+    var required = (flags && flags.required !== undefined) ? flags.required : true;
 
     var check = function (value, emit) {
 
@@ -347,6 +349,7 @@ FieldVal.prototype.get_unrecognized = function () {
     var unrecognized = [];
     var key;
     for (key in fv.validating) {
+        /* istanbul ignore else */
         if (fv.validating.hasOwnProperty(key)) {
             if (fv.recognized_keys[key] !== true) {
                 unrecognized.push(key);
@@ -368,9 +371,10 @@ FieldVal.prototype.end = function () {
 
     //Iterate through manually unrecognized keys
     var key;
-    for (key in fv.unrecognized) {
-        if (fv.unrecognized.hasOwnProperty(key)) {
-            returning_unrecognized[key] = fv.unrecognized[key];
+    for (key in fv.unrecognized_keys) {
+        /* istanbul ignore else */
+        if (fv.unrecognized_keys.hasOwnProperty(key)) {
+            returning_unrecognized[key] = fv.unrecognized_keys[key];
             returning_unrecognized_count++;
         }
     }
@@ -436,25 +440,27 @@ FieldVal.create_error = function (default_error, flags) {
         return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
     }
     if (default_error === FieldVal.MISSING_ERROR) {
-        if ((typeof flags.missing_error) === 'function') {
+        var missing_error_type = typeof flags.missing_error;
+
+        /* istanbul ignore else */
+        if (missing_error_type === 'function') {
             return flags.missing_error.apply(null, Array.prototype.slice.call(arguments, 2));
-        }
-        if ((typeof flags.missing_error) === 'object') {
+        } else if (missing_error_type === 'object') {
             return flags.missing_error;
-        }
-        if ((typeof flags.missing_error) === 'string') {
+        } else if (missing_error_type === 'string') {
             return {
                 error_message: flags.missing_error
             };
         }
     } else {
-        if ((typeof flags.error) === 'function') {
+        var error_type = typeof flags.error;
+
+        /* istanbul ignore else */
+        if (error_type === 'function') {
             return flags.error.apply(null, Array.prototype.slice.call(arguments, 2));
-        }
-        if ((typeof flags.error) === 'object') {
+        } else if (error_type === 'object') {
             return flags.error;
-        }
-        if ((typeof flags.error) === 'string') {
+        } else if (error_type === 'string') {
             return {
                 error_message: flags.error
             };
@@ -464,28 +470,7 @@ FieldVal.create_error = function (default_error, flags) {
     return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
 };
 
-FieldVal.Error = function (number, message, data) {
-
-    if (((typeof number) === 'object') && Object.prototype.toString.call(number) === '[object Array]') {
-        var array = number;
-        number = array[0];
-        message = array[1];
-        data = array[2];
-    }
-    var obj = {
-        error: number
-    };
-    if (message !== undefined && message !== null) {
-        obj.error_message = message;
-    }
-
-    if (data !== undefined && data !== null) {
-        obj.data = data;
-    }
-
-    return obj;
-};
-
-if (module !== undefined) {
+/* istanbul ignore else */
+if ('undefined' !== typeof module) {
     module.exports = FieldVal;
 }
