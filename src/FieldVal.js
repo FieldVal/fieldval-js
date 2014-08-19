@@ -133,7 +133,7 @@ FieldVal.use_checks = function (value, checks, existing_validator, field_name, e
         var check = this_check_function(value, function (new_value) {
             value = new_value;
         });
-        if (check !== null) {
+        if (check !== null && check !== undefined) {
             if (check === FieldVal.REQUIRED_ERROR) {
                 if (field_name) {
                     if (existing_validator) {
