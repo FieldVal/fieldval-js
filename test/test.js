@@ -242,6 +242,7 @@ describe('FieldVal', function() {
                 ],
                 bval.string(true)//Won't be run
             ]);
+            logger.log(JSON.stringify(output,null,4));
             assert.deepEqual({
                 "error":4,
                 "error_message":"Multiple errors.",

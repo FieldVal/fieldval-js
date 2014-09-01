@@ -1,5 +1,10 @@
 "use strict";
 
+var logger;
+if((typeof require) === 'function'){
+    logger = require('tracer').console();
+}
+
 /* istanbul ignore if */
 if (!Array.isArray) {
     Array.isArray = function (value) {
@@ -133,6 +138,9 @@ FieldVal.use_checks = function (value, checks, existing_validator, field_name, e
             value = new_value;
         });
         if (check_response !== null && check_response !== undefined) {
+            if (stop_on_error) {
+                stop = true;
+            }
             if (check_response === FieldVal.REQUIRED_ERROR) {
                 if (field_name) {
                     if (existing_validator) {
@@ -161,26 +169,17 @@ FieldVal.use_checks = function (value, checks, existing_validator, field_name, e
                     }
                 } else {
                     validator.error(check_response);
+                    return validator.end();
                 }
             }
             had_error = true;
-            if (stop_on_error) {
-                stop = true;
-            }
         }
     };
 
     if(checks){
-        var i, this_check;
-        for (i = 0; i < checks.length; i++) {
-            this_check = checks[i];
-            use_check(this_check);
-            if (return_missing) {
-                return FieldVal.REQUIRED_ERROR;
-            }
-            if (stop) {
-                break;
-            }
+        use_check(checks);
+        if (return_missing) {
+            return FieldVal.REQUIRED_ERROR;
         }
     }
 
