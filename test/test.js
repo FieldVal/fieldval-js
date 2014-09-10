@@ -448,10 +448,10 @@ describe('FieldVal', function() {
             assert.strictEqual(undefined, output);
         })
     })
-    describe('default()', function() {
+    describe('default_value()', function() {
         it('should use a default if the value is missing', function() {
             var validator = new FieldVal({});
-            var value = validator.default("the_default").get("my_key", bval.string(true));
+            var value = validator.default_value("the_default").get("my_key", bval.string(true));
             assert.strictEqual(value, "the_default");
         })
 
@@ -459,7 +459,7 @@ describe('FieldVal', function() {
             var validator = new FieldVal({
                 "my_key": "actual_value"
             });
-            var value = validator.default("the_default").get("my_key", bval.string(true));
+            var value = validator.default_value("the_default").get("my_key", bval.string(true));
             assert.strictEqual(value, "actual_value");
         })
     })

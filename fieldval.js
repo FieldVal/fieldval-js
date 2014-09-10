@@ -249,7 +249,7 @@ FieldVal.type = function (desired_type, flags) {
     return check;
 };
 
-FieldVal.prototype.default = function (default_value) {
+FieldVal.prototype.default_value = function (default_value) {
     var fv = this;
 
     return {

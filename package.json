@@ -24,6 +24,6 @@
         "gulp-uglify": "^0.2.1",
         "gulp-util": "^2.2.14",
         "gulp-watch": "^0.6.2",
-        "sa-docs-to-json": "*"
+        "sa-docs-to-json": "SuperAwesomeLtd/sa-docs-to-json"
     }
 }
