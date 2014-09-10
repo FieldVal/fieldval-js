@@ -11,7 +11,8 @@
         "url": "https://github.com/FieldVal/fieldval-js.git"
     },
     "dependencies": {
-        "tracer": "*"
+        "tracer": "*",
+        "mocha": "*"
     },
     "devDependencies": {
         "gulp": "^3.6.1",
