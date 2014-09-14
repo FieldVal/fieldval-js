@@ -21,6 +21,29 @@ describe('FieldVal', function() {
             })
             assert.equal(13, validator.get("my_value"));
         })
+
+        it('should throw an error if used with async checks', function(done) {
+            var validator = new FieldVal({
+                "my_value": 13
+            })
+            try{
+                var async_check = function(value, emit, callback) {
+                    assert.equal(13, value);
+                    setTimeout(function(){
+                        callback({
+                            "error_message": "This is a custom error",
+                            "error": 1000
+                        })
+                    },30);
+                }
+
+                logger.log(async_check.length);
+
+                assert.equal(13, validator.get("my_value", async_check));
+            } catch (e){
+                done();
+            }
+        })
     })
     describe('get() - async', function() {
         it('should return value when the value is present', function(done) {
@@ -35,7 +58,6 @@ describe('FieldVal', function() {
                     "error": 1000
                 })
 
-                return -1;//Means that this is async
             })
             validator.end(function(result){
                 assert.deepEqual({
@@ -157,9 +179,11 @@ describe('FieldVal', function() {
             var called_emit = false;
             var output = FieldVal.use_checks('17', [
                 bval.integer(true, {parse: true})
-            ],null,null,function(new_value){
-                assert.strictEqual(17, new_value);
-                called_emit = true;
+            ],{
+                emit: function(new_value){
+                    assert.strictEqual(17, new_value);
+                    called_emit = true;
+                }
             });
             assert.equal(true, called_emit);
         })
@@ -171,7 +195,24 @@ describe('FieldVal', function() {
             assert.deepEqual(FieldVal.REQUIRED_ERROR, output);
         })
 
-        it('should return null if required false and value is undefined', function() {
+        it('should allow omitting the options argument', function() {
+            var did_respond = false;
+            var output = FieldVal.use_checks("my_value", [
+                bval.integer(true)
+            ], function(response){
+                did_respond = true;
+                assert.deepEqual({
+                    "error_message":"Incorrect field type. Expected integer.",
+                    "error":2,
+                    "expected":"integer",
+                    "received":"string"
+                }, response);
+            });
+
+            assert.equal(did_respond, true);
+        })
+
+        it('should return undefined if required false and value is undefined', function() {
             var output = FieldVal.use_checks(undefined, [
                 bval.string(false),
             ]);
@@ -182,7 +223,9 @@ describe('FieldVal', function() {
             var validator = new FieldVal();
             var output = FieldVal.use_checks(undefined, [
                 bval.string(true)
-            ],validator);
+            ],{
+                validator: validator
+            });
             assert.deepEqual(undefined, output);
             assert.deepEqual({
                 "error":1,
@@ -192,13 +235,25 @@ describe('FieldVal', function() {
 
         it('should return an error if any of the checks throw one (with validator, without field name)', function() {
             var validator = new FieldVal();
-            var output = FieldVal.use_checks(27, [
-                bval.integer(true),
-                bval.minimum(30)
-            ],validator,null,null,function(response){
-                logger.log(response);
-            });
 
+            var did_respond = false;
+            
+            var output = FieldVal.use_checks(
+                27,//value
+                [//checks
+                    bval.integer(true),
+                    bval.minimum(30)
+                ],
+                {//options
+                    validator: validator
+                },
+                function(response){//callback
+                    assert.deepEqual(undefined, response);
+                    did_respond = true;
+                }
+            );
+
+            assert.equal(did_respond, true);
             assert.deepEqual(undefined, output);
             assert.deepEqual({
                 "error":102,
@@ -208,15 +263,24 @@ describe('FieldVal', function() {
 
         it('should return an error if any of the checks throw one (with validator, with field name)', function() {
             var validator = new FieldVal();
-            logger.log(validator);
-            var output = FieldVal.use_checks(27, [
-                bval.integer(true),
-                bval.minimum(30)
-            ],validator,"my_field_name",function(response){
-                logger.log("GOT RESPONSE");
-                logger.log(response);
-            });
+            var did_respond = false;
+            var output = FieldVal.use_checks(
+                27,//value
+                [//checks
+                    bval.integer(true),
+                    bval.minimum(30)
+                ],
+                {//options
+                    validator: validator,
+                    field_name: "my_field_name"
+                },
+                function(response){//callback
+                    assert.deepEqual(undefined, response);
+                    did_respond = true;
+                }
+            );
 
+            assert.equal(did_respond, true);
             assert.deepEqual(undefined, output);
             assert.deepEqual({
                 "invalid": {
@@ -232,25 +296,166 @@ describe('FieldVal', function() {
 
         it('should return an error if any of the checks throw one (with validator, with field name, async)', function(done) {
             var validator = new FieldVal();
-            var output = FieldVal.use_checks(27, [
-                bval.integer(true),
-                bval.minimum(10),
-                function(value, emit, callback){
-                    setTimeout(function(){
-                        callback({
-                            "error_message": "Custom error",
-                            "error": 1000
-                        })
-                    },30);
-                    return -1;
+
+            var did_respond = false;
+
+            var output = FieldVal.use_checks(
+                27,//value
+                [//checks
+                    bval.integer(true),
+                    bval.minimum(10),
+                    function(value, emit, callback){
+                        setTimeout(function(){
+                            callback({
+                                "error_message": "Custom error",
+                                "error": 1000
+                            })
+                        },30);
+                    },
+                    bval.minimum(30)
+                ],
+                {//options
+                    validator: validator,
+                    field_name: "my_field_name",
+                    emit: function(emitted){
+                        assert.strictEqual(emitted,undefined);
+                    },
                 },
-                bval.minimum(30)
-            ],validator,"my_field_name",function(emitted){
-                logger.log("EMIT ",emitted);
-                assert.equal(emitted,null);
-            },function(response){
-                logger.log("GOT RESPONSE", response);
-            });
+                function(response){//calback
+                    assert.deepEqual(undefined, response);
+                    did_respond = true;
+                }
+            );
+
+            validator.end(function(response){
+
+                assert.equal(did_respond, true);
+
+                assert.deepEqual({
+                    "invalid": {
+                        "my_field_name" :{
+                            "error":1000,
+                            "error_message":"Custom error"
+                        }
+                    },
+                    "error_message":"One or more errors.",
+                    "error": 0
+                }, response);
+
+                done();
+            })
+        })
+
+        it('should handle multiple async checks (with validator, with field names, async)', function(done) {
+            var validator = new FieldVal();
+
+            var did_respond = 0;
+
+            FieldVal.use_checks(
+                27,//value
+                [//checks
+                    bval.integer(true),
+                    bval.minimum(10),
+                    function(value, emit, callback){
+                        setTimeout(function(){
+                            callback({
+                                "error_message": "Custom error one",
+                                "error": 1000
+                            })
+                        },30);
+                    },
+                    bval.minimum(30)
+                ],
+                {//options
+                    validator: validator,
+                    field_name: "my_field_name_one",
+                    emit: function(emitted){
+                        assert.strictEqual(emitted,undefined);
+                    },
+                },
+                function(response){//calback
+                    assert.deepEqual(undefined, response);
+                    did_respond++;
+                }
+            );
+
+            FieldVal.use_checks(
+                28,//value
+                [//checks
+                    bval.integer(true),
+                    bval.minimum(10),
+                    function(value, emit, callback){
+                        setTimeout(function(){
+                            callback({
+                                "error_message": "Custom error two",
+                                "error": 1001
+                            })
+                        },10);
+                    },
+                    bval.minimum(30)
+                ],
+                {//options
+                    validator: validator,
+                    field_name: "my_field_name_two",
+                    emit: function(emitted){
+                        assert.strictEqual(emitted,undefined);
+                    },
+                },
+                function(response){//calback
+                    assert.deepEqual(undefined, response);
+                    did_respond++;
+                }
+            );
+
+            validator.end(function(response){
+
+                assert.equal(did_respond, 2);
+
+                assert.deepEqual({
+                    "invalid": {
+                        "my_field_name_one" :{
+                            "error":1000,
+                            "error_message":"Custom error one"
+                        },
+                        "my_field_name_two" :{
+                            "error":1001,
+                            "error_message":"Custom error two"
+                        }
+                    },
+                    "error_message":"One or more errors.",
+                    "error": 0
+                }, response);
+
+                done();
+            })
+        })
+
+        it('should allow omitting of the callback (with validator, with field name, async)', function(done) {
+            var validator = new FieldVal();
+
+            var output = FieldVal.use_checks(
+                27,//value
+                [//checks
+                    bval.integer(true),
+                    bval.minimum(10),
+                    function(value, emit, callback){
+                        setTimeout(function(){
+                            callback({
+                                "error_message": "Custom error",
+                                "error": 1000
+                            })
+                        },30);
+                    },
+                    bval.minimum(30)
+                ],
+                {//options
+                    validator: validator,
+                    field_name: "my_field_name",
+                    emit: function(emitted){
+                        assert.strictEqual(emitted,undefined);
+                    }
+                }
+            );
 
             validator.end(function(response){
 
@@ -271,6 +476,10 @@ describe('FieldVal', function() {
 
         it('should return a multiple error if multiple checks throw errors (with validator, with field name, async)', function(done) {
             var validator = new FieldVal();
+
+
+            var did_respond = false;
+
             var output = FieldVal.use_checks(27, [
                 bval.integer(true),
                 bval.minimum(10),
@@ -282,19 +491,24 @@ describe('FieldVal', function() {
                                 "error": 1000
                             })
                         },30);
-                        return -1;
                     },
                     stop_on_error: false
                 },
                 bval.minimum(30)
-            ],validator,"my_field_name",function(emitted){
-                logger.log("EMIT ",emitted);
-                assert.equal(emitted,null);
+            ],{
+                validator: validator,
+                field_name: "my_field_name",
+                emit: function(emitted){
+                    assert.strictEqual(emitted,undefined);
+                }
             },function(response){
-                logger.log("GOT RESPONSE", response);
+                assert.deepEqual(undefined, response);
+                did_respond = true;
             });
 
             validator.end(function(response){
+
+                assert.equal(did_respond, true);
 
                 assert.deepEqual({
                     "invalid": {
@@ -323,7 +537,10 @@ describe('FieldVal', function() {
             var validator = new FieldVal();
             var output = FieldVal.use_checks(undefined, [
                 bval.integer(true)
-            ],validator,"my_field_name");
+            ],{
+                validator: validator,
+                field_name: "my_field_name"
+            });
 
             assert.deepEqual(undefined, output);
             assert.deepEqual({
@@ -341,7 +558,9 @@ describe('FieldVal', function() {
         it('should return a missing error (without validator, with field name)', function() {
             var output = FieldVal.use_checks(undefined, [
                 bval.integer(true)
-            ],null,"my_field_name");
+            ],{
+                field_name: "my_field_name"
+            });
 
             assert.deepEqual({
                 "missing": {
@@ -354,6 +573,41 @@ describe('FieldVal', function() {
                 "error": 0
             },output)
         })
+
+        it('should return a missing error (without validator, with field name, async)', function() {
+            var did_respond = false;
+            var output = FieldVal.use_checks(undefined, [
+                bval.integer(true)
+            ],{
+                field_name: "my_field_name"
+            }, function(response){
+                did_respond = true;
+                assert.deepEqual(response, {
+                    "missing": {
+                        "my_field_name" :{
+                            "error":1,
+                            "error_message":"Field missing."
+                        }
+                    },
+                    "error_message":"One or more errors.",
+                    "error": 0
+                })
+            });
+
+            assert.equal(did_respond, true);
+
+            assert.deepEqual({
+                "missing": {
+                    "my_field_name" :{
+                        "error":1,
+                        "error_message":"Field missing."
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error": 0
+            },output)
+        })
+
 
         it('should work with nested arrays of checks', function() {
             var output = FieldVal.use_checks(27, [
@@ -728,7 +982,7 @@ describe('FieldVal', function() {
             validator.recognized("my_string");
             assert.strictEqual(
                 validator.end(),
-                null
+                undefined
             );
         })
     })
