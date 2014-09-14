@@ -1,10 +1,5 @@
 "use strict";
 
-var logger;
-if((typeof require) === 'function'){
-    logger = require('tracer').console();
-}
-
 /* istanbul ignore if */
 if (!Array.isArray) {
     Array.isArray = function (value) {
@@ -14,6 +9,8 @@ if (!Array.isArray) {
 
 function FieldVal(validating) {
     var fv = this;
+
+    fv.async_waiting = 0;
 
     fv.validating = validating;
     fv.missing_keys = {};
@@ -47,6 +44,7 @@ FieldVal.MISSING_ERROR = function () {
 /* Global namespaces (e.g. Math.sqrt) are used as constants 
  * to prevent multiple instances of FieldVal (due to being 
  * a dependency) having not-strictly-equal constants. */
+FieldVal.ASYNC = -1;
 FieldVal.REQUIRED_ERROR = Math.sqrt;
 FieldVal.NOT_REQUIRED_BUT_MISSING = Math.floor;
 
@@ -95,106 +93,158 @@ FieldVal.get_value_and_type = function (value, desired_type, flags) {
     };
 };
 
-FieldVal.use_checks = function (value, checks, existing_validator, field_name, emit) {
-    var had_error = false;
-    var stop = false;
+FieldVal.use_check = function (this_check, shared_flags, use_check_done) {
 
-    var validator;
-    if (!existing_validator) {
-        validator = new FieldVal();
-    }
+    var this_check_function;
+    var stop_on_error = true;//Default to true
+    var flags = {};
+    var i = 0;
 
-    var return_missing = false;//Used to escape from check list if a check returns a FieldVal.REQUIRED_ERROR error.
-
-    var use_check = function (this_check) {
-
-        var this_check_function;
-        var stop_on_error = true;//Default to true
-        var flags = {};
-        var i;
-        if ((typeof this_check) === 'object') {
-            if (Array.isArray(this_check)) {
-                for (i = 0; i < this_check.length; i++) {
-                    use_check(this_check[i]);
-                    if (stop) {
-                        break;
-                    }
+    if ((typeof this_check) === 'object') {
+        if (Array.isArray(this_check)) {
+            var this_check_array = this_check;
+            var check_done = function(){
+                i++;
+                if(shared_flags.stop || i>this_check_array.length){
+                    use_check_done();
+                    return;
                 }
-                return;
+                FieldVal.use_check(
+                    this_check_array[i-1],
+                    shared_flags,
+                    function(){
+                        check_done();
+                    }
+                );
             }
-
+            check_done();
+            return;
+        } else {
             flags = this_check;
             this_check_function = flags.check;
             if (flags !== null && (flags.stop_on_error !== undefined)) {
                 stop_on_error = flags.stop_on_error;
             }
-
-        } else {
-            this_check_function = this_check;
-            stop_on_error = true;//defaults to true
         }
+    } else if(typeof this_check === 'function') {
+        this_check_function = this_check;
+        stop_on_error = true;//defaults to true
+    } else {
+        throw new Error("A check can only be provided as a function or as an object with a function as the .check property.");
+    }
 
-        var check_response = this_check_function(value, function (new_value) {
-            value = new_value;
-        });
-        if (check_response !== null && check_response !== undefined) {
+    var with_response = function(response){
+        if (response !== null && response !== undefined) {
             if (stop_on_error) {
-                stop = true;
+                shared_flags.stop = true;
             }
-            if (check_response === FieldVal.REQUIRED_ERROR) {
-                if (field_name) {
-                    if (existing_validator) {
-                        existing_validator.missing(field_name, flags);
-                    } else {
-                        validator.missing(field_name, flags);
-                        return validator.end();
-                    }
+            shared_flags.had_error = true;
+
+            if (response === FieldVal.REQUIRED_ERROR) {
+
+                if (shared_flags.field_name) {
+                    shared_flags.validator.missing(shared_flags.field_name, flags);
+                    use_check_done();
+                    return;
                 } else {
-                    if (existing_validator) {
-                        existing_validator.error(
+                    if (shared_flags.existing_validator) {
+                    
+                        shared_flags.validator.error(
                             FieldVal.create_error(FieldVal.MISSING_ERROR, flags)
                         );
+                        use_check_done();
+                        return;
                     } else {
-                        return_missing = true;
+                        shared_flags.return_missing = true;
+                        use_check_done();
                         return;
                     }
                 }
-            } else if (check_response !== FieldVal.NOT_REQUIRED_BUT_MISSING) {
+            } else if (response !== FieldVal.NOT_REQUIRED_BUT_MISSING) {
                 //NOT_REQUIRED_BUT_MISSING means "don't process proceeding checks, but don't throw an error"
-                if (existing_validator) {
-                    if (field_name) {
-                        existing_validator.invalid(field_name, check_response);
+
+                if (shared_flags.existing_validator) {
+                    if (shared_flags.field_name) {
+                        shared_flags.validator.invalid(shared_flags.field_name, response);
                     } else {
-                        existing_validator.error(check_response);
+                        shared_flags.validator.error(response);
                     }
+                    use_check_done();
                 } else {
-                    validator.error(check_response);
-                    return validator.end();
+                    shared_flags.validator.error(response);
+                    use_check_done();
                 }
             }
-            had_error = true;
-        }
-    };
-
-    if(checks){
-        use_check(checks);
-        if (return_missing) {
-            return FieldVal.REQUIRED_ERROR;
+        } else {
+            use_check_done();
         }
     }
 
-    if (had_error) {
-        if (emit) {
-            emit(undefined);
-        }
+    var check_response = this_check_function(shared_flags.value, shared_flags.emit, function(response){
+        //Response callback
+        with_response(response);
+    });
+    if (check_response===FieldVal.ASYNC){
+        //Waiting for async
     } else {
-        if (emit) {
-            emit(value);
-        }
+        with_response(check_response);
+    }
+};
+
+FieldVal.use_checks = function (value, checks, existing_validator, field_name, emit, done) {
+
+    var shared_flags = {
+        value: value,
+        field_name: field_name,
+        emit: function(emitted){
+            shared_flags.value = emitted;
+        },
+        external_emit: emit,
+        stop: false,
+        return_missing: false,
+        had_error: false
     }
 
-    if (!existing_validator) {
-        return validator.end();
+    if (existing_validator) {
+        shared_flags.validator = existing_validator;
+        shared_flags.existing_validator = true;
+    } else {
+        shared_flags.validator = new FieldVal();
+    }
+
+    var to_return = undefined;
+    var finish = function(response){
+        to_return = response;
+    }
+    shared_flags.validator.async_waiting++;
+    
+    var use_check_res = FieldVal.use_check(checks || [], shared_flags, function(){
+        if (shared_flags.had_error) {
+            if (shared_flags.external_emit) {
+                shared_flags.external_emit(undefined);
+            }
+        } else {
+            if (shared_flags.external_emit) {
+                shared_flags.external_emit(shared_flags.value);
+            }
+        }
+
+        if (shared_flags.return_missing) {
+            finish(FieldVal.REQUIRED_ERROR);
+            return;
+        }
+
+        if(!shared_flags.existing_validator){
+            finish(shared_flags.validator.end());
+            return;
+        }
+
+        shared_flags.validator.async_call_ended();
+    })
+    if(to_return!==undefined){
+        return to_return;
+    } else {
+        finish = done;
     }
 };
 
@@ -358,7 +408,19 @@ FieldVal.prototype.get_unrecognized = function () {
     return unrecognized;
 };
 
-FieldVal.prototype.end = function () {
+FieldVal.prototype.async_call_ended = function(){
+    var fv = this;
+
+    fv.async_waiting--;
+
+    if(fv.async_waiting<=0){
+        if(fv.end_callback){
+            fv.end_callback(fv.generate_response());
+        }
+    }
+}
+
+FieldVal.prototype.generate_response = function(){
     var fv = this;
 
     var returning = {};
@@ -432,6 +494,20 @@ FieldVal.prototype.end = function () {
     }
 
     return null;
+}
+
+FieldVal.prototype.end = function (callback) {
+    var fv = this;
+
+    if(callback){
+        fv.end_callback = callback;
+
+        if(fv.async_waiting<=0){
+            callback(fv.generate_response());
+        }
+    } else {
+        return fv.generate_response();
+    }
 };
 
 FieldVal.create_error = function (default_error, flags) {

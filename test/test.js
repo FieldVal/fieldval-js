@@ -22,6 +22,36 @@ describe('FieldVal', function() {
             assert.equal(13, validator.get("my_value"));
         })
     })
+    describe('get() - async', function() {
+        it('should return value when the value is present', function(done) {
+            var validator = new FieldVal({
+                "my_value": 13
+            })
+            validator.get("my_value", function(value, emit, callback){
+                assert.equal(13, value);
+
+                callback({
+                    "error_message": "This is a custom error",
+                    "error": 1000
+                })
+
+                return -1;//Means that this is async
+            })
+            validator.end(function(result){
+                assert.deepEqual({
+                    "invalid": {
+                        "my_value" :{
+                            "error": 1000,
+                            "error_message":"This is a custom error"
+                        }
+                    },
+                    "error_message":"One or more errors.",
+                    "error": 0
+                }, result);
+                done();
+            })
+        })
+    })
     describe('get_value_and_type()', function() {
         it('should return type and value info 1', function() {
             var vt = FieldVal.get_value_and_type('One','string');
@@ -101,6 +131,17 @@ describe('FieldVal', function() {
             assert.equal(undefined, output);
         })
 
+        it('should throw an error if the checks are provided incorrectly', function(done) {
+            var did_throw_error = false;
+            try{
+                var output = FieldVal.use_checks(23, "NOT A VALID CHECK");
+            } catch (e){
+                did_throw_error = true;
+            }
+            assert.equal(true, did_throw_error);
+            done();
+        })
+
         it('should return an error if any of the checks throw one (without validator)', function() {
             var output = FieldVal.use_checks(27, [
                 bval.integer(true),
@@ -134,7 +175,7 @@ describe('FieldVal', function() {
             var output = FieldVal.use_checks(undefined, [
                 bval.string(false),
             ]);
-            assert.deepEqual(null, output);
+            assert.deepEqual(undefined, output);
         })
 
         it('should return a missing error (FieldVal.REQUIRED_ERROR) (with validator, without field name)', function() {
@@ -154,7 +195,9 @@ describe('FieldVal', function() {
             var output = FieldVal.use_checks(27, [
                 bval.integer(true),
                 bval.minimum(30)
-            ],validator);
+            ],validator,null,null,function(response){
+                logger.log(response);
+            });
 
             assert.deepEqual(undefined, output);
             assert.deepEqual({
@@ -165,10 +208,14 @@ describe('FieldVal', function() {
 
         it('should return an error if any of the checks throw one (with validator, with field name)', function() {
             var validator = new FieldVal();
+            logger.log(validator);
             var output = FieldVal.use_checks(27, [
                 bval.integer(true),
                 bval.minimum(30)
-            ],validator,"my_field_name");
+            ],validator,"my_field_name",function(response){
+                logger.log("GOT RESPONSE");
+                logger.log(response);
+            });
 
             assert.deepEqual(undefined, output);
             assert.deepEqual({
@@ -181,6 +228,95 @@ describe('FieldVal', function() {
                 "error_message":"One or more errors.",
                 "error": 0
             },validator.end())
+        })
+
+        it('should return an error if any of the checks throw one (with validator, with field name, async)', function(done) {
+            var validator = new FieldVal();
+            var output = FieldVal.use_checks(27, [
+                bval.integer(true),
+                bval.minimum(10),
+                function(value, emit, callback){
+                    setTimeout(function(){
+                        callback({
+                            "error_message": "Custom error",
+                            "error": 1000
+                        })
+                    },30);
+                    return -1;
+                },
+                bval.minimum(30)
+            ],validator,"my_field_name",function(emitted){
+                logger.log("EMIT ",emitted);
+                assert.equal(emitted,null);
+            },function(response){
+                logger.log("GOT RESPONSE", response);
+            });
+
+            validator.end(function(response){
+
+                assert.deepEqual({
+                    "invalid": {
+                        "my_field_name" :{
+                            "error":1000,
+                            "error_message":"Custom error"
+                        }
+                    },
+                    "error_message":"One or more errors.",
+                    "error": 0
+                }, response);
+
+                done();
+            })
+        })
+
+        it('should return a multiple error if multiple checks throw errors (with validator, with field name, async)', function(done) {
+            var validator = new FieldVal();
+            var output = FieldVal.use_checks(27, [
+                bval.integer(true),
+                bval.minimum(10),
+                {
+                    check: function(value, emit, callback){
+                        setTimeout(function(){
+                            callback({
+                                "error_message": "Custom error",
+                                "error": 1000
+                            })
+                        },30);
+                        return -1;
+                    },
+                    stop_on_error: false
+                },
+                bval.minimum(30)
+            ],validator,"my_field_name",function(emitted){
+                logger.log("EMIT ",emitted);
+                assert.equal(emitted,null);
+            },function(response){
+                logger.log("GOT RESPONSE", response);
+            });
+
+            validator.end(function(response){
+
+                assert.deepEqual({
+                    "invalid": {
+                        "my_field_name" : {
+                            "error":4,
+                            "error_message":"Multiple errors.",
+                            "errors":[{
+                                "error":1000,
+                                "error_message":"Custom error"
+                            },
+                            {
+                                "error":102,
+                                "error_message":"Value is less than 30"
+                            }]
+                        }
+                    },
+                    "error_message":"One or more errors.",
+                    "error": 0
+                }, response);
+
+                done();
+            })
         })
 
         it('should return a missing error (with validator, with field name)', function() {
@@ -242,7 +378,6 @@ describe('FieldVal', function() {
                 ],
                 bval.string(true)//Won't be run
             ]);
-            logger.log(JSON.stringify(output,null,4));
             assert.deepEqual({
                 "error":4,
                 "error_message":"Multiple errors.",
