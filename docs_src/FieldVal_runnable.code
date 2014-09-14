@@ -1,0 +1,20 @@
+document.write("<pre>");
+
+//Create a FieldVal instance with some data to validate
+var validator = new FieldVal({
+	my_integer: "clearly not an integer"
+});
+
+//Get values using validator.get(field_name, field_type, required)
+var my_integer = validator.get("my_integer", BasicVal.integer(true), BasicVal.minimum(10));
+
+//Output the value (will be undefined if it was invalid)
+document.write("my_integer: "+my_integer+"\n\n");
+
+//Output the result of the validation (null if no errors)
+document.write(
+	"validator.end():\n"+
+	JSON.stringify(validator.end(),null,4)
+);
+
+document.write("</pre>");

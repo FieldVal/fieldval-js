@@ -1,0 +1,1 @@
+FieldVal works both in the browser as demonstrated in the demo above, and as a node package.

@@ -1,0 +1,10 @@
+var my_number = validator.get(
+	"my_number",
+	BasicVal.float(
+		{
+			"required": true
+			"parse": true,
+			"stop_on_error": false
+		}
+	)
+);

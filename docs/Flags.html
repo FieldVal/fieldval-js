@@ -1,8 +1,0 @@
-<h1 id="flags">Flags</h1>
-<p>Flags are used to both pass values to a check and also to indicate to a FieldVal validator how to use the check.</p>
-<h1 id="parse">parse</h1>
-<p>The <code>parse</code> flag is used when checking the type of a value. If <code>parse</code> is set to <code>true</code> then an integer string such as <code>&quot;42&quot;</code> will be converted to <code>42</code> (an integer) if an integer was requested.</p>
-<p>Defaults to <code>false</code></p>
-<h1 id="stop_on_error">stop_on_error</h1>
-<p>The <code>stop_on_error</code> flag indicates to a FieldVal validator whether or not the chain of checks should be halted if this check returns an error. This flag defaults to <code>true</code> because in most cases such as a string being passed to an integer check proceeded by a minimum check, the desired functionality would be to return a single error stating that the value was not an integer, rather than both the integer error and also an error stating that the value was below the specified limit.</p>
-<p>It can be useful to set <code>stop_on_error</code> to <code>false</code> if two checks are independent, e.g. having both a specific prefix and suffix. It would be best to return both errors rather than only inform the user that the suffix was invalid once they have corrected the prefix.</p>

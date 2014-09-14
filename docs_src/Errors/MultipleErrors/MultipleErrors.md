@@ -1,0 +1,1 @@
+FieldVal's default behaviour is to stop checking a field after the first error is found, but sometimes it's useful to report multiple errors for the same key. In this case, the errors are contained with an array in the ```errors``` key. The structure is shown to the right.

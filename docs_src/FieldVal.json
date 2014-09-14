@@ -1,0 +1,88 @@
+{
+    "name": "FieldVal",
+    "text": "FieldVal.md",
+    "code": [{
+        "path": "FieldVal.code",
+        "runnable_path": "FieldVal_runnable.code",
+        "type": "js",
+        "runnable": true,
+        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+    }],
+    "sections": [
+    	{
+            "name": "Browser Usage",
+            "text": "GetBrowser/GetBrowser.md",
+            "code": "GetBrowser/GetBrowser.code",
+            "sections":[
+                {
+                    "name": "Bower",
+                    "text": "GetBrowser/BrowserBower/BrowserBower.md"
+                },
+                {
+                    "name": "Manual Install",
+                    "text": "GetBrowser/BrowserManual/BrowserManual.md"
+                }
+            ]
+        },
+        {
+            "name": "Node Usage",
+            "text": "GetNode/GetNode.md",
+            "code": "GetNode/GetNode.code"
+        },
+        {
+            "name": "Chaining",
+            "text": "Chaining/Chaining.md"
+        },
+    	{
+    		"name": "Checks",
+    		"text": "Checks/Checks.md",
+    		"code": "Checks/Checks.code",
+    		"sections" : [
+    			{
+    				"name": "Parameters",
+    				"text": "Checks/Parameters/Parameters.md",
+    				"code": "Checks/Parameters/Parameters.code"
+    			},
+    			{
+    				"name": "emit",
+    				"text": "Checks/emit/emit.md",
+    				"code": "Checks/emit/emit.code"
+    			},
+                {
+                    "name": "Flags",
+                    "text": "Checks/Flags/flags.md",
+                    "code": "Checks/Flags/flags.code",
+                    "sections": [
+                        {
+                            "name": "stop_on_error",
+                            "text": "Checks/Flags/stop_on_error/stop_on_error.md",
+                            "code": {
+                                "path": "Checks/Flags/stop_on_error/stop_on_error.code",
+                                "type": "js",
+                                "runnable": true,
+                                "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                            }
+                        }
+                    ]
+                }
+    		]
+    	},
+    	{
+    		"name": "Errors",
+    		"text": "Errors/Errors.md",
+    		"code": "Errors/Errors.code",
+    		"sections" : [
+    			{
+    				"name": "Object Errors",
+    				"text": "Errors/ObjectErrors/ObjectErrors.md",
+    				"code": "Errors/ObjectErrors/ObjectErrors.code"
+    			},
+    			{
+    				"name": "Multiple Errors",
+    				"text": "Errors/MultipleErrors/MultipleErrors.md",
+    				"code": "Errors/MultipleErrors/MultipleErrors.code"
+    			}
+    		]
+    	}
+    ]
+}

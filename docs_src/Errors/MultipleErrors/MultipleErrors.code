@@ -1,0 +1,14 @@
+{
+	"error": 4,
+	"error_message": "Multiple errors.",
+	"errors": [
+		{
+			"error": 106,
+			"error_message": "Value does not have prefix: ABC"
+		},
+		{
+			"error": 110,
+			"error_message": "Value does not have suffix: XYZ"
+		}
+	]
+}

@@ -1,0 +1,4 @@
+{
+	"error_message": "A message describing the error",
+	"error": 1017//A number associated with this particular error
+}

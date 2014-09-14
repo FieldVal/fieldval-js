@@ -1,0 +1,9 @@
+var my_value = validator.get("my_value", BasicVal.float(true, {parse: true}), function(value, emit){
+
+	if(value<500){
+		emit(Math.floor(value));
+	} else {
+		emit(Math.ceil(value));
+	}
+
+}, BasicVal.minimum(100))

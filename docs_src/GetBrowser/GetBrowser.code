@@ -1,0 +1,13 @@
+<script type="text/javascript" src="/PATH_TO/fieldval.min.js"></script>
+<script type="text/javascript" src="/PATH_TO/fieldval-basicval.min.js"></script>
+<script type="text/javascript">
+
+var validator = new FieldVal({
+	"my_key": 37
+})
+
+var my_key = validator.get("my_key", BasicVal.integer(true), BasicVal.minimum(40));
+
+console.log(validator.end());
+
+</script>
