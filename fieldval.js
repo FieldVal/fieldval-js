@@ -341,23 +341,36 @@ var FieldVal = (function(){
 
         if ((typeof this_check) === 'object') {
             if (Array.isArray(this_check)) {
+                var any_async = false;
                 var this_check_array = this_check;
+                var did_return = false;
                 var check_done = function(){
                     i++;
                     if(shared_options.stop || i>this_check_array.length){
+                        did_return = true;
                         use_check_done();
                         return;
                     }
-                    FieldVal.use_check(
+                    var check_res = FieldVal.use_check(
                         this_check_array[i-1],
                         shared_options,
                         function(){
                             check_done();
                         }
                     );
+                    if(check_res===FieldVal.ASYNC){
+                        any_async = true;
+                    }
                 };
                 check_done();
-                return;
+                if(did_return){
+                    if(any_async){
+                        return FieldVal.ASYNC;
+                    } else {
+                        return;
+                    }
+                }
+                return FieldVal.ASYNC;
             } else {
                 flags = this_check;
                 this_check_function = flags.check;
@@ -427,8 +440,10 @@ var FieldVal = (function(){
         });
         if (this_check_function.length===3){//Is async - it has a third (callback) parameter
             //Waiting for async
+            return FieldVal.ASYNC;
         } else {
             with_response(check_response);
+            return null;
         }
     };
 
@@ -500,12 +515,15 @@ var FieldVal = (function(){
             shared_options.validator.async_call_ended();
             return;
         });
-        if(did_return){
-            return to_return;
-        } else {
+        if(use_check_res===FieldVal.ASYNC){
             if(done){//The done callback isn't required
                 finish = done;
             }
+            return FieldVal.ASYNC;
+        } 
+        if(did_return){
+            return to_return;
+        } else {
             return FieldVal.ASYNC;
         }
     };

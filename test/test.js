@@ -15,7 +15,7 @@ describe('FieldVal', function() {
         })
     })
     describe('get()', function() {
-        it('should return value when the value is present', function() {
+        it('should return the value when the value is present', function() {
             var validator = new FieldVal({
                 "my_value": 13
             })
@@ -37,41 +37,88 @@ describe('FieldVal', function() {
                     },30);
                 }
 
-                logger.log(async_check.length);
+                assert.equal(13, validator.get("my_value", async_check));
+            } catch (e){
+                //Expecting an error
+                assert.equal(e.message, ".get used with async checks, use .get_async.")
+                done();
+            }
+        })
+
+        it('should throw an error if used with async checks, even if the callback is immediate', function(done) {
+            var validator = new FieldVal({
+                "my_value": 13
+            })
+            try{
+                var async_check = function(value, emit, callback) {
+                    assert.equal(13, value);
+                    callback({
+                        "error_message": "This is a custom error",
+                        "error": 1000
+                    })
+                }
 
                 assert.equal(13, validator.get("my_value", async_check));
             } catch (e){
+                //Expecting an error
+                assert.equal(e.message, ".get used with async checks, use .get_async.")
+                done();
+            }
+        })
+
+        it('', function(done) {
+            var validator = new FieldVal({
+                "my_value": 13
+            })
+            try{
+                var async_check = function(value, emit, callback){
+                    assert.equal(13, value);
+                    callback({
+                        "error_message": "This is a custom error",
+                        "error": 1000
+                    })
+                }
+
+                validator.get("my_value", async_check);
+            } catch (e){
+                assert.equal(e.message, ".get used with async checks, use .get_async.")
                 done();
             }
         })
     })
-    describe('get() - async', function() {
+    describe('get_async', function() {
         it('should return value when the value is present', function(done) {
             var validator = new FieldVal({
                 "my_value": 13
             })
-            validator.get("my_value", function(value, emit, callback){
+            var get_async_output = validator.get_async("my_value",[function(value, emit, callback){
                 assert.equal(13, value);
 
-                callback({
-                    "error_message": "This is a custom error",
-                    "error": 1000
-                })
+                setTimeout(function(){
+                    callback({
+                        "error_message": "This is a custom error",
+                        "error": 1000
+                    })
+                },30);
 
+            }], function(value){
+
+                validator.end(function(result){
+                    assert.deepEqual({
+                        "invalid": {
+                            "my_value" :{
+                                "error": 1000,
+                                "error_message":"This is a custom error"
+                            }
+                        },
+                        "error_message":"One or more errors.",
+                        "error": 0
+                    }, result);
+                    done();
+                })
             })
-            validator.end(function(result){
-                assert.deepEqual({
-                    "invalid": {
-                        "my_value" :{
-                            "error": 1000,
-                            "error_message":"This is a custom error"
-                        }
-                    },
-                    "error_message":"One or more errors.",
-                    "error": 0
-                }, result);
-                done();
-            })
+
+            assert.equal(get_async_output, FieldVal.ASYNC);
         })
     })
     describe('get_value_and_type()', function() {
@@ -158,6 +205,7 @@ describe('FieldVal', function() {
             try{
                 var output = FieldVal.use_checks(23, "NOT A VALID CHECK");
             } catch (e){
+                assert.equal(e.message, "A check can only be provided as a function or as an object with a function as the .check property.")
                 did_throw_error = true;
             }
             assert.equal(true, did_throw_error);
