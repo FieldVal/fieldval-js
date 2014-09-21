@@ -14,7 +14,15 @@ var FieldVal = (function(){
         };
     }
 
-    function FieldVal(validating) {
+    var object_size = function(obj){
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    }
+
+    function FieldVal(validating, existing_error, recognized_keys) {
         var fv = this;
 
         fv.async_waiting = 0;
@@ -26,10 +34,48 @@ var FieldVal = (function(){
         fv.invalid_count = 0;
         fv.unrecognized_keys = {};
         fv.unrecognized_count = 0;
-        fv.recognized_keys = {};
+        fv.recognized_keys = recognized_keys || {};
 
         //Top level errors - added using .error() 
         fv.errors = [];
+
+        if(existing_error){
+            var key_error;
+            if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
+                //The existing_error is a key error
+                key_error = existing_error;
+            } else if(existing_error.error===FieldVal.MULTIPLE_ERRORS){
+                for(var i = 0; i < existing_error.errors.length; i++){
+                    var inner_error = existing_error.errors[i];
+
+                    if(inner_error.error===0){
+                        key_error = inner_error;
+                        //Don't add the key_error to fv.errors (continue)
+                        continue;
+                    }
+                    //Add other errors to fv.errors
+                    fv.errors.push(inner_error);
+                }
+            } else {
+                //Only have non-key error
+                fv.errors.push(existing_error);
+            }
+
+            if(key_error){
+                if(key_error.missing){
+                    fv.missing_keys = key_error.missing;
+                    fv.missing_count = object_size(fv.missing_keys);
+                }
+                if(key_error.unrecognized){
+                    fv.unrecognized_keys = key_error.unrecognized;
+                    fv.unrecognized_count = object_size(fv.unrecognized_keys);
+                }
+                if(key_error.invalid){
+                    fv.invalid_keys = key_error.invalid;
+                    fv.invalid_count = object_size(fv.invalid_count);
+                }
+            }
+        }
     }
 
     FieldVal.prototype.default_value = function (default_value) {
@@ -169,7 +215,7 @@ var FieldVal = (function(){
 
         if(fv.async_waiting<=0){
             if(fv.end_callback){
-                fv.end_callback(fv.generate_response());
+                fv.end_callback(fv.generate_response(), fv.recognized_keys);
             }
         }
     };
@@ -257,10 +303,22 @@ var FieldVal = (function(){
             fv.end_callback = callback;
 
             if(fv.async_waiting<=0){
-                callback(fv.generate_response());
+                callback(fv.generate_response(), fv.recognized_keys);
             }
         } else {
             return fv.generate_response();
+        }
+    };
+
+    FieldVal.prototype.end_with_recognized = function (callback) {
+        var fv = this;
+
+        if(callback){
+            fv.end(callback);
+        } else {
+            if(fv.async_waiting>0){
+                return [fv.generate_response(), fv.recognized_keys];
+            }
         }
     };
 

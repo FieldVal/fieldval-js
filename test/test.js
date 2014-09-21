@@ -66,6 +66,52 @@ describe('FieldVal', function() {
             }
         })
 
+        it('should be able to continue from a previous validator', function(done) {
+            var my_data = {
+                "valid_one_key": 10,
+                "my_invalid_key": 15,
+                "my_unrecognized_key": 13,
+            };
+            var validator_one = new FieldVal(my_data);
+
+            validator_one.get("valid_one_key", bval.integer(true));
+            validator_one.get("my_invalid_key", bval.integer(true), bval.minimum(20));
+            validator_one.get("my_missing_key", bval.integer(true));
+
+            validator_one.end(function(error_one, recognized_keys){
+
+                var validator_two = new FieldVal(my_data, error_one, recognized_keys);
+                validator_two.get("valid_one_key", bval.integer(true), bval.minimum(20))//Makes this key invalid on validator_two
+
+                var error_two = validator_two.end();
+
+                assert.deepEqual(error_two, { 
+                    missing: { 
+                        my_missing_key: { 
+                            error_message: 'Field missing.', error: 1 
+                        }
+                    },
+                    invalid: { 
+                        my_invalid_key: { 
+                            error: 102, error_message: 'Value is less than 20' 
+                        },
+                        valid_one_key: { 
+                            error: 102, error_message: 'Value is less than 20' 
+                        }
+                    },
+                    unrecognized: { 
+                        my_unrecognized_key: { 
+                            error_message: 'Unrecognized field.', error: 3 
+                        }
+                    },
+                    error_message: 'One or more errors.',
+                    error: 0 
+                });
+
+                done();
+            });
+        })
+
         it('', function(done) {
             var validator = new FieldVal({
                 "my_value": 13
