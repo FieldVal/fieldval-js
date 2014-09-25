@@ -14,27 +14,24 @@ var FieldVal = (function(){
         };
     }
 
-    var object_size = function(obj){
-        var size = 0, key;
+    var is_empty = function(obj){
+        var key;
         for (key in obj) {
-            if (obj.hasOwnProperty(key)) size++;
+            if (obj.hasOwnProperty(key)) return false;
         }
-        return size;
+        return true;
     }
 
-    function FieldVal(validating, existing_error, recognized_keys) {
+    function FieldVal(validating, existing_error) {
         var fv = this;
 
         fv.async_waiting = 0;
 
         fv.validating = validating;
         fv.missing_keys = {};
-        fv.missing_count = 0;
         fv.invalid_keys = {};
-        fv.invalid_count = 0;
         fv.unrecognized_keys = {};
-        fv.unrecognized_count = 0;
-        fv.recognized_keys = recognized_keys || {};
+        fv.recognized_keys = {};
 
         //Top level errors - added using .error() 
         fv.errors = [];
@@ -62,21 +59,134 @@ var FieldVal = (function(){
             }
 
             if(key_error){
+                for(var j in validating){
+                    if(validating.hasOwnProperty(j)) {
+                        fv.recognized_keys[j] = true;
+                    }
+                }
                 if(key_error.missing){
                     fv.missing_keys = key_error.missing;
-                    fv.missing_count = object_size(fv.missing_keys);
                 }
                 if(key_error.unrecognized){
                     fv.unrecognized_keys = key_error.unrecognized;
-                    fv.unrecognized_count = object_size(fv.unrecognized_keys);
+                    for(var k in fv.unrecognized_keys){
+                        if(fv.unrecognized_keys.hasOwnProperty(k)) {
+                            delete fv.recognized_keys[k];
+                        }
+                    }
                 }
                 if(key_error.invalid){
                     fv.invalid_keys = key_error.invalid;
-                    fv.invalid_count = object_size(fv.invalid_count);
                 }
+
             }
         }
     }
+
+    FieldVal.prototype.dig = function(){
+        var fv = this;
+
+        var keys;
+        var first_argument = arguments[0];
+        if(Array.isArray(first_argument)){
+            keys = first_argument;
+        } else {
+            keys = arguments;
+        }
+
+        var current_value = fv.validating;
+        var current_error = fv;
+        for(var i = 0; i < keys.length; i++){
+            var this_key = keys[i];
+            current_value = current_value[this_key];
+            if(current_value===undefined){
+                return undefined;
+            }
+            if(current_error){
+                var invalid;
+                if(current_error instanceof FieldVal){
+                    invalid = current_error.invalid_keys;
+                } else {
+                    invalid = current_error.invalid;
+                }
+                if(invalid){
+                    current_error = invalid[this_key];
+                }
+            }
+        }
+        return new FieldVal(current_value,current_error);
+    };
+
+
+    //TODO guard against invalid arguments
+    FieldVal.prototype.invalid = function(){
+        var fv = this;
+
+        //error is the last argument, previous arguments are keys
+        var error = arguments[arguments.length-1];
+
+        var keys, keys_length;
+        if(arguments.length===2){
+
+            var first_argument = arguments[0];
+            if(Array.isArray(first_argument)){
+                keys = first_argument;
+                keys_length = first_argument.length;
+            } else {
+
+                fv.invalid_keys[arguments[0]] = FieldVal.add_to_invalid(
+                    error, 
+                    fv.invalid_keys[arguments[0]]
+                );
+
+                return fv;
+            }
+        } else {
+            keys = arguments;
+            keys_length = arguments.length - 1;
+        }
+
+        var current_error = fv;
+        for(var i = 0; i < keys_length; i++){
+            var this_key = keys[i];
+            logger.log(this_key);
+            logger.log(current_error);
+
+            var current_invalid;
+            if(current_error instanceof FieldVal){
+                current_invalid = current_error.invalid_keys;
+            } else {
+                current_invalid = current_error.invalid;
+            }
+
+            var new_error;
+            if(i===keys_length-1){
+                new_error = error;
+            } else{
+                new_error = current_invalid[this_key];
+            }
+            if(!new_error){
+                new_error = {
+                    error: FieldVal.ONE_OR_MORE_ERRORS,
+                    error_message: FieldVal.ONE_OR_MORE_ERRORS_STRING,
+                    invalid: {}
+                };
+            }
+
+            if(current_error instanceof FieldVal){
+                current_error.invalid(this_key, new_error);
+            } else {
+                current_invalid[this_key] = FieldVal.add_to_invalid(
+                    new_error, 
+                    current_invalid[this_key]
+                );
+            }
+
+            current_error = new_error;
+        }
+
+        return fv;
+    };
 
     FieldVal.prototype.default_value = function (default_value) {
         var fv = this;
@@ -142,33 +252,29 @@ var FieldVal = (function(){
         return fv;
     };
 
-    FieldVal.prototype.invalid = function (field_name, error) {
+    FieldVal.add_to_invalid = function(error, existing){
         var fv = this;
 
-        var existing = fv.invalid_keys[field_name];
         if (existing !== undefined) {
             //Add to an existing error
             if (existing.errors !== undefined) {
                 existing.errors.push(error);
             } else {
-                fv.invalid_keys[field_name] = {
+                existing = {
                     error: FieldVal.MULTIPLE_ERRORS,
                     error_message: "Multiple errors.",
                     errors: [existing, error]
                 };
             }
-        } else {
-            fv.invalid_keys[field_name] = error;
-            fv.invalid_count++;
-        }
-        return fv;
+            return existing;
+        } 
+        return error;
     };
 
     FieldVal.prototype.missing = function (field_name, flags) {
         var fv = this;
 
         fv.missing_keys[field_name] = FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
-        fv.missing_count++;
         return fv;
     };
 
@@ -179,7 +285,6 @@ var FieldVal = (function(){
             error_message: "Unrecognized field.",
             error: FieldVal.FIELD_UNRECOGNIZED
         };
-        fv.unrecognized_count++;
         return fv;
     };
 
@@ -228,7 +333,6 @@ var FieldVal = (function(){
         var has_error = false;
 
         var returning_unrecognized = {};
-        var returning_unrecognized_count = 0;
 
         //Iterate through manually unrecognized keys
         var key;
@@ -236,7 +340,6 @@ var FieldVal = (function(){
             /* istanbul ignore else */
             if (fv.unrecognized_keys.hasOwnProperty(key)) {
                 returning_unrecognized[key] = fv.unrecognized_keys[key];
-                returning_unrecognized_count++;
             }
         }
 
@@ -249,25 +352,24 @@ var FieldVal = (function(){
                     error_message: "Unrecognized field.",
                     error: FieldVal.FIELD_UNRECOGNIZED
                 };
-                returning_unrecognized_count++;
             }
         }
 
-        if (fv.missing_count !== 0) {
+        if (!is_empty(fv.missing_keys)) {
             returning.missing = fv.missing_keys;
             has_error = true;
         }
-        if (fv.invalid_count !== 0) {
+        if (!is_empty(fv.invalid_keys)) {
             returning.invalid = fv.invalid_keys;
             has_error = true;
         }
-        if (returning_unrecognized_count !== 0) {
+        if (!is_empty(returning_unrecognized)) {
             returning.unrecognized = returning_unrecognized;
             has_error = true;
         }
 
         if (has_error) {
-            returning.error_message = "One or more errors.";
+            returning.error_message = FieldVal.ONE_OR_MORE_ERRORS_STRING;
             returning.error = FieldVal.ONE_OR_MORE_ERRORS;
 
             if (fv.errors.length === 0) {
@@ -330,6 +432,7 @@ var FieldVal = (function(){
     FieldVal.NOT_REQUIRED_BUT_MISSING = Math.floor;
 
     FieldVal.ONE_OR_MORE_ERRORS = 0;
+    FieldVal.ONE_OR_MORE_ERRORS_STRING = "One or more errors.";
     FieldVal.FIELD_MISSING = 1;
     FieldVal.INCORRECT_FIELD_TYPE = 2;
     FieldVal.FIELD_UNRECOGNIZED = 3;
