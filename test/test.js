@@ -1028,35 +1028,143 @@ describe('FieldVal', function() {
     //         assert.deepEqual(expected, actual);
     //     })
 
-        it('should allow errors to be set for multiple levels of keys', function() {
-            var validator = new FieldVal({});
-            var invalid_details = {
-                error: 1000,
-                error_message: 'My custom error'
+    //     it('should allow errors to be set for multiple levels of keys', function() {
+    //         var validator = new FieldVal({});
+    //         var invalid_details = {
+    //             error: 1000,
+    //             error_message: 'My custom error'
+    //         }
+    //         validator.invalid("first_inner","another_level", invalid_details);
+    //         var expected = {
+    //             invalid: {
+    //                 'first_inner': {
+    //                     invalid: {
+    //                         'another_level': {
+    //                             error: 1000,
+    //                             error_message: 'My custom error'
+    //                         }
+    //                     },
+    //                     error: 0,
+    //                     error_message: "One or more errors."
+    //                 }
+    //             },
+    //             error_message: 'One or more errors.',
+    //             error: 0
+    //         };
+    //         var actual = validator.end();
+    //         logger.log(JSON.stringify(expected,null,4));
+    //         logger.log(JSON.stringify(actual,null,4));
+    //         assert.deepEqual(expected, actual);
+    //     })
+    // })
+    describe('dig()', function() {
+
+        var example_data = JSON.stringify({
+            "one": "not a number",
+            "first_inner": {
+                "shallow_1": "My shallow 1",
+                "shallow_2": 11,
+                "second_inner" : {
+                    "third_inner" : {
+                        "deep_key": 15,
+                        "another_deep_key": "not an integer"
+                    }
+                }
             }
-            validator.invalid("first_inner","another_level", invalid_details);
-            var expected = {
-                invalid: {
-                    'first_inner': {
-                        invalid: {
-                            'another_level': {
-                                error: 1000,
-                                error_message: 'My custom error'
+        });
+        var get_example_data = function(){
+            return JSON.parse(example_data);
+        }
+        var example_error = JSON.stringify({
+            "missing": {
+                "two": {
+                    "error_message": "Field missing.",
+                    "error": 1
+                }
+            },
+            "invalid": {
+                "one": {
+                    "error_message": "Incorrect field type. Expected number.",
+                    "error": 2,
+                    "expected": "number",
+                    "received": "string"
+                },
+                "first_inner": {
+                    "missing": {
+                        "shallow_3": {
+                            "error_message": "Field missing.",
+                            "error": 1
+                        }
+                    },
+                    "invalid": {
+                        "shallow_2": {
+                            "error_message": "Incorrect field type. Expected string.",
+                            "error": 2,
+                            "expected": "string",
+                            "received": "number"
+                        },
+                        "second_inner": {
+                            "invalid": {
+                                "third_inner": {
+                                    "invalid": {
+                                        "another_deep_key": {
+                                            "error_message": "Incorrect field type. Expected number.",
+                                            "error": 2,
+                                            "expected": "number",
+                                            "received": "string"
+                                        }
+                                    },
+                                    "error_message": "One or more errors.",
+                                    "error": 0
+                                }
+                            },
+                            "error_message": "One or more errors.",
+                            "error": 0
+                        }
+                    },
+                    "error_message": "One or more errors.",
+                    "error": 0
+                }
+            },
+            "error_message": "One or more errors.",
+            "error": 0
+        });
+        var get_example_error = function(){
+            return JSON.parse(example_error);
+        }
+
+        it('return a new FieldVal instance if dug into an existing error if the key exists', function() {
+            
+            var validator = new FieldVal(
+                get_example_data(), get_example_error()
+            );
+
+            var dug = validator.dig("first_inner","second_inner");
+            assert.strictEqual(dug instanceof FieldVal, true);
+            assert.deepEqual({
+                "invalid": {
+                    "third_inner": {
+                        "invalid": {
+                            "another_deep_key": {
+                                "error_message": "Incorrect field type. Expected number.",
+                                "error": 2,
+                                "expected": "number",
+                                "received": "string"
                             }
                         },
-                        error: 0,
-                        error_message: "One or more errors."
+                        "error_message": "One or more errors.",
+                        "error": 0
                     }
                 },
-                error_message: 'One or more errors.',
-                error: 0
-            };
-            var actual = validator.end();
-            logger.log(JSON.stringify(expected,null,4));
-            logger.log(JSON.stringify(actual,null,4));
-            assert.deepEqual(expected, actual);
+                "error_message": "One or more errors.",
+                "error": 0
+            },dug.end())
+
+
+            var dug2 = validator.dig("non_existant_key","second_inner");
+            assert.strictEqual(dug2, undefined);
         })
-    // })
+    })
     // describe('unrecognized()', function(){
     //     it('should return an unrecognized error when a field is manually unrecognized', function() {
     //         var validator = new FieldVal({})

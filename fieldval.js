@@ -252,23 +252,41 @@ var FieldVal = (function(){
         return fv;
     };
 
-    FieldVal.add_to_invalid = function(error, existing){
+    FieldVal.add_to_invalid = function(this_error, existing){
         var fv = this;
 
         if (existing !== undefined) {
+
+            logger.log(this_error);
+            logger.log(existing);
             //Add to an existing error
             if (existing.errors !== undefined) {
-                existing.errors.push(error);
+                for(var i = 0; i < existing.errors.length; i++){
+                    var inner_error = existing.errors;
+                    logger.log("INNER ERROR ",i);
+                    //If error codes match
+                    if(inner_error.error!==undefined && (inner_error.error === this_error.error)){
+                        //Replace the error
+                        existing.errors[i] = this_error;
+                    }
+                }
+                existing.errors.push(this_error);
             } else {
-                existing = {
-                    error: FieldVal.MULTIPLE_ERRORS,
-                    error_message: "Multiple errors.",
-                    errors: [existing, error]
-                };
+                //If the error codes match
+                if(existing.error!==undefined && (existing.error === this_error.error)){
+                    //Replace the error
+                    existing = this_error;
+                } else {
+                    existing = {
+                        error: FieldVal.MULTIPLE_ERRORS,
+                        error_message: "Multiple errors.",
+                        errors: [existing, this_error]
+                    };
+                }
             }
             return existing;
         } 
-        return error;
+        return this_error;
     };
 
     FieldVal.prototype.missing = function (field_name, flags) {
