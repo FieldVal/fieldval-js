@@ -36,49 +36,59 @@ var FieldVal = (function(){
         //Top level errors - added using .error() 
         fv.errors = [];
 
-        if(existing_error){
-            var key_error;
-            if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
-                //The existing_error is a key error
-                key_error = existing_error;
-            } else if(existing_error.error===FieldVal.MULTIPLE_ERRORS){
-                for(var i = 0; i < existing_error.errors.length; i++){
-                    var inner_error = existing_error.errors[i];
+        if(existing_error!==undefined){
+            //Provided a (potentially null) existing error
 
-                    if(inner_error.error===0){
-                        key_error = inner_error;
-                        //Don't add the key_error to fv.errors (continue)
-                        continue;
+            if(existing_error){
+                var key_error;
+                if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
+                    //The existing_error is a key error
+                    key_error = existing_error;
+                } else if(existing_error.error===FieldVal.MULTIPLE_ERRORS){
+                    for(var i = 0; i < existing_error.errors.length; i++){
+                        var inner_error = existing_error.errors[i];
+
+                        if(inner_error.error===0){
+                            key_error = inner_error;
+                            //Don't add the key_error to fv.errors (continue)
+                            continue;
+                        }
+                        //Add other errors to fv.errors
+                        fv.errors.push(inner_error);
                     }
-                    //Add other errors to fv.errors
-                    fv.errors.push(inner_error);
+                } else {
+                    //Only have non-key error
+                    fv.errors.push(existing_error);
+                }
+
+                if(key_error){
+                    for(var j in validating){
+                        if(validating.hasOwnProperty(j)) {
+                            fv.recognized_keys[j] = true;
+                        }
+                    }
+                    if(key_error.missing){
+                        fv.missing_keys = key_error.missing;
+                    }
+                    if(key_error.unrecognized){
+                        fv.unrecognized_keys = key_error.unrecognized;
+                        for(var k in fv.unrecognized_keys){
+                            if(fv.unrecognized_keys.hasOwnProperty(k)) {
+                                delete fv.recognized_keys[k];
+                            }
+                        }
+                    }
+                    if(key_error.invalid){
+                        fv.invalid_keys = key_error.invalid;
+                    }
+
                 }
             } else {
-                //Only have non-key error
-                fv.errors.push(existing_error);
-            }
-
-            if(key_error){
                 for(var j in validating){
                     if(validating.hasOwnProperty(j)) {
                         fv.recognized_keys[j] = true;
                     }
                 }
-                if(key_error.missing){
-                    fv.missing_keys = key_error.missing;
-                }
-                if(key_error.unrecognized){
-                    fv.unrecognized_keys = key_error.unrecognized;
-                    for(var k in fv.unrecognized_keys){
-                        if(fv.unrecognized_keys.hasOwnProperty(k)) {
-                            delete fv.recognized_keys[k];
-                        }
-                    }
-                }
-                if(key_error.invalid){
-                    fv.invalid_keys = key_error.invalid;
-                }
-
             }
         }
     }
@@ -413,7 +423,7 @@ var FieldVal = (function(){
             };
         }
 
-        return undefined;
+        return null;
     };
 
     FieldVal.prototype.end = function (callback) {
@@ -690,7 +700,7 @@ var FieldVal = (function(){
                 return;
             }
 
-            finish(undefined);
+            finish(null);
             shared_options.validator.async_call_ended();
             return;
         });
