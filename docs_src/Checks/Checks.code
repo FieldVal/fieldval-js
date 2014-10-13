@@ -1,0 +1,10 @@
+var my_check = function(value, emit){
+
+	if(value!=="My Exact Value"){
+		return {
+			error: 1000,
+			error_message: "I'm really picky. Enter 'My Exact Value'."
+		}
+	}
+
+}

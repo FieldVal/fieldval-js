@@ -1,5 +1,5 @@
-var Validator = require('../fieldval');
-var bval = Validator.BasicVal;
+var FieldVal = require('fieldval');
+var bval = require('fieldval-basicval');
 
 console.log('=============\n\
 This example shows simple usage of FieldVal.js\n\
@@ -19,10 +19,8 @@ console.log(JSON.stringify(my_data, null, 2));
 
 
 
-
-// Create a new FieldVal Validator for my_data
-var validator = new Validator(my_data);
-
+// Create a new FieldVal FieldVal for my_data
+var validator = new FieldVal(my_data);
 
 
 
@@ -33,10 +31,12 @@ var values = {};
 values.some_text = validator.get('some_text', bval.string(true));
 console.log("some_text: "+values.some_text);
 
-values.another_string = validator.get('another_string', bval.string({required:false}));
+values.another_string = validator.get('another_string', bval.string({required:true, missing_error: {
+	error_message: "I'm a custom missing error!"
+}}));
 console.log("another_string: "+values.another_string);
 
-values.a_number = validator.get('a_number', bval.integer(true));
+values.a_number = validator.get('a_number', bval.integer(true), bval.minimum(70));
 console.log("a_number: "+values.a_number);
 
 

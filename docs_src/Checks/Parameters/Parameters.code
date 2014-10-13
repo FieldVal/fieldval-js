@@ -1,0 +1,21 @@
+var minimum = function(min_val, flags) {
+
+    var check = function(value) {
+        if (value < min_val) {
+            return {
+	            error: 1000,
+	            error_message: "Value was below " + min_val
+	        }
+        }
+    }
+
+    if(flags){
+        //The check becomes part of the flag object, which is returned
+        flags.check = check;
+        return flags
+    }
+
+    return check;
+}
+
+var check = minimum(14);

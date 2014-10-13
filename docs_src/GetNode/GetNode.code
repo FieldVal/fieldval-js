@@ -1,0 +1,10 @@
+var FieldVal = require('fieldval');
+var BasicVal = require('fieldval-basicval');
+
+var validator = new FieldVal({
+	"my_key": 37
+})
+
+var my_key = validator.get("my_key", BasicVal.integer(true), BasicVal.minimum(40));
+
+console.log(validator.end());

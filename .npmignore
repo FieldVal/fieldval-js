@@ -1,0 +1,12 @@
+coverage
+docs
+docs_src
+examples
+node_modules
+src
+test
+.gitignore
+.travis.yml
+gulpfile.js
+link.sh
+.gitignore

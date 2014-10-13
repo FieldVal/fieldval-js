@@ -1,0 +1,24 @@
+var validator = new FieldVal({
+	"my_string" : "Testing"
+})
+
+var my_string = validator.get(
+	"my_string",
+	BasicVal.prefix(
+		"ABC",
+		{
+			"stop_on_error" : false
+		}
+	),
+	BasicVal.suffix(
+		"XYZ"
+	)
+)
+
+document.write("my_string: "+my_string);
+
+document.write(
+	"<pre>"+
+		JSON.stringify(validator.end(),null,4)+
+	"</pre>"
+);
