@@ -1,4 +1,3 @@
-var logger = require("tracer").console();
 var FieldVal = require('../src/FieldVal');
 var bval = require('fieldval-basicval');
 var assert = require("assert")
@@ -1052,8 +1051,6 @@ describe('FieldVal', function() {
                 error: 0
             };
             var actual = validator.end();
-            logger.log(JSON.stringify(expected,null,4));
-            logger.log(JSON.stringify(actual,null,4));
             assert.deepEqual(expected, actual);
         })
     })

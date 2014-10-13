@@ -15,7 +15,6 @@
         "fieldval-basicval": "*",
         "gulp": "^3.6.1",
         "gulp-concat": "^2.2.0",
-        "gulp-imports": "MarcusLongmuir/gulp-imports",
         "gulp-istanbul": "^0.2.2",
         "gulp-jshint": "^1.8.4",
         "gulp-mocha": "^1.0.0",
