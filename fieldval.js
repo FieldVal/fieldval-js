@@ -1,12 +1,6 @@
 var FieldVal = (function(){
     "use strict";
 
-    var logger;
-    /* istanbul ignore next */
-    if((typeof require) === 'function'){
-        logger = require("tracer").console();
-    }
-
     /* istanbul ignore next */
     if (!Array.isArray) {
         Array.isArray = function (value) {
@@ -37,7 +31,7 @@ var FieldVal = (function(){
         fv.errors = [];
 
         if(existing_error!==undefined){
-            //Provided a (potentially null) existing error
+            //Provided a (potentially undefined) existing error
 
             if(existing_error){
                 var key_error;
@@ -159,8 +153,6 @@ var FieldVal = (function(){
         var current_error = fv;
         for(var i = 0; i < keys_length; i++){
             var this_key = keys[i];
-            logger.log(this_key);
-            logger.log(current_error);
 
             var current_invalid;
             if(current_error instanceof FieldVal){
@@ -267,13 +259,10 @@ var FieldVal = (function(){
 
         if (existing !== undefined) {
 
-            logger.log(this_error);
-            logger.log(existing);
             //Add to an existing error
             if (existing.errors !== undefined) {
                 for(var i = 0; i < existing.errors.length; i++){
                     var inner_error = existing.errors;
-                    logger.log("INNER ERROR ",i);
                     //If error codes match
                     if(inner_error.error!==undefined && (inner_error.error === this_error.error)){
                         //Replace the error
@@ -583,7 +572,7 @@ var FieldVal = (function(){
 
                 if (response === FieldVal.REQUIRED_ERROR) {
 
-                    if (shared_options.field_name) {
+                    if (shared_options.field_name!==undefined) {
                         shared_options.validator.missing(shared_options.field_name, flags);
                         use_check_done();
                         return;

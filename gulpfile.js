@@ -34,14 +34,14 @@ gulp.task('js', function(){
 
 gulp.task('test', function(cb){
     gulp.src(['src/**/*.js'])
-    // .pipe(istanbul())
+    .pipe(istanbul())
     .on( 'finish', function () {
         gulp.src( [ 'test/test.js' ] )
         .pipe( mocha( {
             reporter: 'spec'
         }))
         .on('error', gutil.log)
-        // .pipe(istanbul.writeReports())
+        .pipe(istanbul.writeReports())
         .on('end', cb);
     } );
 });
