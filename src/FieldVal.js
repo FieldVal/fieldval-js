@@ -228,8 +228,11 @@ var FieldVal = (function(){
     FieldVal.prototype.get_async = function (field_name, checks, done){
         var fv = this;
 
-        var value = fv.validating[field_name];
+        if(!Array.isArray(checks)){
+            throw new Error(".get_async second argument must be an array of checks");
+        }
 
+        var value = fv.validating[field_name];
         fv.recognized_keys[field_name] = true;
 
         var use_checks_res = FieldVal.use_checks(value, checks, {
@@ -239,7 +242,9 @@ var FieldVal = (function(){
                 value = new_value;
             }
         },function(check_result){
-            done(value);
+            if(done!==undefined){
+                done(value);
+            }
         });
 
         return (use_checks_res === FieldVal.ASYNC) ? FieldVal.ASYNC : undefined;
