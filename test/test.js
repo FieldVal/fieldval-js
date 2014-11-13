@@ -175,7 +175,16 @@ describe('FieldVal', function() {
             }, vt);
             assert.strictEqual('One', vt.value);
         })
-        it('should return type and value info (numeric string', function() {
+        it('should return type and value info (boolean string)', function() {
+            var vt = FieldVal.get_value_and_type('true','boolean',{parse:true});
+            assert.deepEqual({
+                type: 'boolean',
+                desired_type: 'boolean',
+                value: true
+            }, vt);
+            assert.strictEqual(true, vt.value);
+        })
+        it('should return type and value info (numeric string)', function() {
             var vt = FieldVal.get_value_and_type('2','number',{parse:true});
             assert.deepEqual({
                 type: 'number',
@@ -184,7 +193,7 @@ describe('FieldVal', function() {
             }, vt);
             assert.strictEqual(2, vt.value);
         })
-        it('should return type and value info (numeric string', function() {
+        it('should return type and value info (numeric string)', function() {
             var vt = FieldVal.get_value_and_type('2.a','float',{parse:true});
             assert.deepEqual({
                 type: 'string',

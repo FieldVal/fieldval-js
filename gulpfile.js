@@ -5,7 +5,6 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var watch = require('gulp-watch');
 var gulpImports = require('gulp-imports');
-var nodemon = require('gulp-nodemon');
 var path = require('path');
 
 var mocha = require('gulp-mocha');
@@ -43,7 +42,7 @@ gulp.task('test', function(cb){
         .on('error', gutil.log)
         .pipe(istanbul.writeReports())
         .on('end', cb);
-    } );
+    });
 });
 
 gulp.task('jshint', function () {

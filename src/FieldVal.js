@@ -121,7 +121,6 @@ var FieldVal = (function(){
         return new FieldVal(current_value,current_error);
     };
 
-
     //TODO guard against invalid arguments
     FieldVal.prototype.invalid = function(){
         var fv = this;
@@ -495,6 +494,13 @@ var FieldVal = (function(){
                 if (!isNaN(parsed_float) && (parsed_float.toString()).length === (value.toString()).length) {
                     value = parsed_float;
                     desired_type = "number";
+                }
+            } else if (desired_type === "boolean") {
+                if(value === 'true'){
+                    value = true;
+                }
+                if(value === 'false'){
+                    value = false;
                 }
             }
         }
