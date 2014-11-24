@@ -607,7 +607,7 @@ var FieldVal = (function(){
                 } else {
 
                     if (shared_options.existing_validator) {
-                        if (shared_options.field_name) {
+                        if (shared_options.field_name!==undefined) {
                             shared_options.validator.invalid(shared_options.field_name, response);
                         } else {
                             shared_options.validator.error(response);
