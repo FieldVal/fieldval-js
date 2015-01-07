@@ -1,6 +1,6 @@
 FieldVal's error structure is designed to match the input structure on a per-key level. This is achieved by attaching each error to its appropriate key and building a hierarchical structure that can be easily navigated both visually and programmatically.
 
-In the example provided to the right, the error outlines 3 categories of issues with the provided data:
+There are three types of errors:
 
 * ```invalid```
 	

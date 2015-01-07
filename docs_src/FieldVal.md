@@ -1,14 +1,17 @@
-####THIS PROJECT SHOULD BE CONSIDERED "ALPHAWARE". ALTHOUGH WE USE THIS PROJECT IN PRODUCTION, WE ADVISE AGAINST DOING SO AT THIS STAGE UNLESS YOU ARE COMFORTABLE WITH FIXING BUGS YOURSELF.####
+The FieldVal library allows you to easily create readable and structured error reports for any data.
 
-The FieldVal library allows you to easily validate objects and provide readable and structured error reports.
+#####Look at FieldVal error structure to the right#####
 
-To start validating data, create a new instance of ```FieldVal``` with an object that you want to validates as the parameter.
+FieldVal comes with a collection of checks called BasicVal. These are standard checks such as email, numeric limits etc., but you can write your own FieldVal checks with simple functions.
 
-Then use the ```.get()``` function of the validator to retrieve values whilst simultatenously building an error report.
+To start validating, pass your data to a new instance of ```FieldVal```.
 
-When you've finished retrieving keys, use ```.end()``` on the validator to retreive the error report or null if there were no errors.
+Then use ```.get()``` to retrieve values whilst simultatenously building an error report.
 
-####Run the example to the right####
-You can try out FieldVal using CodePen. Just click the "Run on CodePen" button and modify the code to see how you can use FieldVal. [FieldVal-All](http://github.com/FieldVal/fieldval-all-js) is included, so you can use BasicVal checks too.
+When you've finished validating, use ```.end()``` to retrieve the error report or null if there were no errors.
 
-Try changing the data provided to the ```FieldVal``` constructor to see how the error changes. (hint: It's expecting an integer greater than or equal to 10).
+####Run the code example to the right####
+
+Try out FieldVal using CodePen by clicking the "Run on Codepen" button below the example. [FieldVal-All](http://github.com/FieldVal/fieldval-all-js) is included, so you can use BasicVal checks too.
+
+Try changing the data provided to ```FieldVal``` to see how the error changes.

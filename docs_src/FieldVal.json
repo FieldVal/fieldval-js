@@ -2,13 +2,23 @@
     "name": "FieldVal",
     "text": "FieldVal.md",
     "code": [{
+        "path": "FieldVal_in_out.code",
+        "name": "FieldVal Error Structure",
+        "type": "js"
+    },{
         "path": "FieldVal.code",
+        "name": "Code",
         "runnable_path": "FieldVal_runnable.code",
         "type": "js",
         "runnable": true,
         "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
     }],
     "sections": [
+        {
+            "name": "Node Usage",
+            "text": "GetNode/GetNode.md",
+            "code": "GetNode/GetNode.code"
+        },
     	{
             "name": "Browser Usage",
             "text": "GetBrowser/GetBrowser.md",
@@ -25,16 +35,28 @@
             ]
         },
         {
-            "name": "Node Usage",
-            "text": "GetNode/GetNode.md",
-            "code": "GetNode/GetNode.code"
-        },
-        {
             "name": "Chaining",
             "text": "Chaining/Chaining.md"
         },
+        {
+            "name": "Flags",
+            "text": "Flags/flags.md",
+            "code": "Flags/flags.code",
+            "sections": [
+                {
+                    "name": "stop_on_error",
+                    "text": "Flags/stop_on_error/stop_on_error.md",
+                    "code": {
+                        "path": "Flags/stop_on_error/stop_on_error.code",
+                        "type": "js",
+                        "runnable": true,
+                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                    }
+                }
+            ]
+        },
     	{
-    		"name": "Checks",
+    		"name": "Custom Check Functions",
     		"text": "Checks/Checks.md",
     		"code": "Checks/Checks.code",
     		"sections" : [
@@ -47,24 +69,7 @@
     				"name": "emit",
     				"text": "Checks/emit/emit.md",
     				"code": "Checks/emit/emit.code"
-    			},
-                {
-                    "name": "Flags",
-                    "text": "Checks/Flags/flags.md",
-                    "code": "Checks/Flags/flags.code",
-                    "sections": [
-                        {
-                            "name": "stop_on_error",
-                            "text": "Checks/Flags/stop_on_error/stop_on_error.md",
-                            "code": {
-                                "path": "Checks/Flags/stop_on_error/stop_on_error.code",
-                                "type": "js",
-                                "runnable": true,
-                                "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
-                            }
-                        }
-                    ]
-                }
+    			}
     		]
     	},
     	{

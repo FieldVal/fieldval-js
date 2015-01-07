@@ -1,27 +1,13 @@
-//Create a FieldVal instance with some data to validate
-var validator = new FieldVal({
-    my_integer: "clearly not an integer"
+var validator = new FieldVal(data);
+validator.get("my_email", BasicVal.string(true), BasicVal.email());
+validator.get("my_integer", BasicVal.integer(true));
+validator.get("multiple_of_three", BasicVal.integer(true), function(val){
+  if(val % 3 !== 0){
+    return {
+      "error_message": "Not a multiple of three",
+      "error": 1000
+    }
+  }
 });
 
-//Get values using validator.get(field_name, field_type, required)
-var my_integer = validator.get("my_integer", BasicVal.integer(true), BasicVal.minimum(10));
-
-//Output the value (will be undefined if it was invalid)
-console.log("my_integer: ", my_integer);
-
-//Output the result of the validation (null if no errors)
-console.log(validator.end());
-
-//OUTPUT:
-//{
-//    "invalid": {
-//        "my_integer": {
-//            "error_message": "Incorrect field type. Expected integer.",
-//            "error": 2,
-//            "expected": "integer",
-//            "received": "string"
-//        }
-//    },
-//    "error_message": "One or more errors.",
-//    "error": 0
-//}
+document.write("<pre>"+JSON.stringify(validator.end(),null,4)+"</pre>");

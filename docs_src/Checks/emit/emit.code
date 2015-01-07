@@ -1,9 +1,15 @@
-var my_value = validator.get("my_value", BasicVal.float(true, {parse: true}), function(value, emit){
-
-	if(value<500){
-		emit(Math.floor(value));
-	} else {
-		emit(Math.ceil(value));
-	}
-
-}, BasicVal.minimum(100))
+var validator = new FieldVal({
+    "my_money": "€7.54"
+})
+ 
+var my_money = validator.get("my_money", 
+    BasicVal.string(true), 
+    BasicVal.prefix("€"),
+    function(value, emit){
+     
+        emit(value.substring(1))
+ 
+    },
+    BasicVal.float({parse:true}),
+    BasicVal.minimum(5)
+);

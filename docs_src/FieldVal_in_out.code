@@ -1,0 +1,28 @@
+//YOUR INPUT
+var data = {
+	"my_email": "almost@@example.com",
+    "my_integer": "clearly not an integer",
+    "multiple_of_three": 8
+}
+
+//FIELDVAL OUTPUT
+{
+    "invalid": {
+        "my_email": {
+            "error": 107,
+            "error_message": "Invalid email address format."
+        },
+        "my_integer": {
+            "error_message": "Incorrect field type. Expected integer.",
+            "error": 2,
+            "expected": "integer",
+            "received": "string"
+        },
+        "multiple_of_three": {
+            "error_message": "Not a multiple of three",
+            "error": 1000
+        }
+    },
+    "error_message": "One or more errors.",
+    "error": 0
+}
