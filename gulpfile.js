@@ -32,10 +32,10 @@ gulp.task('js', function(){
 
 
 gulp.task('test', function(cb){
-    gulp.src(['src/**/*.js'])
+    gulp.src(['./fieldval.js'])
     .pipe(istanbul())
     .on( 'finish', function () {
-        gulp.src( [ 'test/test.js' ] )
+        gulp.src( ['test/FieldVal_test.js','test/BasicVal_test.js'] )
         .pipe( mocha( {
             reporter: 'spec'
         }))

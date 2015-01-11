@@ -1,5 +1,5 @@
-var FieldVal = require('../src/FieldVal');
-var bval = require('fieldval-basicval');
+var FieldVal = require('../fieldval');
+var bval = FieldVal.BasicVal;
 var assert = require("assert")
 
 describe('FieldVal', function() {
