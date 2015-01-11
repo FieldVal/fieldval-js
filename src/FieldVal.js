@@ -78,9 +78,9 @@ var FieldVal = (function(){
 
                 }
             } else {
-                for(var j in validating){
-                    if(validating.hasOwnProperty(j)) {
-                        fv.recognized_keys[j] = true;
+                for(var n in validating){
+                    if(validating.hasOwnProperty(n)) {
+                        fv.recognized_keys[n] = true;
                     }
                 }
             }
@@ -802,6 +802,10 @@ var FieldVal = (function(){
 
         return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
     };
+
+    @import("./BasicVal.js");
+
+    FieldVal.BasicVal = BasicVal;
 
     return FieldVal;
 }).call();
