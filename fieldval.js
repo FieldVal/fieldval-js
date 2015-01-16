@@ -483,16 +483,29 @@ var FieldVal = (function(){
 
         if (typeof value !== 'string' || parse) {
             if (desired_type === "integer") {
-                var parsed_int = parseInt(value, 10);
-                if (!isNaN(parsed_int) && (parsed_int.toString()).length === (value.toString()).length) {
-                    value = parsed_int;
-                    desired_type = parsed_int;
+                var invalid = false;
+                for(var i = 0; i < value.length; i++){
+                    var char_code = value[i].charCodeAt(0);
+                    if(! ((char_code>=48 && char_code<=57) || char_code===45/*-*/)) {
+                        invalid = true;
+                        break;
+                    }
+                }
+                if(!invalid){
+                    value = parseInt(value);
                     desired_type = "number";
                 }
             } else if (desired_type === "float" || desired_type === "number") {
-                var parsed_float = parseFloat(value, 10);
-                if (!isNaN(parsed_float) && (parsed_float.toString()).length === (value.toString()).length) {
-                    value = parsed_float;
+                var invalid = false;
+                for(var i = 0; i < value.length; i++){
+                    var char_code = value[i].charCodeAt(0);
+                    if(! ((char_code>=48 && char_code<=57) || char_code===46/*.*/ || char_code===45/*-*/)) {
+                        invalid = true;
+                        break;
+                    }
+                }
+                if(!invalid){
+                    value = parseFloat(value);
                     desired_type = "number";
                 }
             } else if (desired_type === "boolean") {
