@@ -55,39 +55,157 @@
                 }
             ]
         },
-    	{
-    		"name": "Custom Check Functions",
-    		"text": "Checks/Checks.md",
-    		"code": "Checks/Checks.code",
-    		"sections" : [
-    			{
-    				"name": "Parameters",
-    				"text": "Checks/Parameters/Parameters.md",
-    				"code": "Checks/Parameters/Parameters.code"
-    			},
-    			{
-    				"name": "emit",
-    				"text": "Checks/emit/emit.md",
-    				"code": "Checks/emit/emit.code"
-    			}
-    		]
-    	},
-    	{
-    		"name": "Errors",
-    		"text": "Errors/Errors.md",
-    		"code": "Errors/Errors.code",
-    		"sections" : [
-    			{
-    				"name": "Object Errors",
-    				"text": "Errors/ObjectErrors/ObjectErrors.md",
-    				"code": "Errors/ObjectErrors/ObjectErrors.code"
-    			},
-    			{
-    				"name": "Multiple Errors",
-    				"text": "Errors/MultipleErrors/MultipleErrors.md",
-    				"code": "Errors/MultipleErrors/MultipleErrors.code"
-    			}
-    		]
-    	}
+        {
+            "name": "Check Functions",
+            "text": "Checks/Checks.md",
+            "code": "Checks/Checks.code",
+            "sections" : [
+                {
+                    "name": "Parameters",
+                    "text": "Checks/Parameters/Parameters.md",
+                    "code": "Checks/Parameters/Parameters.code"
+                },
+                {
+                    "name": "emit",
+                    "text": "Checks/emit/emit.md",
+                    "code": "Checks/emit/emit.code"
+                }
+            ]
+        },
+        {
+            "name": "Errors",
+            "text": "Errors/Errors.md",
+            "code": "Errors/Errors.code",
+            "sections" : [
+                {
+                    "name": "Object Errors",
+                    "text": "Errors/ObjectErrors/ObjectErrors.md",
+                    "code": "Errors/ObjectErrors/ObjectErrors.code"
+                },
+                {
+                    "name": "Multiple Errors",
+                    "text": "Errors/MultipleErrors/MultipleErrors.md",
+                    "code": "Errors/MultipleErrors/MultipleErrors.code"
+                }
+            ]
+        },
+        {
+            "name": "BasicVal",
+            "text": "BasicVal/BasicVal.md",
+            "sections" : [
+                {
+                    "name": "equal_to",
+                    "text": "BasicVal/equal_to/equal_to.md"
+                },
+                {
+                    "name": "integer",
+                    "text": "BasicVal/integer/integer.md"
+                },
+                {
+                    "name": "number",
+                    "text": "BasicVal/number/number.md"
+                },
+                {
+                    "name": "array",
+                    "text": "BasicVal/array/array.md"
+                },
+                {
+                    "name": "object",
+                    "text": "BasicVal/object/object.md"
+                },
+                {
+                    "name": "float",
+                    "text": "BasicVal/float/float.md"
+                },
+                {
+                    "name": "boolean",
+                    "text": "BasicVal/boolean/boolean.md"
+                },
+                {
+                    "name": "string",
+                    "text": "BasicVal/string/string.md"
+                },
+                {
+                    "name": "length",
+                    "text": "BasicVal/length/length.md"
+                },
+                {
+                    "name": "min_length",
+                    "text": "BasicVal/min_length/min_length.md"
+                },
+                {
+                    "name": "max_length",
+                    "text": "BasicVal/max_length/max_length.md"
+                },
+                {
+                    "name": "no_whitespace",
+                    "text": "BasicVal/no_whitespace/no_whitespace.md"
+                },
+                {
+                    "name": "minimum",
+                    "text": "BasicVal/minimum/minimum.md"
+                },
+                {
+                    "name": "maximum",
+                    "text": "BasicVal/maximum/maximum.md"
+                },
+                {
+                    "name": "range",
+                    "text": "BasicVal/range/range.md"
+                },
+                {
+                    "name": "does_not_contain",
+                    "text": "BasicVal/does_not_contain/does_not_contain.md"
+                },
+                {
+                    "name": "one_of",
+                    "text": "BasicVal/one_of/one_of.md"
+                },
+                {
+                    "name": "not_one_of",
+                    "text": "BasicVal/not_one_of/not_one_of.md"
+                },
+                {
+                    "name": "not_empty",
+                    "text": "BasicVal/not_empty/not_empty.md"
+                },
+                {
+                    "name": "prefix",
+                    "text": "BasicVal/prefix/prefix.md"
+                },
+                {
+                    "name": "start_with_letter",
+                    "text": "BasicVal/start_with_letter/start_with_letter.md"
+                },
+                {
+                    "name": "suffix",
+                    "text": "BasicVal/suffix/suffix.md"
+                },
+                {
+                    "name": "each",
+                    "text": "BasicVal/each/each.md"
+                },
+                {
+                    "name": "each_async",
+                    "text": "BasicVal/each_async/each_async.md"
+                },
+                {
+                    "name": "multiple",
+                    "text": "BasicVal/multiple/multiple.md"
+                },
+                {
+                    "name": "multiple_async",
+                    "text": "BasicVal/multiple_async/multiple_async.md"
+                },
+                {
+                    "name": "email",
+                    "text": "BasicVal/email/email.md"
+                },
+                {
+                    "name": "url",
+                    "text": "BasicVal/url/url.md"
+                }
+            ]
+        }
     ]
 }

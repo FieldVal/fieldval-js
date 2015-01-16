@@ -1,0 +1,1 @@
+BasicVal is a set of standard FieldVal [check functions](/docs/fieldval/Check%20Functions).

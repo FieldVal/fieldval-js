@@ -73,7 +73,7 @@
             ]
         },
         {
-            "name": "Custom Check Functions",
+            "name": "Check Functions",
             "code": [
                 {
                     "contents": "var my_check = function(value, emit){\n\n\tif(value!==\"My Exact Value\"){\n\t\treturn {\n\t\t\terror: 1000,\n\t\t\terror_message: \"I'm really picky. Enter 'My Exact Value'.\"\n\t\t}\n\t}\n\n}"
@@ -127,6 +127,124 @@
                         }
                     ],
                     "text": "<p>FieldVal&#39;s default behaviour is to stop checking a field after the first error is found, but sometimes it&#39;s useful to report multiple errors for the same key. In this case, the errors are contained with an array in the <code>errors</code> key. The structure is shown to the right.</p>\n"
+                }
+            ]
+        },
+        {
+            "name": "BasicVal",
+            "text": "<p>BasicVal is a set of standard FieldVal <a href=\"/docs/fieldval/Check%20Functions\">check functions</a>.</p>\n",
+            "sections": [
+                {
+                    "name": "equal_to",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "integer",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "number",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "array",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "object",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "float",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "boolean",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "string",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "length",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "min_length",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "max_length",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "no_whitespace",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "minimum",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "maximum",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "range",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "does_not_contain",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "one_of",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "not_one_of",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "not_empty",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "prefix",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "start_with_letter",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "suffix",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "each",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "each_async",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "multiple",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "multiple_async",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "email",
+                    "text": "<p>Check</p>\n"
+                },
+                {
+                    "name": "url",
+                    "text": "<p>Check</p>\n"
                 }
             ]
         }
