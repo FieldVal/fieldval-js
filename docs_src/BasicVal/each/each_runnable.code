@@ -1,0 +1,15 @@
+var data = {
+	even_numbers: [1,2,4]
+}
+var validator = new FieldVal(data);
+validator.get(
+		'even_numbers',
+		BasicVal.array(true),
+		BasicVal.each(function(val,index){
+			var error = BasicVal.integer()(val); 
+			if(error)return error;
+			return BasicVal.minimum(40)(val);
+		})
+	)
+	
+console.log(validator.end());

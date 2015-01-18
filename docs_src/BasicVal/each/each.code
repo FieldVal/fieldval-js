@@ -1,0 +1,34 @@
+//CODE
+var validator = new FieldVal({
+	an_array: [44, 56, 3]
+});
+
+validator.get(
+	'an_array',
+	BasicVal.array(true),
+	BasicVal.each(function(val,index){
+		var error = BasicVal.integer().check(val); 
+		if(error)return error;
+		return BasicVal.minimum(40).check(val);
+	})
+)
+
+console.log(JSON.stringify(validator.end(), null, 4));
+
+//OUTPUT
+{
+    "invalid": {
+        "an_array": {
+            "invalid": {
+                "2": {
+                    "error": 102,
+                    "error_message": "Value is less than 40"
+                }
+            },
+            "error_message": "One or more errors.",
+            "error": 0
+        }
+    },
+    "error_message": "One or more errors.",
+    "error": 0
+}

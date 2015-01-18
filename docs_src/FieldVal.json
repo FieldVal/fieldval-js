@@ -183,19 +183,21 @@
                 },
                 {
                     "name": "each",
-                    "text": "BasicVal/each/each.md"
-                },
-                {
-                    "name": "each_async",
-                    "text": "BasicVal/each_async/each_async.md"
+                    "text": "BasicVal/each/each.md",
+                    "code": [{
+                        "path": "BasicVal/each/each.code",
+                        "type": "js",
+                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                    }]
                 },
                 {
                     "name": "multiple",
-                    "text": "BasicVal/multiple/multiple.md"
-                },
-                {
-                    "name": "multiple_async",
-                    "text": "BasicVal/multiple_async/multiple_async.md"
+                    "text": "BasicVal/multiple/multiple.md",
+                    "code": [{
+                        "path": "BasicVal/multiple/multiple.code",
+                        "type": "js",
+                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                    }]
                 },
                 {
                     "name": "email",
