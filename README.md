@@ -1,6 +1,8 @@
 FieldVal-JS
 ========
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/FieldVal/fieldval-js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 The FieldVal-JS library allows you to easily validate objects and provide readable and structured error reports.
 
 ```javascript
