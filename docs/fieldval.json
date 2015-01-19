@@ -79,7 +79,7 @@
                     "contents": "var my_check = function(value, emit){\n\n\tif(value!==\"My Exact Value\"){\n\t\treturn {\n\t\t\terror: 1000,\n\t\t\terror_message: \"I'm really picky. Enter 'My Exact Value'.\"\n\t\t}\n\t}\n\n}"
                 }
             ],
-            "text": "<p>FieldVal checks are simple functions that take a value and an emit function and return an error if the value was invalid. If the value is valid, the function does not return anything.</p>\n<ul>\n<li><code>value</code> is the value that this check is validating.</li>\n<li><code>emit</code> is a function that the check can use to change the value for subsequent checks and for the eventual output. (<a href=\"/docs/fieldval/Custom Check Functions/emit\">more info</a>)</li>\n</ul>\n",
+            "text": "<p>FieldVal checks are simple functions that take a value and an emit function and return an error if the value was invalid. If the value is valid, the function does not return anything.</p>\n<ul>\n<li><code>value</code> is the value that this check is validating.</li>\n<li><code>emit</code> is a function that the check can use to change the value for subsequent checks and for the eventual output. (<a href=\"/docs/fieldval/Custom Check Functions/emit\">more info</a>)</li>\n</ul>\n<p>A check can be either a simple function or an object that implements <code>.check(value)</code> function.</p>\n",
             "sections": [
                 {
                     "name": "Parameters",
