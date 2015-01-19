@@ -52,6 +52,16 @@
                         "runnable": true,
                         "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
                     }
+                },
+                {
+                    "name": "error",
+                    "text": "Flags/error/error.md",
+                    "code": {
+                        "path": "Flags/error/error.code",
+                        "type": "js",
+                        "runnable": true,
+                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                    }
                 }
             ]
         },

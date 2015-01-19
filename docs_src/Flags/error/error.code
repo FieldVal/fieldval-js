@@ -1,0 +1,13 @@
+//CODE
+var custom_error = {
+	error: 1001,
+	error_message: "Custom integer error"
+}
+
+BasicVal.integer(true, {
+	error: custom_error
+}).check("test")
+
+//OUTPUT
+{ error: 1001,
+  error_message: 'Custom integer error' }
