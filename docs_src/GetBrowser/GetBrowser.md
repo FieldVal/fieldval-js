@@ -1,1 +1,1 @@
-FieldVal works both in the browser as demonstrated in the demo above, and as a node package.
+To use FieldVal in the browser as demonstrated above, include a script tag for the ```fieldval.js``` file.

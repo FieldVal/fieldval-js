@@ -1,6 +1,4 @@
-The FieldVal library allows you to easily create readable and structured error reports for any data.
-
-#####Look at FieldVal error structure to the right#####
+FieldVal is a Javascript library that allows you to easily create readable and structured error reports for any data.
 
 FieldVal comes with a collection of checks called BasicVal. These are standard checks such as email, numeric limits etc., but you can write your own FieldVal checks with simple functions.
 
