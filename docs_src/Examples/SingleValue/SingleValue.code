@@ -1,0 +1,11 @@
+//CODE
+var value = "abc";
+BasicVal.integer().check(value);
+
+//OUTPUT
+{
+	error_message: 'Incorrect field type. Expected integer.',
+ 	error: 2,
+  	expected: 'integer',
+  	received: 'string' 
+}
