@@ -46,6 +46,64 @@
             ]
         },
         {
+            "name": "Examples",
+            "text": "",
+            "sections": [
+                {
+                    "name": "Backend",
+                    "code": [
+                        {
+                            "contents": "var FieldVal = require('fieldval');\nvar BasicVal = FieldVal.BasicVal;\n\nvar express = require('express');\nvar bodyParser = require('body-parser');\n\nvar app = express();\napp.use(bodyParser.json());\n\napp.post('/', function (req, res) {\n\tvar validator = new FieldVal(req.body);\n\tvar id = validator.get(\"id\", BasicVal.number());\n\tvar username = validator.get(\"username\", BasicVal.string());\n\tvar error = validator.end();\n\tif (error) {\n\t\treturn res.json(error);\n\t}\n\n\t//At this point we know that 'id' and 'username' are certainly valid types.\n\t//Proceed with the code\n\tres.json({success:true})\n})\n\napp.listen(3000);"
+                        }
+                    ],
+                    "text": "<p>We often use FieldVal for validating endpoint&#39;s input. In case validation has failed, a structured error is returned. Otherwise we can proceed with using extracted values.</p>\n<p>Example dependencies:</p>\n<ul>\n<li><a href=\"https://www.npmjs.com/package/express\">express</a></li>\n<li><a href=\"https://www.npmjs.com/package/body-parser\">bodyParser</a></li>\n</ul>\n"
+                },
+                {
+                    "name": "Frontend",
+                    "code": [
+                        {
+                            "type": "js",
+                            "runnable": true,
+                            "demo": true,
+                            "css_external": "__CURRENT_DOMAIN__/demo_files/minimal.css",
+                            "js_library": "jquery",
+                            "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js",
+                            "runnable_contents": "function validate_form(data) {\n\tvar validator = new FieldVal(data);\n\tvalidator.get(\"name\", BasicVal.string(true));\n\tvalidator.get(\"email\", BasicVal.string(true), BasicVal.email());\n\treturn validator.end();\n}\n\n\n$(document).ready(function(){\n\n\tvar output = $(\"<pre/>\");\n\tvar display_output = function(value) {\n\t\toutput.text(\"Error output:\\n\" + JSON.stringify(value, null, 4));\n\t}\n\t\n\tvar form = new FVForm()\n\t.add_field(\"name\", new FVTextField(\"Name\"))\n\t.add_field(\"email\", new FVTextField(\"Email\"))\n\t.on_submit(function(value){\n\t\tform.clear_errors();\n\t\tvar error = validate_form(value); \n\t\tif (error) {\n\t\t\tform.error(error);\n\t\t}\n\t\tdisplay_output(error);\n\t})\n  \n\tform.element.append(\n\t\t$(\"<button/>\").text(\"Submit\")\n\t).appendTo(\"body\");\n\toutput.appendTo(\"body\");\n\tform.submit();\n});",
+                            "contents": "function validate_form(data) {\n\tvar validator = new FieldVal(data);\n\tvalidator.get(\"name\", BasicVal.string(true));\n\tvalidator.get(\"email\", BasicVal.string(true), BasicVal.email());\n\treturn validator.end();\n}\n\nvar form = new FVForm()\n.add_field(\"name\", new FVTextField(\"Name\"))\n.add_field(\"email\", new FVTextField(\"Email\"))\n.on_submit(function(value){\n\tform.clear_errors();\n\tvar error = validate_form(value); \n\tif (error) {\n\t\tform.error(error);\n\t} else {\n\t\talert(JSON.stringify(value));\n\t}\n})"
+                        }
+                    ],
+                    "text": "<p>Another common usecase for FieldVal is validating forms on a web page. The example displays integration with <a href=\"/docs/fieldvalui\">FieldVal UI</a> that not only creates a form, but also displays a structured error produced by FieldVal.</p>\n<p>Using <a href=\"/docs/fieldvalui\">FieldVal UI</a> is optional, but recommended.</p>\n"
+                },
+                {
+                    "name": "Validating single value",
+                    "code": [
+                        {
+                            "contents": "//CODE\nvar value = \"abc\";\nBasicVal.integer().check(value);\n\n//OUTPUT\n{\n\terror_message: 'Incorrect field type. Expected integer.',\n \terror: 2,\n  \texpected: 'integer',\n  \treceived: 'string' \n}"
+                        }
+                    ],
+                    "text": "<p>It is possible to use <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> check functions on a single value.</p>\n<p><code>.check()</code> is documented in a <a href=\"/docs/fieldval/Check%20Functions\">Check Functions</a> section.</p>\n"
+                },
+                {
+                    "name": "Validating nested objects",
+                    "code": [
+                        {
+                            "contents": "var validator = new FieldVal(val);\nvalidator.get(\"name\", BasicVal.string(true));\nvalidator.get(\"email\", BasicVal.string(true), BasicVal.email());\nvalidator.get(\"enquiry\", BasicVal.object(true), function(enquiry){\n    var inner_validator = new FieldVal(enquiry);\n    inner_validator.get(\"type\", BasicVal.string(true), BasicVal.one_of([\"One\",\"Two\"]))\n    inner_validator.get(\"message\", BasicVal.string(true))\n    return inner_validator.end();\n});\n\nvalidator.end();"
+                        }
+                    ],
+                    "text": "<p>Nested objects can be validated using an inner_validator in a <a href=\"/docs/fieldval/Check%20Functions\">custom check function</a> that is validating the object.</p>\n"
+                },
+                {
+                    "name": "Creating errors without validation",
+                    "code": [
+                        {
+                            "contents": "//CODE\nvar invalid_error = {\n\terror: 1020,\n\terror_message: \"Value is invalid\"\n}\n\nvar validator = new FieldVal(null)\nvalidator.invalid(\"invalid_field\", invalid_error)\nvalidator.missing(\"missing_field\")\nvalidator.unrecognized(\"unrecognized_field\")\nvalidator.end()\n\n//OUTPUT\n{\n    \"missing\": {\n        \"missing_field\": {\n            \"error_message\": \"Field missing.\",\n            \"error\": 1\n        }\n    },\n    \"invalid\": {\n        \"invalid_field\": {\n            \"error\": 1020,\n            \"error_message\": \"Value is invalid\"\n        }\n    },\n    \"unrecognized\": {\n        \"unrecognized_field\": {\n            \"error_message\": \"Unrecognized field.\",\n            \"error\": 3\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 0\n}"
+                        }
+                    ],
+                    "text": "<p>Sometimes it is useful to create a structured error for a specific field without validating a value. This can be achieved by calling one of the following FieldVal object&#39;s methods:</p>\n<ul>\n<li><code>invalid(field_name, error)</code> </li>\n<li><code>unrecognized(field_name)</code> </li>\n<li><code>missing(field_name)</code> </li>\n</ul>\n"
+                }
+            ]
+        },
+        {
             "name": "Errors",
             "code": [
                 {
@@ -263,48 +321,6 @@
                         }
                     ],
                     "text": "<p>The <code>error</code> flag overrides standard error for <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> checks.</p>\n"
-                }
-            ]
-        },
-        {
-            "name": "Examples",
-            "text": "",
-            "sections": [
-                {
-                    "name": "Single value validation",
-                    "code": [
-                        {
-                            "contents": "//CODE\nvar value = \"abc\";\nBasicVal.integer().check(value);\n\n//OUTPUT\n{\n\terror_message: 'Incorrect field type. Expected integer.',\n \terror: 2,\n  \texpected: 'integer',\n  \treceived: 'string' \n}"
-                        }
-                    ],
-                    "text": "<p>It is possible to use <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> check functions on a single value.</p>\n<p><code>.check()</code> is documented in a <a href=\"/docs/fieldval/Check%20Functions\">Check Functions</a> section.</p>\n"
-                },
-                {
-                    "name": "Creating errors without validation",
-                    "code": [
-                        {
-                            "contents": "//CODE\nvar invalid_error = {\n\terror: 1020,\n\terror_message: \"Value is invalid\"\n}\n\nvar validator = new FieldVal(null)\nvalidator.invalid(\"invalid_field\", invalid_error)\nvalidator.missing(\"missing_field\")\nvalidator.unrecognized(\"unrecognized_field\")\nvalidator.end()\n\n//OUTPUT\n{\n    \"missing\": {\n        \"missing_field\": {\n            \"error_message\": \"Field missing.\",\n            \"error\": 1\n        }\n    },\n    \"invalid\": {\n        \"invalid_field\": {\n            \"error\": 1020,\n            \"error_message\": \"Value is invalid\"\n        }\n    },\n    \"unrecognized\": {\n        \"unrecognized_field\": {\n            \"error_message\": \"Unrecognized field.\",\n            \"error\": 3\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 0\n}"
-                        }
-                    ],
-                    "text": "<p>Sometimes it is useful to create a structured error for a specific field without validating a value. This can be achieved by calling one of the following FieldVal object&#39;s methods:</p>\n<ul>\n<li><code>invalid(field_name, error)</code> </li>\n<li><code>unrecognized(field_name)</code> </li>\n<li><code>missing(field_name)</code> </li>\n</ul>\n"
-                },
-                {
-                    "name": "Backend example",
-                    "code": [
-                        {
-                            "contents": "var FieldVal = require('fieldval');\nvar BasicVal = FieldVal.BasicVal;\n\nvar express = require('express');\nvar bodyParser = require('body-parser');\n\nvar app = express();\napp.use(bodyParser.json());\n\napp.post('/', function (req, res) {\n\tvar validator = new FieldVal(req.body);\n\tvar id = validator.get(\"id\", BasicVal.number());\n\tvar username = validator.get(\"username\", BasicVal.string());\n\tvar error = validator.end();\n\tif (error) {\n\t\treturn res.json(error);\n\t}\n\n\t//At this point we know that 'id' and 'username' are certainly valid types.\n\t//Proceed with the code\n\tres.json({success:true})\n})\n\napp.listen(3000);"
-                        }
-                    ],
-                    "text": "<p>We often use FieldVal for validating endpoint&#39;s input. In case validation has failed, a structured error is returned. Otherwise we can proceed with using extracted values.</p>\n<p>Example dependencies:</p>\n<ul>\n<li><a href=\"https://www.npmjs.com/package/express\">express</a></li>\n<li><a href=\"https://www.npmjs.com/package/body-parser\">bodyParser</a></li>\n</ul>\n"
-                },
-                {
-                    "name": "Nested objects",
-                    "code": [
-                        {
-                            "contents": "var validator = new FieldVal(val);\nvalidator.get(\"name\", BasicVal.string(true));\nvalidator.get(\"email\", BasicVal.string(true), BasicVal.email());\nvalidator.get(\"enquiry\", BasicVal.object(true), function(enquiry){\n    var inner_validator = new FieldVal(enquiry);\n    inner_validator.get(\"type\", BasicVal.string(true), BasicVal.one_of([\"One\",\"Two\"]))\n    inner_validator.get(\"message\", BasicVal.string(true))\n    return inner_validator.end();\n});\n\nvalidator.end();"
-                        }
-                    ],
-                    "text": "<p>Nested objects can be validated using an inner_validator in a <a href=\"/docs/fieldval/Check%20Functions\">custom check function</a> that is validating the object.</p>\n"
                 }
             ]
         }

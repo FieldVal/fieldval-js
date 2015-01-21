@@ -1,0 +1,33 @@
+function validate_form(data) {
+	var validator = new FieldVal(data);
+	validator.get("name", BasicVal.string(true));
+	validator.get("email", BasicVal.string(true), BasicVal.email());
+	return validator.end();
+}
+
+
+$(document).ready(function(){
+
+	var output = $("<pre/>");
+	var display_output = function(value) {
+		output.text("Error output:\n" + JSON.stringify(value, null, 4));
+	}
+	
+	var form = new FVForm()
+	.add_field("name", new FVTextField("Name"))
+	.add_field("email", new FVTextField("Email"))
+	.on_submit(function(value){
+		form.clear_errors();
+		var error = validate_form(value); 
+		if (error) {
+			form.error(error);
+		}
+		display_output(error);
+	})
+  
+	form.element.append(
+		$("<button/>").text("Submit")
+	).appendTo("body");
+	output.appendTo("body");
+	form.submit();
+});

@@ -35,6 +35,45 @@
             ]
         },
         {
+            "name": "Examples",
+            "text": "Examples/Examples.md",
+            "sections" : [
+                {
+                    "name": "Backend",
+                    "text": "Examples/Backend/Backend.md",
+                    "code": "Examples/Backend/Backend.code"
+                },
+                {
+                    "name": "Frontend",
+                    "text": "Examples/Frontend/Frontend.md",
+                    "code": [{
+                        "path": "Examples/Frontend/Frontend.code",
+                        "runnable_path": "Examples/Frontend/Frontend_runnable.code",
+                        "type": "js",
+                        "runnable": true, "demo": true,
+                        "css_external": "__CURRENT_DOMAIN__/demo_files/minimal.css",
+                        "js_library": "jquery",
+                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                    }]
+                },
+                {
+                    "name": "Validating single value",
+                    "text": "Examples/SingleValue/SingleValue.md",
+                    "code": "Examples/SingleValue/SingleValue.code"
+                },
+                {
+                    "name": "Validating nested objects",
+                    "text": "Examples/Nested/Nested.md",
+                    "code": "Examples/Nested/Nested.code"
+                },
+                {
+                    "name": "Creating errors without validation",
+                    "text": "Examples/CreateError/CreateError.md",
+                    "code": "Examples/CreateError/CreateError.code"
+                }
+            ]
+        },
+        {
             "name": "Errors",
             "text": "Errors/Errors.md",
             "code": "Errors/Errors.code",
@@ -216,32 +255,6 @@
                         "runnable": true,
                         "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
                     }
-                }
-            ]
-        },
-        {
-            "name": "Examples",
-            "text": "Examples/Examples.md",
-            "sections" : [
-                {
-                    "name": "Single value validation",
-                    "text": "Examples/SingleValue/SingleValue.md",
-                    "code": "Examples/SingleValue/SingleValue.code"
-                },
-                {
-                    "name": "Creating errors without validation",
-                    "text": "Examples/CreateError/CreateError.md",
-                    "code": "Examples/CreateError/CreateError.code"
-                },
-                {
-                    "name": "Backend example",
-                    "text": "Examples/Backend/Backend.md",
-                    "code": "Examples/Backend/Backend.code"
-                },
-                {
-                    "name": "Nested objects",
-                    "text": "Examples/Nested/Nested.md",
-                    "code": "Examples/Nested/Nested.code"
                 }
             ]
         }

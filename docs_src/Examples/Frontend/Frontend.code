@@ -1,0 +1,19 @@
+function validate_form(data) {
+	var validator = new FieldVal(data);
+	validator.get("name", BasicVal.string(true));
+	validator.get("email", BasicVal.string(true), BasicVal.email());
+	return validator.end();
+}
+
+var form = new FVForm()
+.add_field("name", new FVTextField("Name"))
+.add_field("email", new FVTextField("Email"))
+.on_submit(function(value){
+	form.clear_errors();
+	var error = validate_form(value); 
+	if (error) {
+		form.error(error);
+	} else {
+		alert(JSON.stringify(value));
+	}
+})
