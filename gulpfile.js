@@ -3,9 +3,7 @@ var gutil = require('gulp-util');
 
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-var watch = require('gulp-watch');
 var gulpImports = require('gulp-imports');
-var path = require('path');
 
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');

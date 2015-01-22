@@ -10,6 +10,6 @@ When you've finished validating, use ```.end()``` to retrieve the error report o
 
 ####Run the code example to the right####
 
-Try out FieldVal using CodePen by clicking the "Run on Codepen" button below the example. [FieldVal-All](http://github.com/FieldVal/fieldval-all-js) is included, so you can use BasicVal checks too.
+Try out FieldVal using CodePen by clicking the "Run on Codepen" button below the example.
 
 Try changing the data provided to ```FieldVal``` to see how the error changes.
