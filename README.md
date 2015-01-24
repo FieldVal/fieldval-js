@@ -3,6 +3,8 @@ FieldVal-JS
 
 The FieldVal-JS library allows you to easily validate data and provide readable and structured error reports.
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/FieldVal/fieldval-js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Documentation and Examples
 =============
 
