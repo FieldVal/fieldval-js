@@ -1,6 +1,6 @@
 {
     "name": "fieldval",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "description": "fieldval",
     "main": "fieldval.js",
     "scripts": {
@@ -12,7 +12,6 @@
     },
     "devDependencies": {
         "mocha": "*",
-        "fieldval-basicval": "*",
         "gulp": "^3.6.1",
         "gulp-concat": "^2.2.0",
         "gulp-imports" : "MarcusLongmuir/gulp-imports",

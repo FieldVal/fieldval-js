@@ -14,7 +14,7 @@ var FieldVal = (function(){
             if (obj.hasOwnProperty(key)) return false;
         }
         return true;
-    }
+    };
 
     function FieldVal(validating, existing_error) {
         var fv = this;
@@ -42,7 +42,7 @@ var FieldVal = (function(){
                     for(var i = 0; i < existing_error.errors.length; i++){
                         var inner_error = existing_error.errors[i];
 
-                        if(inner_error.error===0){
+                        if(inner_error.error===FieldVal.ONE_OR_MORE_ERRORS){
                             key_error = inner_error;
                             //Don't add the key_error to fv.errors (continue)
                             continue;
@@ -452,12 +452,12 @@ var FieldVal = (function(){
     FieldVal.REQUIRED_ERROR = Math.sqrt;
     FieldVal.NOT_REQUIRED_BUT_MISSING = Math.floor;
 
-    FieldVal.ONE_OR_MORE_ERRORS = 0;
-    FieldVal.ONE_OR_MORE_ERRORS_STRING = "One or more errors.";
     FieldVal.FIELD_MISSING = 1;
     FieldVal.INCORRECT_FIELD_TYPE = 2;
     FieldVal.FIELD_UNRECOGNIZED = 3;
     FieldVal.MULTIPLE_ERRORS = 4;
+    FieldVal.ONE_OR_MORE_ERRORS = 5;
+    FieldVal.ONE_OR_MORE_ERRORS_STRING = "One or more errors.";
 
     FieldVal.INCORRECT_TYPE_ERROR = function (expected_type, type) {
         return {
@@ -804,8 +804,10 @@ var FieldVal = (function(){
     };
 
     @import("./BasicVal.js");
+    @import("./DateVal.js");
 
     FieldVal.BasicVal = BasicVal;
+    FieldVal.DateVal = DateVal;
 
     return FieldVal;
 }).call();
@@ -813,4 +815,8 @@ var FieldVal = (function(){
 /* istanbul ignore else */
 if ('undefined' !== typeof module) {
     module.exports = FieldVal;
+} else {
+    //Expose BasicVal and DateVal globally
+    BasicVal = FieldVal.BasicVal;
+    DateVal = FieldVal.DateVal;
 }

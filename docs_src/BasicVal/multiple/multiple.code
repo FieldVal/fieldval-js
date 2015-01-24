@@ -22,5 +22,5 @@ console.log(JSON.stringify(validator.end(), null, 4));
         }
     },
     "error_message": "One or more errors.",
-    "error": 0
+    "error": 5
 }
