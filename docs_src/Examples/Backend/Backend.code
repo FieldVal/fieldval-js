@@ -1,0 +1,24 @@
+var FieldVal = require('fieldval');
+var BasicVal = FieldVal.BasicVal;
+
+var express = require('express');
+var bodyParser = require('body-parser');
+
+var app = express();
+app.use(bodyParser.json());
+
+app.post('/', function (req, res) {
+	var validator = new FieldVal(req.body);
+	var id = validator.get("id", BasicVal.number());
+	var username = validator.get("username", BasicVal.string());
+	var error = validator.end();
+	if (error) {
+		return res.json(error);
+	}
+
+	//At this point we know that 'id' and 'username' are certainly valid types.
+	//Proceed with the code
+	res.json({success:true})
+})
+
+app.listen(3000);

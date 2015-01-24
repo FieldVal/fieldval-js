@@ -4,7 +4,7 @@
         {
             "name": "FieldVal Error Structure",
             "type": "js",
-            "contents": "//YOUR INPUT\nvar data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\n//FIELDVAL OUTPUT\n{\n    \"invalid\": {\n        \"my_email\": {\n            \"error\": 107,\n            \"error_message\": \"Invalid email address format.\"\n        },\n        \"my_integer\": {\n            \"error_message\": \"Incorrect field type. Expected integer.\",\n            \"error\": 2,\n            \"expected\": \"integer\",\n            \"received\": \"string\"\n        },\n        \"multiple_of_three\": {\n            \"error_message\": \"Not a multiple of three\",\n            \"error\": 1000\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 0\n}"
+            "contents": "//YOUR INPUT\nvar data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\n//FIELDVAL OUTPUT\n{\n    \"invalid\": {\n        \"my_email\": {\n            \"error\": 107,\n            \"error_message\": \"Invalid email address format.\"\n        },\n        \"my_integer\": {\n            \"error_message\": \"Incorrect field type. Expected integer.\",\n            \"error\": 2,\n            \"expected\": \"integer\",\n            \"received\": \"string\"\n        },\n        \"multiple_of_three\": {\n            \"error_message\": \"Not a multiple of three\",\n            \"error\": 1000\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
         },
         {
             "name": "Code",
@@ -15,33 +15,273 @@
             "contents": "var validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.string(true), BasicVal.email());\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\ndocument.write(\"<pre>\"+JSON.stringify(validator.end(),null,4)+\"</pre>\");"
         }
     ],
-    "text": "<p>The FieldVal library allows you to easily create readable and structured error reports for any data.</p>\n<h5 id=\"look-at-fieldval-error-structure-to-the-right\">Look at FieldVal error structure to the right</h5>\n<p>FieldVal comes with a collection of checks called BasicVal. These are standard checks such as email, numeric limits etc., but you can write your own FieldVal checks with simple functions.</p>\n<p>To start validating, pass your data to a new instance of <code>FieldVal</code>.</p>\n<p>Then use <code>.get()</code> to retrieve values whilst simultatenously building an error report.</p>\n<p>When you&#39;ve finished validating, use <code>.end()</code> to retrieve the error report or null if there were no errors.</p>\n<h4 id=\"run-the-code-example-to-the-right\">Run the code example to the right</h4>\n<p>Try out FieldVal using CodePen by clicking the &quot;Run on Codepen&quot; button below the example. <a href=\"http://github.com/FieldVal/fieldval-all-js\">FieldVal-All</a> is included, so you can use BasicVal checks too.</p>\n<p>Try changing the data provided to <code>FieldVal</code> to see how the error changes.</p>\n",
+    "text": "<p>FieldVal is a Javascript library that allows you to easily create readable and structured error reports for any data.</p>\n<p>FieldVal comes with a collection of checks called BasicVal. These are standard checks such as email, numeric limits etc., but you can write your own FieldVal checks with simple functions.</p>\n<p>To start validating, pass your data to a new instance of <code>FieldVal</code>.</p>\n<p>Then use <code>.get()</code> to retrieve values whilst simultatenously building an error report.</p>\n<p>When you&#39;ve finished validating, use <code>.end()</code> to retrieve the error report or null if there were no errors.</p>\n<h4 id=\"run-the-code-example-to-the-right\">Run the code example to the right</h4>\n<p>Try out FieldVal using CodePen by clicking the &quot;Run on Codepen&quot; button below the example.</p>\n<p>Try changing the data provided to <code>FieldVal</code> to see how the error changes.</p>\n",
     "sections": [
         {
             "name": "Node Usage",
             "code": [
                 {
-                    "contents": "var FieldVal = require('fieldval');\nvar BasicVal = require('fieldval-basicval');\n\nvar validator = new FieldVal({\n\t\"my_key\": 37\n})\n\nvar my_key = validator.get(\"my_key\", BasicVal.integer(true), BasicVal.minimum(40));\n\nconsole.log(validator.end());"
+                    "contents": "var FieldVal = require('fieldval');\nvar BasicVal = FieldVal.BasicVal;\n\nvar validator = new FieldVal({\n\t\"my_key\": 37\n})\n\nvar my_key = validator.get(\"my_key\", BasicVal.integer(true), BasicVal.minimum(40));\n\nconsole.log(validator.end());"
                 }
             ],
-            "text": "<p>To use FieldVal as a node package, install <code>fieldval</code> and <code>fieldval-basicval</code> using <code>npm</code>:</p>\n<pre><code class=\"lang-bash\">npm install fieldval fieldval-basicval --save\n</code></pre>\n"
+            "text": "<p>FieldVal works both in the browser as demonstrated in the demo above, and as a node package.</p>\n<p>To use FieldVal as a node package, install <code>fieldval</code> using <code>npm</code>:</p>\n<pre><code class=\"lang-bash\">npm install fieldval --save\n</code></pre>\n"
         },
         {
             "name": "Browser Usage",
             "code": [
                 {
-                    "contents": "<script type=\"text/javascript\" src=\"/PATH_TO/fieldval.min.js\"></script>\n<script type=\"text/javascript\" src=\"/PATH_TO/fieldval-basicval.min.js\"></script>\n<script type=\"text/javascript\">\n\nvar validator = new FieldVal({\n\t\"my_key\": 37\n})\n\nvar my_key = validator.get(\"my_key\", BasicVal.integer(true), BasicVal.minimum(40));\n\nconsole.log(validator.end());\n\n</script>"
+                    "contents": "<script type=\"text/javascript\" src=\"/PATH_TO/fieldval.js\"></script>script>\n<script type=\"text/javascript\">\n\nvar validator = new FieldVal({\n\t\"my_key\": 37\n})\n\nvar my_key = validator.get(\"my_key\", BasicVal.integer(true), BasicVal.minimum(40));\n\nconsole.log(validator.end());\n\n</script>"
                 }
             ],
-            "text": "<p>FieldVal works both in the browser as demonstrated in the demo above, and as a node package.</p>\n",
+            "text": "<p>To use FieldVal in the browser as demonstrated above, include a script tag for the <code>fieldval.js</code> file.</p>\n",
             "sections": [
                 {
                     "name": "Bower",
-                    "text": "<p>FieldVal is available as a <a href=\"http://bower.io\">Bower</a> package. To install into your existing project, use:</p>\n<pre><code class=\"lang-bash\">bower install fieldval fieldval-basicval --save\n</code></pre>\n"
+                    "text": "<p>FieldVal is available as a <a href=\"http://bower.io\">Bower</a> package. To install into your existing project, use:</p>\n<pre><code class=\"lang-bash\">bower install fieldval --save\n</code></pre>\n"
                 },
                 {
                     "name": "Manual Install",
-                    "text": "<p>To use FieldVal in the browser without a package manager, download <code>fieldval.min.js</code> and <code>fieldval-basicval.min.js</code> from their repositories:</p>\n<ul>\n<li><p><a href=\"https://raw.githubusercontent.com/FieldVal/fieldval-js/master/fieldval.min.js\">fieldval.min.js</a> (<a href=\"https://github.com/FieldVal/fieldval-js/\">repository</a>)</p>\n</li>\n<li><p><a href=\"https://raw.githubusercontent.com/FieldVal/fieldval-basicval-js/master/fieldval-basicval.min.js\">fieldval-basicval.min.js</a> (<a href=\"https://github.com/FieldVal/fieldval-basicval-js/\">repository</a>)</p>\n</li>\n</ul>\n"
+                    "text": "<p>To use FieldVal in the browser without a package manager, download <code>fieldval.js</code> or <code>fieldval.min.js</code> from the <a href=\"https://github.com/FieldVal/fieldval-js/\">repository</a>.</p>\n<ul>\n<li><p><a href=\"https://raw.githubusercontent.com/FieldVal/fieldval-js/master/fieldval.js\">fieldval.js</a></p>\n</li>\n<li><p><a href=\"https://raw.githubusercontent.com/FieldVal/fieldval-js/master/fieldval.min.js\">fieldval.min.js</a></p>\n</li>\n</ul>\n"
+                }
+            ]
+        },
+        {
+            "name": "Examples",
+            "text": "",
+            "sections": [
+                {
+                    "name": "Backend",
+                    "code": [
+                        {
+                            "contents": "var FieldVal = require('fieldval');\nvar BasicVal = FieldVal.BasicVal;\n\nvar express = require('express');\nvar bodyParser = require('body-parser');\n\nvar app = express();\napp.use(bodyParser.json());\n\napp.post('/', function (req, res) {\n\tvar validator = new FieldVal(req.body);\n\tvar id = validator.get(\"id\", BasicVal.number());\n\tvar username = validator.get(\"username\", BasicVal.string());\n\tvar error = validator.end();\n\tif (error) {\n\t\treturn res.json(error);\n\t}\n\n\t//At this point we know that 'id' and 'username' are certainly valid types.\n\t//Proceed with the code\n\tres.json({success:true})\n})\n\napp.listen(3000);"
+                        }
+                    ],
+                    "text": "<p>We often use FieldVal for validating endpoint&#39;s input. In case validation has failed, a structured error is returned. Otherwise we can proceed with using extracted values.</p>\n<p>Example dependencies:</p>\n<ul>\n<li><a href=\"https://www.npmjs.com/package/express\">express</a></li>\n<li><a href=\"https://www.npmjs.com/package/body-parser\">bodyParser</a></li>\n</ul>\n"
+                },
+                {
+                    "name": "Frontend",
+                    "code": [
+                        {
+                            "type": "js",
+                            "runnable": true,
+                            "demo": true,
+                            "css_external": "__CURRENT_DOMAIN__/demo_files/minimal.css",
+                            "js_library": "jquery",
+                            "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js",
+                            "runnable_contents": "function validate_form(data) {\n\tvar validator = new FieldVal(data);\n\tvalidator.get(\"name\", BasicVal.string(true));\n\tvalidator.get(\"email\", BasicVal.string(true), BasicVal.email());\n\treturn validator.end();\n}\n\n\n$(document).ready(function(){\n\n\tvar output = $(\"<pre/>\");\n\tvar display_output = function(value) {\n\t\toutput.text(\"Error output:\\n\" + JSON.stringify(value, null, 4));\n\t}\n\t\n\tvar form = new FVForm()\n\t.add_field(\"name\", new FVTextField(\"Name\"))\n\t.add_field(\"email\", new FVTextField(\"Email\"))\n\t.on_submit(function(value){\n\t\tform.clear_errors();\n\t\tvar error = validate_form(value); \n\t\tif (error) {\n\t\t\tform.error(error);\n\t\t}\n\t\tdisplay_output(error);\n\t})\n  \n\tform.element.append(\n\t\t$(\"<button/>\").text(\"Submit\")\n\t).appendTo(\"body\");\n\toutput.appendTo(\"body\");\n\tform.submit();\n});",
+                            "contents": "function validate_form(data) {\n\tvar validator = new FieldVal(data);\n\tvalidator.get(\"name\", BasicVal.string(true));\n\tvalidator.get(\"email\", BasicVal.string(true), BasicVal.email());\n\treturn validator.end();\n}\n\nvar form = new FVForm()\n.add_field(\"name\", new FVTextField(\"Name\"))\n.add_field(\"email\", new FVTextField(\"Email\"))\n.on_submit(function(value){\n\tform.clear_errors();\n\tvar error = validate_form(value); \n\tif (error) {\n\t\tform.error(error);\n\t} else {\n\t\talert(JSON.stringify(value));\n\t}\n})"
+                        }
+                    ],
+                    "text": "<p>Another common usecase for FieldVal is validating forms on a web page. The example displays integration with <a href=\"/docs/fieldvalui\">FieldVal UI</a> that not only creates a form, but also displays a structured error produced by FieldVal.</p>\n<p>Using <a href=\"/docs/fieldvalui\">FieldVal UI</a> is optional, but recommended.</p>\n"
+                },
+                {
+                    "name": "Validating single value",
+                    "code": [
+                        {
+                            "contents": "//CODE\nvar value = \"abc\";\nBasicVal.integer().check(value);\n\n//OUTPUT\n{\n\terror_message: 'Incorrect field type. Expected integer.',\n \terror: 2,\n  \texpected: 'integer',\n  \treceived: 'string' \n}"
+                        }
+                    ],
+                    "text": "<p>It is possible to use <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> check functions on a single value.</p>\n<p><code>.check()</code> is documented in a <a href=\"/docs/fieldval/Check%20Functions\">Check Functions</a> section.</p>\n"
+                },
+                {
+                    "name": "Validating nested objects",
+                    "code": [
+                        {
+                            "contents": "var validator = new FieldVal(val);\nvalidator.get(\"name\", BasicVal.string(true));\nvalidator.get(\"email\", BasicVal.string(true), BasicVal.email());\nvalidator.get(\"enquiry\", BasicVal.object(true), function(enquiry){\n    var inner_validator = new FieldVal(enquiry);\n    inner_validator.get(\"type\", BasicVal.string(true), BasicVal.one_of([\"One\",\"Two\"]))\n    inner_validator.get(\"message\", BasicVal.string(true))\n    return inner_validator.end();\n});\n\nvalidator.end();"
+                        }
+                    ],
+                    "text": "<p>Nested objects can be validated using an inner_validator in a <a href=\"/docs/fieldval/Check%20Functions\">custom check function</a> that is validating the object.</p>\n"
+                },
+                {
+                    "name": "Creating errors without validation",
+                    "code": [
+                        {
+                            "contents": "//CODE\nvar invalid_error = {\n\terror: 1020,\n\terror_message: \"Value is invalid\"\n}\n\nvar validator = new FieldVal(null)\nvalidator.invalid(\"invalid_field\", invalid_error)\nvalidator.missing(\"missing_field\")\nvalidator.unrecognized(\"unrecognized_field\")\nvalidator.end()\n\n//OUTPUT\n{\n    \"missing\": {\n        \"missing_field\": {\n            \"error_message\": \"Field missing.\",\n            \"error\": 1\n        }\n    },\n    \"invalid\": {\n        \"invalid_field\": {\n            \"error\": 1020,\n            \"error_message\": \"Value is invalid\"\n        }\n    },\n    \"unrecognized\": {\n        \"unrecognized_field\": {\n            \"error_message\": \"Unrecognized field.\",\n            \"error\": 3\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
+                        }
+                    ],
+                    "text": "<p>Sometimes it is useful to create a structured error for a specific field without validating a value. This can be achieved by calling one of the following FieldVal object&#39;s methods:</p>\n<ul>\n<li><code>invalid(field_name, error)</code> </li>\n<li><code>unrecognized(field_name)</code> </li>\n<li><code>missing(field_name)</code> </li>\n</ul>\n"
+                }
+            ]
+        },
+        {
+            "name": "Errors",
+            "code": [
+                {
+                    "contents": "{\n\t\"error_message\": \"A message describing the error\",\n\t\"error\": 1017//A number associated with this particular error\n}"
+                }
+            ],
+            "text": "<p>FieldVal use a standard error structure. The most basic error structure is provided as an example to the right.</p>\n<p>To avoid conflicting with FieldVal error numbers (that begin at 0), your error numbers should start at 1000.</p>\n",
+            "sections": [
+                {
+                    "name": "Object Errors",
+                    "code": [
+                        {
+                            "contents": "//Example input\n{\n\t\"my_integer\": \"Not an integer\",\n\t\"my_string\": 23,\n\t\"curveball\": \"Not expected!\"\n}\n\n//Example error\n{\n\t\"error_message\": \"One or more errors.\",\n\t\"error\": 5,\n\t\"invalid\": {\n\t\t\"my_string\": {\n\t\t\t\"error_message\": \"Incorrect field type. Expected string.\",\n\t\t\t\"error\": 2,\n\t\t\t\"expected\": \"string\",\n\t\t\t\"received\": \"number\"\n\t\t},\n\t\t\"my_integer\": {\n\t\t\t\"error_message\": \"Incorrect field type. Expected integer.\",\n\t\t\t\"error\": 2,\n\t\t\t\"expected\": \"integer\",\n\t\t\t\"received\": \"string\"\n\t\t}\n\t},\n\t\"missing\": {\n\t\t\"my_array\": {\n\t\t\t\"error_message\": \"Field missing.\",\n\t\t\t\"error\": 1\n\t\t}\n\t},\n\t\"unrecognized\": {\n\t\t\"curveball\": {\n\t\t\t\"error_message\": \"Unrecognized field.\",\n\t\t\t\"error\": 3\n\t\t}\n\t}\n}"
+                        }
+                    ],
+                    "text": "<p>FieldVal&#39;s error structure is designed to match the input structure on a per-key level. This is achieved by attaching each error to its appropriate key and building a hierarchical structure that can be easily navigated both visually and programmatically.</p>\n<p>There are three types of errors:</p>\n<ul>\n<li><p><code>invalid</code></p>\n<p>  These fields were provided, but there was something wrong with the values.</p>\n<ul>\n<li><code>my_integer</code> isn&#39;t an integer - it&#39;s a string</li>\n<li><code>my_string</code> isn&#39;t a string - it&#39;s a integer</li>\n</ul>\n</li>\n<li><p><code>missing</code></p>\n<p>  These fields were indicated as required during validation, but they aren&#39;t in the data.</p>\n<ul>\n<li><code>my_array</code> wasn&#39;t present</li>\n</ul>\n</li>\n<li><p><code>unrecognized</code></p>\n<p>  When validation ended, these fields hadn&#39;t been looked for, but they were sent.</p>\n<ul>\n<li><code>curveball</code> wasn&#39;t a valid field to send</li>\n</ul>\n</li>\n</ul>\n"
+                },
+                {
+                    "name": "Multiple Errors",
+                    "code": [
+                        {
+                            "contents": "{\n\t\"error\": 4,\n\t\"error_message\": \"Multiple errors.\",\n\t\"errors\": [\n\t\t{\n\t\t\t\"error\": 106,\n\t\t\t\"error_message\": \"Value does not have prefix: ABC\"\n\t\t},\n\t\t{\n\t\t\t\"error\": 110,\n\t\t\t\"error_message\": \"Value does not have suffix: XYZ\"\n\t\t}\n\t]\n}"
+                        }
+                    ],
+                    "text": "<p>FieldVal&#39;s default behaviour is to stop checking a field after the first error is found, but sometimes it&#39;s useful to report multiple errors for the same key. In this case, the errors are contained with an array in the <code>errors</code> key. The structure is shown to the right.</p>\n"
+                }
+            ]
+        },
+        {
+            "name": "Check Functions",
+            "code": [
+                {
+                    "contents": "var my_check = function(value, emit){\n\n\tif(value!==\"My Exact Value\"){\n\t\treturn {\n\t\t\terror: 1000,\n\t\t\terror_message: \"I'm really picky. Enter 'My Exact Value'.\"\n\t\t}\n\t}\n\n}"
+                }
+            ],
+            "text": "<p>FieldVal checks are simple functions that take a value and an emit function and return an error if the value was invalid. If the value is valid, the function does not return anything.</p>\n<ul>\n<li><code>value</code> is the value that this check is validating.</li>\n<li><code>emit</code> is a function that the check can use to change the value for subsequent checks and for the eventual output. (<a href=\"/docs/fieldval/Custom Check Functions/emit\">more info</a>)</li>\n</ul>\n<p>A check can be either a simple function or an object that implements <code>.check(value)</code> function.</p>\n",
+            "sections": [
+                {
+                    "name": "Parameters",
+                    "code": [
+                        {
+                            "contents": "var minimum = function(min_val, flags) {\n\n    var check = function(value) {\n        if (value < min_val) {\n            return {\n\t            error: 1000,\n\t            error_message: \"Value was below \" + min_val\n\t        }\n        }\n    }\n\n    if(flags){\n        //The check becomes part of the flag object, which is returned\n        flags.check = check;\n        return flags\n    }\n\n    return check;\n}\n\nvar check = minimum(14);"
+                        }
+                    ],
+                    "text": "<p>A check function must take a value and return an error. To make reusable checks that can be configured for each use using parameters, you must create a wrapper for the check.</p>\n<p>The example provided is a function that performs the same action as BasicVal.minimum.</p>\n<p><code>check</code> is now a function that will return an error if the value is less than <code>14</code>. This is because minimum is a wrapper that creates a function with access to the configuration parameters (<code>14</code> as <code>min_val</code> in this case).</p>\n<p><a href=\"/docs/fieldval/Flags\">Flags</a> are additional parameters. If <code>flags</code> is set then the check becomes a property of the <code>flags</code> object. The FieldVal library can use both an object that contains a <code>check</code> property and also a function directly.</p>\n"
+                },
+                {
+                    "name": "emit",
+                    "code": [
+                        {
+                            "contents": "var validator = new FieldVal({\n    \"my_money\": \"€7.54\"\n})\n \nvar my_money = validator.get(\"my_money\", \n    BasicVal.string(true), \n    BasicVal.prefix(\"€\"),\n    function(value, emit){\n     \n        emit(value.substring(1))\n \n    },\n    BasicVal.float({parse:true}),\n    BasicVal.minimum(5)\n);"
+                        }
+                    ],
+                    "text": "<p>The <code>emit</code> function allows a check to not just validate a value, but also modify it - an example use case is shown to the right.</p>\n<p><code>emit</code> is most useful when the data is manipulated significantly in order to perform further validation, such as splitting into an array or parsing numeric strings.</p>\n"
+                }
+            ]
+        },
+        {
+            "name": "BasicVal",
+            "text": "<p>BasicVal is a set of standard FieldVal <a href=\"/docs/fieldval/Check%20Functions\">check functions</a>. Checks accept <a href=\"/docs/fieldval/Flags\">flags</a> as arguments and return typical FieldVal <a href=\"/docs/fieldval/Errors\">errors</a>.</p>\n<p>BasicVal can be found at <code>FieldVal.BasicVal</code>.</p>\n",
+            "sections": [
+                {
+                    "name": "equal_to",
+                    "text": "<p><code>BasicVal.equal_to(desired_value, [flags])</code></p>\n<p>Checks if the value that is being validated is equal to the desired value.</p>\n"
+                },
+                {
+                    "name": "integer",
+                    "text": "<p><code>BasicVal.integer(required, [flags])</code></p>\n<p>Checks if the value is an integer. <code>required</code> specifies whether the check is required.</p>\n"
+                },
+                {
+                    "name": "number",
+                    "text": "<p><code>BasicVal.number(required, [flags])</code></p>\n<p>Checks if the value is a number, including floats.</p>\n"
+                },
+                {
+                    "name": "array",
+                    "text": "<p><code>BasicVal.array(required, [flags])</code></p>\n<p>Checks if the value is an array.</p>\n"
+                },
+                {
+                    "name": "object",
+                    "text": "<p><code>BasicVal.object(required, [flags])</code></p>\n<p>Checks if the value is an object.</p>\n"
+                },
+                {
+                    "name": "float",
+                    "text": "<p><code>BasicVal.float(required, [flags])</code></p>\n<p>Checks if the value is a float.</p>\n"
+                },
+                {
+                    "name": "boolean",
+                    "text": "<p><code>BasicVal.boolean(required, [flags])</code></p>\n<p>Checks if the value is a boolean.</p>\n"
+                },
+                {
+                    "name": "string",
+                    "text": "<p><code>BasicVal.string(required, [flags])</code></p>\n<p>Checks if the value is a string.</p>\n"
+                },
+                {
+                    "name": "length",
+                    "text": "<p><code>BasicVal.length(desired_length, [flags])</code></p>\n<p>Checks if the value has desired length.</p>\n"
+                },
+                {
+                    "name": "min_length",
+                    "text": "<p><code>BasicVal.min_length(min_length, [flags])</code></p>\n<p>Checks if length of the value is greater or equal to min_length.</p>\n"
+                },
+                {
+                    "name": "max_length",
+                    "text": "<p><code>BasicVal.max_length(max_length, [flags])</code></p>\n<p>Checks if length of the value is less or equal to min_length.</p>\n"
+                },
+                {
+                    "name": "no_whitespace",
+                    "text": "<p><code>BasicVal.no_whitespace([flags])</code></p>\n<p>Checks if there are no whitespaces in the value.</p>\n"
+                },
+                {
+                    "name": "minimum",
+                    "text": "<p><code>BasicVal.minimum(min_val, [flags])</code></p>\n<p>Checks if the value is greater or equal to min_val.</p>\n"
+                },
+                {
+                    "name": "maximum",
+                    "text": "<p><code>BasicVal.maximum(max_val, [flags])</code></p>\n<p>Checks if the value is less or equal to max_val.</p>\n"
+                },
+                {
+                    "name": "range",
+                    "text": "<p><code>BasicVal.range(min_val, max_val, [flags])</code></p>\n<p>Combines <a href=\"/docs/fieldval/BasicVal/minimum\">minimum</a> and <a href=\"/docs/fieldval/BasicVal/maximum\">maximum</a>.</p>\n"
+                },
+                {
+                    "name": "does_not_contain",
+                    "text": "<p><code>BasicVal.does_not_contain(characters, [flags])</code></p>\n<p>Checks if strings does not contain any of the provided characters. <code>characters</code> can be either one character or a list of characters.</p>\n"
+                },
+                {
+                    "name": "one_of",
+                    "text": "<p><code>BasicVal.one_of(desired_values, [flags])</code></p>\n<p>Checks if the value is equal to one of the desired_values. <code>desired_values</code> is an array.</p>\n"
+                },
+                {
+                    "name": "not_one_of",
+                    "text": "<p><code>BasicVal.not_one_of(undesired_values, [flags])</code></p>\n<p>Checks if the value is not equal to one of the undesired_values. <code>undesired_values</code> is an array.</p>\n"
+                },
+                {
+                    "name": "not_empty",
+                    "text": "<p><code>BasicVal.not_empty(trim, [flags])</code></p>\n<p>Checks if the string value is not empty. <code>trim</code> is a boolean specifying whether the string needs to be trimmed before the check.</p>\n"
+                },
+                {
+                    "name": "prefix",
+                    "text": "<p><code>BasicVal.each(on_each, [flags])</code></p>\n<p>Checks if the string value starts with the <code>desired_prefix</code>.</p>\n"
+                },
+                {
+                    "name": "start_with_letter",
+                    "text": "<p><code>BasicVal.start_with_letter([flags])</code></p>\n<p>Checks if the string value starts with a letter.</p>\n"
+                },
+                {
+                    "name": "suffix",
+                    "text": "<p><code>BasicVal.suffix(desired_suffix, [flags])</code></p>\n<p>Checks if the string value ends with the <code>desired_suffix</code>.</p>\n"
+                },
+                {
+                    "name": "each",
+                    "code": [
+                        {
+                            "type": "js",
+                            "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js",
+                            "contents": "//CODE\nvar validator = new FieldVal({\n\tan_array: [44, 56, 3]\n});\n\nvalidator.get(\n\t'an_array',\n\tBasicVal.array(true),\n\tBasicVal.each(function(val,index){\n\t\tvar error = BasicVal.integer().check(val); \n\t\tif(error)return error;\n\t\treturn BasicVal.minimum(40).check(val);\n\t})\n)\n\nconsole.log(JSON.stringify(validator.end(), null, 4));\n\n//OUTPUT\n{\n    \"invalid\": {\n        \"an_array\": {\n            \"invalid\": {\n                \"2\": {\n                    \"error\": 102,\n                    \"error_message\": \"Value is less than 40\"\n                }\n            },\n            \"error_message\": \"One or more errors.\",\n            \"error\": 5\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
+                        }
+                    ],
+                    "text": "<p><code>BasicVal.each(on_each, [flags])</code></p>\n<p>Iterates through the array value and calls <code>on_each</code> function on each value.</p>\n<p><code>on_each(value, index, emit)</code></p>\n<p>returns a FieldVal <a href=\"/docs/fieldval/Errors\">error</a> or null if there are no errors</p>\n"
+                },
+                {
+                    "name": "multiple",
+                    "code": [
+                        {
+                            "type": "js",
+                            "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js",
+                            "contents": "//CODE\nvar validator = new FieldVal({\n\tvalue: \"test\"\n});\n\nvalidator.get(\n\t'value',\n\tBasicVal.multiple([\n        BasicVal.integer(),\n        BasicVal.prefix(\"abc\")\n    ])\n)\n\nconsole.log(JSON.stringify(validator.end(), null, 4));\n\n//OUTPUT\n{\n    \"invalid\": {\n        \"value\": {\n            \"error\": 115,\n            \"error_message\": \"None of the options were valid.\"\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
+                        }
+                    ],
+                    "text": "<p><code>BasicVal.multiple(possibles, [flags])</code></p>\n<p>Validates the value with multiple checks. Only one of the checks need to pass for the value to be valid.</p>\n<p><code>possibles</code> is an array of multiple checks</p>\n"
+                },
+                {
+                    "name": "email",
+                    "text": "<p><code>BasicVal.email([flags])</code></p>\n<p>Checks if the string value is an email.</p>\n"
+                },
+                {
+                    "name": "url",
+                    "text": "<p><code>BasicVal.url([flags])</code></p>\n<p>Checks if the string value is a url.</p>\n"
                 }
             ]
         },
@@ -69,64 +309,18 @@
                         }
                     ],
                     "text": "<p>The <code>stop_on_error</code> flag indicates to a FieldVal validator whether or not the chain of checks should be halted if this check returns an error. This flag defaults to <code>true</code> because in most cases such as a string being passed to an integer check proceeded by a minimum check, the desired functionality would be to return a single error stating that the value was not an integer, rather than both the integer error and also an error stating that the value was below the specified limit.</p>\n<p>It can be useful to set <code>stop_on_error</code> to <code>false</code> if two checks are independent, e.g. having both a specific prefix and suffix. It would be best to return both errors rather than only inform the user that the suffix was invalid once they have corrected the prefix.</p>\n"
-                }
-            ]
-        },
-        {
-            "name": "Custom Check Functions",
-            "code": [
-                {
-                    "contents": "var my_check = function(value, emit){\n\n\tif(value!==\"My Exact Value\"){\n\t\treturn {\n\t\t\terror: 1000,\n\t\t\terror_message: \"I'm really picky. Enter 'My Exact Value'.\"\n\t\t}\n\t}\n\n}"
-                }
-            ],
-            "text": "<p>FieldVal checks are simple functions that take a value and an emit function and return an error if the value was invalid. If the value is valid, the function does not return anything.</p>\n<ul>\n<li><code>value</code> is the value that this check is validating.</li>\n<li><code>emit</code> is a function that the check can use to change the value for subsequent checks and for the eventual output. (<a href=\"/docs/fieldval/Custom Check Functions/emit\">more info</a>)</li>\n</ul>\n",
-            "sections": [
-                {
-                    "name": "Parameters",
-                    "code": [
-                        {
-                            "contents": "var minimum = function(min_val, flags) {\n\n    var check = function(value) {\n        if (value < min_val) {\n            return {\n\t            error: 1000,\n\t            error_message: \"Value was below \" + min_val\n\t        }\n        }\n    }\n\n    if(flags){\n        //The check becomes part of the flag object, which is returned\n        flags.check = check;\n        return flags\n    }\n\n    return check;\n}\n\nvar check = minimum(14);"
-                        }
-                    ],
-                    "text": "<p>A check function must take a value and return an error. To make reusable checks that can be configured for each use using parameters, you must create a wrapper for the check.</p>\n<p>The example provided is a function that performs the same action as BasicVal.minimum.</p>\n<p><code>check</code> is now a function that will return an error if the value is less than <code>14</code>. This is because minimum is a wrapper that creates a function with access to the configuration parameters (<code>14</code> as <code>min_val</code> in this case).</p>\n<p><a href=\"/docs/fieldval/Flags\">Flags</a> are additional parameters. If <code>flags</code> is set then the check becomes a property of the <code>flags</code> object. The FieldVal library can use both an object that contains a <code>check</code> property and also a function directly.</p>\n"
                 },
                 {
-                    "name": "emit",
+                    "name": "error",
                     "code": [
                         {
-                            "contents": "var validator = new FieldVal({\n    \"my_money\": \"€7.54\"\n})\n \nvar my_money = validator.get(\"my_money\", \n    BasicVal.string(true), \n    BasicVal.prefix(\"€\"),\n    function(value, emit){\n     \n        emit(value.substring(1))\n \n    },\n    BasicVal.float({parse:true}),\n    BasicVal.minimum(5)\n);"
+                            "type": "js",
+                            "runnable": true,
+                            "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js",
+                            "contents": "//CODE\nvar custom_error = {\n\terror: 1001,\n\terror_message: \"Custom integer error\"\n}\n\nBasicVal.integer(true, {\n\terror: custom_error\n}).check(\"test\")\n\n//OUTPUT\n{ error: 1001,\n  error_message: 'Custom integer error' }"
                         }
                     ],
-                    "text": "<p>The <code>emit</code> function allows a check to not just validate a value, but also modify it - an example use case is shown to the right.</p>\n<p><code>emit</code> is most useful when the data is manipulated significantly in order to perform further validation, such as splitting into an array or parsing numeric strings.</p>\n"
-                }
-            ]
-        },
-        {
-            "name": "Errors",
-            "code": [
-                {
-                    "contents": "{\n\t\"error_message\": \"A message describing the error\",\n\t\"error\": 1017//A number associated with this particular error\n}"
-                }
-            ],
-            "text": "<p>FieldVal use a standard error structure. The most basic error structure is provided as an example to the right.</p>\n<p>To avoid conflicting with FieldVal error numbers (that begin at 0), your error numbers should start at 1000.</p>\n",
-            "sections": [
-                {
-                    "name": "Object Errors",
-                    "code": [
-                        {
-                            "contents": "//Example input\n{\n\t\"my_integer\": \"Not an integer\",\n\t\"my_string\": 23,\n\t\"curveball\": \"Not expected!\"\n}\n\n//Example error\n{\n\t\"error_message\": \"One or more errors.\",\n\t\"error\": 0,\n\t\"invalid\": {\n\t\t\"my_string\": {\n\t\t\t\"error_message\": \"Incorrect field type. Expected string.\",\n\t\t\t\"error\": 2,\n\t\t\t\"expected\": \"string\",\n\t\t\t\"received\": \"number\"\n\t\t},\n\t\t\"my_integer\": {\n\t\t\t\"error_message\": \"Incorrect field type. Expected integer.\",\n\t\t\t\"error\": 2,\n\t\t\t\"expected\": \"integer\",\n\t\t\t\"received\": \"string\"\n\t\t}\n\t},\n\t\"missing\": {\n\t\t\"my_array\": {\n\t\t\t\"error_message\": \"Field missing.\",\n\t\t\t\"error\": 1\n\t\t}\n\t},\n\t\"unrecognized\": {\n\t\t\"curveball\": {\n\t\t\t\"error_message\": \"Unrecognized field.\",\n\t\t\t\"error\": 3\n\t\t}\n\t}\n}"
-                        }
-                    ],
-                    "text": "<p>FieldVal&#39;s error structure is designed to match the input structure on a per-key level. This is achieved by attaching each error to its appropriate key and building a hierarchical structure that can be easily navigated both visually and programmatically.</p>\n<p>There are three types of errors:</p>\n<ul>\n<li><p><code>invalid</code></p>\n<p>  These fields were provided, but there was something wrong with the values.</p>\n<ul>\n<li><code>my_integer</code> isn&#39;t an integer - it&#39;s a string</li>\n<li><code>my_string</code> isn&#39;t a string - it&#39;s a integer</li>\n</ul>\n</li>\n<li><p><code>missing</code></p>\n<p>  These fields were indicated as required during validation, but they aren&#39;t in the data.</p>\n<ul>\n<li><code>my_array</code> wasn&#39;t present</li>\n</ul>\n</li>\n<li><p><code>unrecognized</code></p>\n<p>  When validation ended, these fields hadn&#39;t been looked for, but they were sent.</p>\n<ul>\n<li><code>curveball</code> wasn&#39;t a valid field to send</li>\n</ul>\n</li>\n</ul>\n"
-                },
-                {
-                    "name": "Multiple Errors",
-                    "code": [
-                        {
-                            "contents": "{\n\t\"error\": 4,\n\t\"error_message\": \"Multiple errors.\",\n\t\"errors\": [\n\t\t{\n\t\t\t\"error\": 106,\n\t\t\t\"error_message\": \"Value does not have prefix: ABC\"\n\t\t},\n\t\t{\n\t\t\t\"error\": 110,\n\t\t\t\"error_message\": \"Value does not have suffix: XYZ\"\n\t\t}\n\t]\n}"
-                        }
-                    ],
-                    "text": "<p>FieldVal&#39;s default behaviour is to stop checking a field after the first error is found, but sometimes it&#39;s useful to report multiple errors for the same key. In this case, the errors are contained with an array in the <code>errors</code> key. The structure is shown to the right.</p>\n"
+                    "text": "<p>The <code>error</code> flag overrides standard error for <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> checks.</p>\n"
                 }
             ]
         }

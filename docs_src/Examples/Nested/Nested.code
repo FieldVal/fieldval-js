@@ -1,0 +1,11 @@
+var validator = new FieldVal(val);
+validator.get("name", BasicVal.string(true));
+validator.get("email", BasicVal.string(true), BasicVal.email());
+validator.get("enquiry", BasicVal.object(true), function(enquiry){
+    var inner_validator = new FieldVal(enquiry);
+    inner_validator.get("type", BasicVal.string(true), BasicVal.one_of(["One","Two"]))
+    inner_validator.get("message", BasicVal.string(true))
+    return inner_validator.end();
+});
+
+validator.end();

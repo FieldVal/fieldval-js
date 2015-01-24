@@ -103,7 +103,7 @@ describe('FieldVal', function() {
                         }
                     },
                     error_message: 'One or more errors.',
-                    error: 0 
+                    error: 5 
                 });
 
                 done();
@@ -156,7 +156,7 @@ describe('FieldVal', function() {
                             }
                         },
                         "error_message":"One or more errors.",
-                        "error": 0
+                        "error": 5
                     }, result);
                     done();
                 })
@@ -391,7 +391,7 @@ describe('FieldVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error": 0
+                "error": 5
             },validator.end())
         })
 
@@ -440,7 +440,7 @@ describe('FieldVal', function() {
                         }
                     },
                     "error_message":"One or more errors.",
-                    "error": 0
+                    "error": 5
                 }, response);
 
                 done();
@@ -524,7 +524,7 @@ describe('FieldVal', function() {
                         }
                     },
                     "error_message":"One or more errors.",
-                    "error": 0
+                    "error": 5
                 }, response);
 
                 done();
@@ -568,7 +568,7 @@ describe('FieldVal', function() {
                         }
                     },
                     "error_message":"One or more errors.",
-                    "error": 0
+                    "error": 5
                 }, response);
 
                 done();
@@ -627,7 +627,7 @@ describe('FieldVal', function() {
                         }
                     },
                     "error_message":"One or more errors.",
-                    "error": 0
+                    "error": 5
                 }, response);
 
                 done();
@@ -652,7 +652,7 @@ describe('FieldVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error": 0
+                "error": 5
             },validator.end())
         })
 
@@ -671,7 +671,7 @@ describe('FieldVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error": 0
+                "error": 5
             },output)
         })
 
@@ -691,7 +691,7 @@ describe('FieldVal', function() {
                         }
                     },
                     "error_message":"One or more errors.",
-                    "error": 0
+                    "error": 5
                 })
             });
 
@@ -705,7 +705,7 @@ describe('FieldVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error": 0
+                "error": 5
             },output)
         })
 
@@ -770,7 +770,7 @@ describe('FieldVal', function() {
                     }
                 },
                 error_message: 'One or more errors.',
-                error: 0
+                error: 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -796,7 +796,7 @@ describe('FieldVal', function() {
                     }
                 },
                 error_message: 'One or more errors.',
-                error: 0
+                error: 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -824,7 +824,7 @@ describe('FieldVal', function() {
                     }
                 },
                 error_message: 'One or more errors.',
-                error: 0
+                error: 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -847,7 +847,7 @@ describe('FieldVal', function() {
                     }
                 },
                 error_message: 'One or more errors.',
-                error: 0
+                error: 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -965,7 +965,7 @@ describe('FieldVal', function() {
                     }
                 },
                 error_message: 'One or more errors.',
-                error: 0
+                error: 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -987,7 +987,7 @@ describe('FieldVal', function() {
                     }
                 },
                 error_message: 'One or more errors.',
-                error: 0
+                error: 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -1030,7 +1030,7 @@ describe('FieldVal', function() {
                     }
                 },
                 error_message: 'One or more errors.',
-                error: 0
+                error: 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -1052,12 +1052,12 @@ describe('FieldVal', function() {
                                 error_message: 'My custom error'
                             }
                         },
-                        error: 0,
+                        error: 5,
                         error_message: "One or more errors."
                     }
                 },
                 error_message: 'One or more errors.',
-                error: 0
+                error: 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -1121,19 +1121,19 @@ describe('FieldVal', function() {
                                         }
                                     },
                                     "error_message": "One or more errors.",
-                                    "error": 0
+                                    "error": 5
                                 }
                             },
                             "error_message": "One or more errors.",
-                            "error": 0
+                            "error": 5
                         }
                     },
                     "error_message": "One or more errors.",
-                    "error": 0
+                    "error": 5
                 }
             },
             "error_message": "One or more errors.",
-            "error": 0
+            "error": 5
         });
         var get_example_error = function(){
             return JSON.parse(example_error);
@@ -1159,11 +1159,11 @@ describe('FieldVal', function() {
                             }
                         },
                         "error_message": "One or more errors.",
-                        "error": 0
+                        "error": 5
                     }
                 },
                 "error_message": "One or more errors.",
-                "error": 0
+                "error": 5
             },dug.end())
 
 
@@ -1185,7 +1185,7 @@ describe('FieldVal', function() {
                         }
                     },
                     "error_message":"One or more errors.",
-                    "error":0
+                    "error":5
                 }
             );
         })
@@ -1205,7 +1205,7 @@ describe('FieldVal', function() {
                         }
                     },
                     "error_message":"One or more errors.",
-                    "error":0
+                    "error":5
                 }
             );
         })
@@ -1251,7 +1251,7 @@ describe('FieldVal', function() {
                     }
                 },
                 "error_message": "One or more errors.",
-                "error": 0
+                "error": 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -1268,7 +1268,7 @@ describe('FieldVal', function() {
                     }
                 },
                 "error_message": "One or more errors.",
-                "error": 0
+                "error": 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -1296,7 +1296,7 @@ describe('FieldVal', function() {
                             }
                         },
                         "error_message": "One or more errors.",
-                        "error": 0
+                        "error": 5
                     }
                 ]
             };

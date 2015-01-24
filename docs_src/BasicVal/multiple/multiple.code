@@ -1,0 +1,26 @@
+//CODE
+var validator = new FieldVal({
+	value: "test"
+});
+
+validator.get(
+	'value',
+	BasicVal.multiple([
+        BasicVal.integer(),
+        BasicVal.prefix("abc")
+    ])
+)
+
+console.log(JSON.stringify(validator.end(), null, 4));
+
+//OUTPUT
+{
+    "invalid": {
+        "value": {
+            "error": 115,
+            "error_message": "None of the options were valid."
+        }
+    },
+    "error_message": "One or more errors.",
+    "error": 5
+}

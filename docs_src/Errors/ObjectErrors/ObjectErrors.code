@@ -8,7 +8,7 @@
 //Example error
 {
 	"error_message": "One or more errors.",
-	"error": 0,
+	"error": 5,
 	"invalid": {
 		"my_string": {
 			"error_message": "Incorrect field type. Expected string.",

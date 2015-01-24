@@ -54,7 +54,7 @@ describe('BasicVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error":0
+                "error":5
             }, my_validator.end());
         })
     })
@@ -115,11 +115,11 @@ describe('BasicVal', function() {
                             }
                         },
                         "error_message": "One or more errors.",
-                        "error": 0
+                        "error": 5
                     }
                 },
                 "error_message": "One or more errors.",
-                "error": 0
+                "error": 5
             }, val_error);
         })
 
@@ -281,7 +281,7 @@ describe('BasicVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error":0
+                "error":5
             }, my_validator.end());
         })
     })
@@ -317,7 +317,7 @@ describe('BasicVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error":0
+                "error":5
             }, my_validator.end());
         })
     })
@@ -345,7 +345,7 @@ describe('BasicVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error":0
+                "error":5
             }, my_validator.end());
         })
     })
@@ -381,7 +381,7 @@ describe('BasicVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error":0
+                "error":5
             }, my_validator.end());
         })
     })
@@ -408,7 +408,7 @@ describe('BasicVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error": 0
+                "error": 5
             }, my_validator.end());
         })
 
@@ -510,7 +510,7 @@ describe('BasicVal', function() {
                     }
                 },
                 "error_message":"One or more errors.",
-                "error":0
+                "error":5
             }, my_validator.end());
         })
     })
@@ -556,7 +556,7 @@ describe('BasicVal', function() {
                 "my_float": "43.5"
             })
             assert.strictEqual(undefined, my_validator.get("my_float", bval.float(true)));
-            assert.deepEqual({"invalid":{"my_float":{"error_message":"Incorrect field type. Expected float.","error":2,"expected":"float","received":"string"}},"error_message":"One or more errors.","error":0}, my_validator.end());
+            assert.deepEqual({"invalid":{"my_float":{"error_message":"Incorrect field type. Expected float.","error":2,"expected":"float","received":"string"}},"error_message":"One or more errors.","error":5}, my_validator.end());
         })
 
         it('should create a custom error when one is provided (float)', function() {
@@ -572,7 +572,7 @@ describe('BasicVal', function() {
                     }
                 })
             ));
-            assert.deepEqual({"invalid":{"my_float":{"error":1000,"error_message":"Please enter a number"}},"error_message":"One or more errors.","error":0}, my_validator.end());
+            assert.deepEqual({"invalid":{"my_float":{"error":1000,"error_message":"Please enter a number"}},"error_message":"One or more errors.","error":5}, my_validator.end());
         })
     })
 
@@ -591,7 +591,7 @@ describe('BasicVal', function() {
                     }
                 })
             ));
-            assert.deepEqual({"invalid":{"my_string":{"error":1001,"error_message":"Please enter text"}},"error_message":"One or more errors.","error":0}, my_validator.end());
+            assert.deepEqual({"invalid":{"my_string":{"error":1001,"error_message":"Please enter text"}},"error_message":"One or more errors.","error":5}, my_validator.end());
         })
 
         it('should return null when the value is the wrong type', function() {
@@ -599,7 +599,7 @@ describe('BasicVal', function() {
                 "my_string": 13
             })
             assert.strictEqual(undefined, my_validator.get("my_string", bval.string(true)));
-            assert.deepEqual({"invalid":{"my_string":{"error_message":"Incorrect field type. Expected string.","error":2,"expected":"string","received":"number"}},"error_message":"One or more errors.","error":0}, my_validator.end())
+            assert.deepEqual({"invalid":{"my_string":{"error_message":"Incorrect field type. Expected string.","error":2,"expected":"string","received":"number"}},"error_message":"One or more errors.","error":5}, my_validator.end())
         })
     })
 })

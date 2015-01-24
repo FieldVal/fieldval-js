@@ -1,5 +1,5 @@
 var FieldVal = require('fieldval');
-var BasicVal = require('fieldval-basicval');
+var BasicVal = FieldVal.BasicVal;
 
 var validator = new FieldVal({
 	"my_key": 37

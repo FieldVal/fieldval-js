@@ -1,0 +1,1 @@
+Nested objects can be validated using an inner_validator in a [custom check function](/docs/fieldval/Check%20Functions) that is validating the object.

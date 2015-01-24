@@ -1,0 +1,1 @@
+The ```error``` flag overrides standard error for [BasicVal](/docs/fieldval/BasicVal) checks.
