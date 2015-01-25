@@ -12,7 +12,7 @@ describe('BasicVal', function() {
             assert.strictEqual(null, my_validator.end());
         })
 
-        it('should not continue if required=false', function(){
+        it('should not continue if required=false and the value is missing', function(){
             var my_validator = new FieldVal({
                 "another_value": 17
             })
@@ -493,15 +493,62 @@ describe('BasicVal', function() {
             var my_validator = new FieldVal({
                 "my_email": "example-user@test.com"
             })
-            assert.equal("example-user@test.com", my_validator.get("my_email", bval.string(true), bval.email({})));
-            assert.strictEqual(null, my_validator.end());
+            var email = my_validator.get("my_email", bval.email());
+            assert.deepEqual(null, my_validator.end());
+            assert.equal("example-user@test.com", email);
+        })
+
+        it('should return no errors if the key requested is not present', function() {
+            var my_validator = new FieldVal({
+                //No fields
+            })
+            var email = my_validator.get("my_email", bval.email(false));
+            assert.deepEqual(null, my_validator.end());
+            assert.strictEqual(undefined, email);
+        })
+
+        it('should return a required error if the key is missing and required is set to true', function() {
+            var my_validator = new FieldVal({
+                //No fields
+            })
+            var email = my_validator.get("my_email", bval.email({required:true}));
+            assert.deepEqual({
+                "missing":{
+                    "my_email":{
+                        "error_message":"Field missing.",
+                        "error":1
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error":5
+            }, my_validator.end());
+            assert.strictEqual(undefined, email);
+        })
+
+        it('should create an error when a type other than a string is present', function() {
+            var my_validator = new FieldVal({
+                "my_email": 123
+            })
+            assert.strictEqual(undefined, my_validator.get("my_email", bval.email(true)));
+            assert.deepEqual({
+                "invalid":{
+                    "my_email":{
+                        "error":2,
+                        "error_message":"Incorrect field type. Expected string.",
+                        "expected": "string",
+                        "received": "number"
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error":5
+            }, my_validator.end());
         })
 
         it('should create an error when a string of invalid syntax is present', function() {
             var my_validator = new FieldVal({
                 "my_email": "example@user"
             })
-            assert.strictEqual(undefined, my_validator.get("my_email", bval.string(true), bval.email()));
+            assert.strictEqual(undefined, my_validator.get("my_email", bval.email(true)));
             assert.deepEqual({
                 "invalid":{
                     "my_email":{
