@@ -11,7 +11,7 @@
         "runnable_path": "FieldVal_runnable.code",
         "type": "js",
         "runnable": true,
-        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
     }],
     "sections": [
         {
@@ -53,7 +53,10 @@
                         "runnable": true, "demo": true,
                         "css_external": "__CURRENT_DOMAIN__/demo_files/minimal.css",
                         "js_library": "jquery",
-                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                        "js_external": [
+                            "__CURRENT_DOMAIN__/demo_files/fieldval.js",
+                            "__CURRENT_DOMAIN__/demo_files/fieldval-ui.js"
+                        ]
                     }]
                 },
                 {
@@ -112,118 +115,137 @@
             "text": "BasicVal/BasicVal.md",
             "sections" : [
                 {
-                    "name": "equal_to",
-                    "text": "BasicVal/equal_to/equal_to.md"
+                    "name": "Type Checks",
+                    "text": "BasicVal/TypeChecks/TypeChecks.md",
+                    "sections": [
+                        {
+                            "name": "array",
+                            "text": "BasicVal/TypeChecks/array/array.md"
+                        },
+                        {
+                            "name": "boolean",
+                            "text": "BasicVal/TypeChecks/boolean/boolean.md"
+                        },
+                        {
+                            "name": "email",
+                            "text": "BasicVal/TypeChecks/email/email.md"
+                        },
+                        {
+                            "name": "integer",
+                            "text": "BasicVal/TypeChecks/integer/integer.md"
+                        },
+                        {
+                            "name": "number",
+                            "text": "BasicVal/TypeChecks/number/number.md"
+                        },
+                        {
+                            "name": "object",
+                            "text": "BasicVal/TypeChecks/object/object.md"
+                        },
+                        {
+                            "name": "string",
+                            "text": "BasicVal/TypeChecks/string/string.md"
+                        },
+                        {
+                            "name": "url",
+                            "text": "BasicVal/TypeChecks/url/url.md"
+                        }
+                    ]
                 },
                 {
-                    "name": "integer",
-                    "text": "BasicVal/integer/integer.md"
-                },
-                {
-                    "name": "number",
-                    "text": "BasicVal/number/number.md"
-                },
-                {
-                    "name": "array",
-                    "text": "BasicVal/array/array.md"
-                },
-                {
-                    "name": "object",
-                    "text": "BasicVal/object/object.md"
-                },
-                {
-                    "name": "float",
-                    "text": "BasicVal/float/float.md"
-                },
-                {
-                    "name": "boolean",
-                    "text": "BasicVal/boolean/boolean.md"
-                },
-                {
-                    "name": "string",
-                    "text": "BasicVal/string/string.md"
-                },
-                {
-                    "name": "length",
-                    "text": "BasicVal/length/length.md"
-                },
-                {
-                    "name": "min_length",
-                    "text": "BasicVal/min_length/min_length.md"
-                },
-                {
-                    "name": "max_length",
-                    "text": "BasicVal/max_length/max_length.md"
-                },
-                {
-                    "name": "no_whitespace",
-                    "text": "BasicVal/no_whitespace/no_whitespace.md"
-                },
-                {
-                    "name": "minimum",
-                    "text": "BasicVal/minimum/minimum.md"
-                },
-                {
-                    "name": "maximum",
-                    "text": "BasicVal/maximum/maximum.md"
-                },
-                {
-                    "name": "range",
-                    "text": "BasicVal/range/range.md"
-                },
-                {
-                    "name": "does_not_contain",
-                    "text": "BasicVal/does_not_contain/does_not_contain.md"
-                },
-                {
-                    "name": "one_of",
-                    "text": "BasicVal/one_of/one_of.md"
-                },
-                {
-                    "name": "not_one_of",
-                    "text": "BasicVal/not_one_of/not_one_of.md"
-                },
-                {
-                    "name": "not_empty",
-                    "text": "BasicVal/not_empty/not_empty.md"
-                },
-                {
-                    "name": "prefix",
-                    "text": "BasicVal/prefix/prefix.md"
-                },
-                {
-                    "name": "start_with_letter",
-                    "text": "BasicVal/start_with_letter/start_with_letter.md"
-                },
-                {
-                    "name": "suffix",
-                    "text": "BasicVal/suffix/suffix.md"
-                },
-                {
-                    "name": "each",
-                    "text": "BasicVal/each/each.md",
-                    "code": [{
-                        "path": "BasicVal/each/each.code",
-                        "type": "js",
-                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
-                    }]
-                },
-                {
-                    "name": "multiple",
-                    "text": "BasicVal/multiple/multiple.md",
-                    "code": [{
-                        "path": "BasicVal/multiple/multiple.code",
-                        "type": "js",
-                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
-                    }]
-                },
-                {
-                    "name": "email",
-                    "text": "BasicVal/email/email.md"
-                },
-                {
-                    "name": "url",
-                    "text": "BasicVal/url/url.md"
+                    "name": "Other Checks",
+                    "sections": [
+                        {
+                            "name": "date",
+                            "text": "BasicVal/OtherChecks/date/date.md"
+                        },
+                        {
+                            "name": "date_format",
+                            "text": "BasicVal/OtherChecks/date_format/date_format.md"
+                        },
+                        {
+                            "name": "does_not_contain",
+                            "text": "BasicVal/OtherChecks/does_not_contain/does_not_contain.md"
+                        },
+                        {
+                            "name": "each",
+                            "text": "BasicVal/OtherChecks/each/each.md",
+                            "code": [
+                                {
+                                    "path": "BasicVal/OtherChecks/each/each.code",
+                                    "type": "js",
+                                    "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "equal_to",
+                            "text": "BasicVal/OtherChecks/equal_to/equal_to.md"
+                        },
+                        {
+                            "name": "length",
+                            "text": "BasicVal/OtherChecks/length/length.md"
+                        },
+                        {
+                            "name": "max_length",
+                            "text": "BasicVal/OtherChecks/max_length/max_length.md"
+                        },
+                        {
+                            "name": "maximum",
+                            "text": "BasicVal/OtherChecks/maximum/maximum.md"
+                        },
+                        {
+                            "name": "min_length",
+                            "text": "BasicVal/OtherChecks/min_length/min_length.md"
+                        },
+                        {
+                            "name": "minimum",
+                            "text": "BasicVal/OtherChecks/minimum/minimum.md"
+                        },
+                        {
+                            "name": "multiple",
+                            "text": "BasicVal/OtherChecks/multiple/multiple.md",
+                            "code": [
+                                {
+                                    "path": "BasicVal/OtherChecks/multiple/multiple.code",
+                                    "type": "js",
+                                    "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "no_whitespace",
+                            "text": "BasicVal/OtherChecks/no_whitespace/no_whitespace.md"
+                        },
+                        {
+                            "name": "not_empty",
+                            "text": "BasicVal/OtherChecks/not_empty/not_empty.md"
+                        },
+                        {
+                            "name": "not_one_of",
+                            "text": "BasicVal/OtherChecks/not_one_of/not_one_of.md"
+                        },
+                        {
+                            "name": "one_of",
+                            "text": "BasicVal/OtherChecks/one_of/one_of.md"
+                        },
+                        {
+                            "name": "prefix",
+                            "text": "BasicVal/OtherChecks/prefix/prefix.md"
+                        },
+                        {
+                            "name": "range",
+                            "text": "BasicVal/OtherChecks/range/range.md"
+                        },
+                        {
+                            "name": "start_with_letter",
+                            "text": "BasicVal/OtherChecks/start_with_letter/start_with_letter.md"
+                        },
+                        {
+                            "name": "suffix",
+                            "text": "BasicVal/OtherChecks/suffix/suffix.md"
+                        }
+                    ]
                 }
             ]
         },
@@ -243,7 +265,7 @@
                         "path": "Flags/stop_on_error/stop_on_error.code",
                         "type": "js",
                         "runnable": true,
-                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
                     }
                 },
                 {
@@ -253,7 +275,7 @@
                         "path": "Flags/error/error.code",
                         "type": "js",
                         "runnable": true,
-                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval-all.js"
+                        "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
                     }
                 }
             ]
