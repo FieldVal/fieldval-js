@@ -166,6 +166,9 @@ var DateVal = (function(){
                     for(var n = 0; n < max; n++){
                         var character = value[i + n];
                         if(character===undefined){
+                            if(n<min){
+                                error = true;
+                            }
                             break;
                         }
                         var char_code = character.charCodeAt(0);

@@ -802,12 +802,11 @@ var FieldVal = (function(){
 
         return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
     };
-
-    @import("./BasicVal.js");
     @import("./DateVal.js");
-
-    FieldVal.BasicVal = BasicVal;
+    @import("./BasicVal.js");
+    
     FieldVal.DateVal = DateVal;
+    FieldVal.BasicVal = BasicVal;
 
     return FieldVal;
 }).call();

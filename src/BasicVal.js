@@ -473,6 +473,8 @@ var BasicVal = (function(){
                 check: check
             };
         },
+        date: DateVal.date,
+        date_format: DateVal.date_format,
         each: function(on_each, flags) {
             var check = function(array, stop) {
                 var validator = new FieldVal(null);
