@@ -489,7 +489,7 @@ var FieldVal = (function(){
                     desired_type = parsed_int;
                     desired_type = "number";
                 }
-            } else if (desired_type === "float" || desired_type === "number") {
+            } else if (desired_type === "number") {
                 var parsed_float = parseFloat(value, 10);
                 if (!isNaN(parsed_float) && (parsed_float.toString()).length === (value.toString()).length) {
                     value = parsed_float;
@@ -982,9 +982,6 @@ var FieldVal = (function(){
         },
         object: function(required, flags){
             return FieldVal.type("object",BasicVal.merge_required_and_flags(required, flags));
-        },
-        float: function(required, flags){
-            return FieldVal.type("float",BasicVal.merge_required_and_flags(required, flags));
         },
         boolean: function(required, flags){
             return FieldVal.type("boolean",BasicVal.merge_required_and_flags(required, flags));
