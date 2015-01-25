@@ -489,7 +489,7 @@ var FieldVal = (function(){
                     desired_type = parsed_int;
                     desired_type = "number";
                 }
-            } else if (desired_type === "float" || desired_type === "number") {
+            } else if (desired_type === "number") {
                 var parsed_float = parseFloat(value, 10);
                 if (!isNaN(parsed_float) && (parsed_float.toString()).length === (value.toString()).length) {
                     value = parsed_float;
@@ -802,12 +802,11 @@ var FieldVal = (function(){
 
         return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
     };
-
-    @import("./BasicVal.js");
     @import("./DateVal.js");
-
-    FieldVal.BasicVal = BasicVal;
+    @import("./BasicVal.js");
+    
     FieldVal.DateVal = DateVal;
+    FieldVal.BasicVal = BasicVal;
 
     return FieldVal;
 }).call();

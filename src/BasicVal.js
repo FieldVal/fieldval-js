@@ -178,9 +178,6 @@ var BasicVal = (function(){
         object: function(required, flags){
             return FieldVal.type("object",BasicVal.merge_required_and_flags(required, flags));
         },
-        float: function(required, flags){
-            return FieldVal.type("float",BasicVal.merge_required_and_flags(required, flags));
-        },
         boolean: function(required, flags){
             return FieldVal.type("boolean",BasicVal.merge_required_and_flags(required, flags));
         },
@@ -476,6 +473,8 @@ var BasicVal = (function(){
                 check: check
             };
         },
+        date: DateVal.date,
+        date_format: DateVal.date_format,
         each: function(on_each, flags) {
             var check = function(array, stop) {
                 var validator = new FieldVal(null);
@@ -658,8 +657,12 @@ var BasicVal = (function(){
                 check: check
             };
         },
-        email: function(flags){
+        email: function(required, flags){
+            flags = BasicVal.merge_required_and_flags(required, flags);
             var check = function(value) {
+                var string_error = BasicVal.string(flags).check(value);
+                if(string_error!==undefined) return string_error;
+
                 var re = BasicVal.email_regex;
                 if(!re.test(value)){
                     return FieldVal.create_error(BasicVal.errors.invalid_email, flags);
@@ -673,8 +676,12 @@ var BasicVal = (function(){
                 check: check
             };
         },
-        url: function(flags){
+        url: function(required, flags){
+            flags = BasicVal.merge_required_and_flags(required, flags);
             var check = function(value) {
+                var string_error = BasicVal.string(flags).check(value);
+                if(string_error!==undefined) return string_error;
+                
                 var re = BasicVal.url_regex;
                 if(!re.test(value)){
                     return FieldVal.create_error(BasicVal.errors.invalid_url, flags);

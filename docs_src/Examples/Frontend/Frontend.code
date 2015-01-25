@@ -1,7 +1,7 @@
 function validate_form(data) {
 	var validator = new FieldVal(data);
 	validator.get("name", BasicVal.string(true));
-	validator.get("email", BasicVal.string(true), BasicVal.email());
+	validator.get("email", BasicVal.email(true));
 	return validator.end();
 }
 

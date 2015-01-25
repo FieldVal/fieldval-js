@@ -1,0 +1,21 @@
+//Examples
+
+DateVal.date("yyyy/MM/dd").check("2014/13/12")
+//Output
+{
+	error: 112,
+ 	error_message: 'Invalid date.' 
+}
+
+
+DateVal.date("yyyy/MM/dd").check("2014-12-12")
+//Output
+{
+	error: 111,
+ 	error_message: 'Invalid date format.'
+}
+
+
+DateVal.date("yyyy-MM-dd").check("2014-12-12")
+//Output (no errors)
+undefined 
