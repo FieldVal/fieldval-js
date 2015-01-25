@@ -489,7 +489,7 @@ var FieldVal = (function(){
                     desired_type = parsed_int;
                     desired_type = "number";
                 }
-            } else if (desired_type === "float" || desired_type === "number") {
+            } else if (desired_type === "number") {
                 var parsed_float = parseFloat(value, 10);
                 if (!isNaN(parsed_float) && (parsed_float.toString()).length === (value.toString()).length) {
                     value = parsed_float;

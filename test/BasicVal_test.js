@@ -588,38 +588,38 @@ describe('BasicVal', function() {
         })
     })
 
-    describe('float()', function() {
+    describe('number()', function() {
 
-        it('should return a float when an float is requested and the value is a float string and parse flag is true', function() {
+        it('should return a number when an number is requested and the value is a number string and parse flag is true', function() {
             var my_validator = new FieldVal({
-                "my_float": "43.5"
+                "my_number": "43.5"
             })
-            assert.equal(43.5, my_validator.get("my_float", bval.float(true, {parse: true})));
+            assert.equal(43.5, my_validator.get("my_number", bval.number(true, {parse: true})));
             assert.strictEqual(null, my_validator.end());
         })
 
-        it('should create an error when an float is requested and the value is a float string, but parse flag is not set to true', function() {
+        it('should create an error when an number is requested and the value is a number string, but parse flag is not set to true', function() {
             var my_validator = new FieldVal({
-                "my_float": "43.5"
+                "my_number": "43.5"
             })
-            assert.strictEqual(undefined, my_validator.get("my_float", bval.float(true)));
-            assert.deepEqual({"invalid":{"my_float":{"error_message":"Incorrect field type. Expected float.","error":2,"expected":"float","received":"string"}},"error_message":"One or more errors.","error":5}, my_validator.end());
+            assert.strictEqual(undefined, my_validator.get("my_number", bval.number(true)));
+            assert.deepEqual({"invalid":{"my_number":{"error_message":"Incorrect field type. Expected number.","error":2,"expected":"number","received":"string"}},"error_message":"One or more errors.","error":5}, my_validator.end());
         })
 
-        it('should create a custom error when one is provided (float)', function() {
+        it('should create a custom error when one is provided (number)', function() {
             var my_validator = new FieldVal({
-                "my_float": "42"
+                "my_number": "42"
             })
             assert.strictEqual(undefined, my_validator.get(
-                "my_float", 
-                bval.float(true, {
+                "my_number", 
+                bval.number(true, {
                     error:{
                         error: 1000,
                         error_message: "Please enter a number"
                     }
                 })
             ));
-            assert.deepEqual({"invalid":{"my_float":{"error":1000,"error_message":"Please enter a number"}},"error_message":"One or more errors.","error":5}, my_validator.end());
+            assert.deepEqual({"invalid":{"my_number":{"error":1000,"error_message":"Please enter a number"}},"error_message":"One or more errors.","error":5}, my_validator.end());
         })
     })
 

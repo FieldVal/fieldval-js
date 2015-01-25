@@ -178,9 +178,6 @@ var BasicVal = (function(){
         object: function(required, flags){
             return FieldVal.type("object",BasicVal.merge_required_and_flags(required, flags));
         },
-        float: function(required, flags){
-            return FieldVal.type("float",BasicVal.merge_required_and_flags(required, flags));
-        },
         boolean: function(required, flags){
             return FieldVal.type("boolean",BasicVal.merge_required_and_flags(required, flags));
         },
