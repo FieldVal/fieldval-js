@@ -15,7 +15,7 @@ describe('DateVal', function() {
                 "my_date_6": "07/30/14",
                 "my_date_7": "30/07/14",
                 "my_date_8": "29/02/04",
-                "my_date_9": "29/05/2014 15:45:12"
+                "my_date_9": "29/05/2014 15:45:12",
             })
 
             assert.equal("04/07/2014", my_validator.get("my_date_1", BasicVal.string(true), DateVal.date("dd/MM/yyyy")));
@@ -40,7 +40,8 @@ describe('DateVal', function() {
                 "my_date_6": "07",
                 "my_date_7": "a",
                 "my_date_8": "()",
-                "my_date_9": "-:/ "
+                "my_date_9": "-:/ ",
+                "my_date_10": "2012-12-2"
             })
 
             assert.equal(undefined, my_validator.get("my_date_1", BasicVal.string(true), DateVal.date("dd/MM/yyyy")));
@@ -52,6 +53,7 @@ describe('DateVal', function() {
             assert.equal(undefined, my_validator.get("my_date_7", BasicVal.string(true), DateVal.date("dd/MM/yy")));
             assert.equal(undefined, my_validator.get("my_date_8", BasicVal.string(true), DateVal.date("dd/MM/yyyy")));
             assert.equal(undefined, my_validator.get("my_date_9", BasicVal.string(true), DateVal.date("dd/MM/yyyy hh:mm:ss")));
+            assert.equal(undefined, my_validator.get("my_date_10", BasicVal.string(true), DateVal.date("yyyy-MM-dd")));
             assert.deepEqual({
                 "invalid": {
                     "my_date_1": {
@@ -87,6 +89,10 @@ describe('DateVal', function() {
                         "error_message": "Invalid date format."
                     },
                     "my_date_9": {
+                        "error": 111,
+                        "error_message": "Invalid date format."
+                    },
+                    "my_date_10": {
                         "error": 111,
                         "error_message": "Invalid date format."
                     }
