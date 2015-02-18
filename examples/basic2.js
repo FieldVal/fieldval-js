@@ -1,5 +1,6 @@
-var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
+//Import FieldVal and BasicVal
+var FieldVal = require('../fieldval')
+var bval = FieldVal.BasicVal;
 
 var my_data = {
 	"my_integer": 18,
@@ -15,7 +16,7 @@ var validator = new FieldVal(my_data);
 
 validator.get('my_string', bval.string(true), bval.prefix("ABC", {stop_on_error: false}), bval.suffix("XYZ"));
 
-var my_value = validator.get("my_value", bval.float(true, {parse: true}), function(value, emit){
+var my_value = validator.get("my_value", bval.number(true, {parse: true}), function(value, emit){
 	if(value<500){
 		emit(Math.floor(value));
 	} else {

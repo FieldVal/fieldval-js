@@ -1,6 +1,5 @@
-var logger = require('tracer').console();
-var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
+var FieldVal = require('../fieldval')
+var bval = FieldVal.BasicVal;
 
 console.log('=============\n\
 This example shows custom check usage of FieldVal.js\n\
@@ -39,7 +38,7 @@ var my_custom_check = function(value,emit){
 	var error = bval.integer(true, {parse:true}).check(suffix,function(int_value){
 		number = int_value;
 	}); if(error)return error;
-	var error = bval.minimum(0)(number); if(error) return error;
+	var error = bval.minimum(0).check(number); if(error) return error;
 
 	emit(number);//Output the numeric value of the suffix of the string
 }

@@ -1,85 +1,85 @@
 var FieldVal = require('../fieldval');
 var bval = FieldVal.BasicVal;
-var assert = require("assert")
+var assert = require('assert')
 
 describe('FieldVal', function() {
     describe('constructor', function() {
         it('should return an object if constructed with an empty object', function() {
-            assert.equal("object", typeof new FieldVal({}));
+            assert.equal('object', typeof new FieldVal({}));
         })
 
         it('should return an object if constructed with a null parameter', function() {
-            assert.equal("object", typeof new FieldVal(null));
+            assert.equal('object', typeof new FieldVal(null));
         })
     })
     describe('get()', function() {
         it('should return the value when the value is present', function() {
             var validator = new FieldVal({
-                "my_value": 13
+                'my_value': 13
             })
-            assert.equal(13, validator.get("my_value"));
+            assert.equal(13, validator.get('my_value'));
         })
 
         it('should throw an error if used with async checks', function(done) {
             var validator = new FieldVal({
-                "my_value": 13
+                'my_value': 13
             })
             try{
                 var async_check = function(value, emit, callback) {
                     assert.equal(13, value);
                     setTimeout(function(){
                         callback({
-                            "error_message": "This is a custom error",
-                            "error": 1000
+                            'error_message': 'This is a custom error',
+                            'error': 1000
                         })
                     },30);
                 }
 
-                assert.equal(13, validator.get("my_value", async_check));
+                assert.equal(13, validator.get('my_value', async_check));
             } catch (e){
                 //Expecting an error
-                assert.equal(e.message, ".get used with async checks, use .get_async.")
+                assert.equal(e.message, '.get used with async checks, use .get_async.')
                 done();
             }
         })
 
         it('should throw an error if used with async checks, even if the callback is immediate', function(done) {
             var validator = new FieldVal({
-                "my_value": 13
+                'my_value': 13
             })
             try{
                 var async_check = function(value, emit, callback) {
                     assert.equal(13, value);
                     callback({
-                        "error_message": "This is a custom error",
-                        "error": 1000
+                        'error_message': 'This is a custom error',
+                        'error': 1000
                     })
                 }
 
-                assert.equal(13, validator.get("my_value", async_check));
+                assert.equal(13, validator.get('my_value', async_check));
             } catch (e){
                 //Expecting an error
-                assert.equal(e.message, ".get used with async checks, use .get_async.")
+                assert.equal(e.message, '.get used with async checks, use .get_async.')
                 done();
             }
         })
 
         it('should be able to continue from a previous validator', function(done) {
             var my_data = {
-                "valid_one_key": 10,
-                "my_invalid_key": 15,
-                "my_unrecognized_key": 13,
+                'valid_one_key': 10,
+                'my_invalid_key': 15,
+                'my_unrecognized_key': 13,
             };
             var validator_one = new FieldVal(my_data);
 
-            validator_one.get("valid_one_key", bval.integer(true));
-            validator_one.get("my_invalid_key", bval.integer(true), bval.minimum(20));
-            validator_one.get("my_missing_key", bval.integer(true));
+            validator_one.get('valid_one_key', bval.integer(true));
+            validator_one.get('my_invalid_key', bval.integer(true), bval.minimum(20));
+            validator_one.get('my_missing_key', bval.integer(true));
 
             validator_one.end(function(error_one, recognized_keys){
 
                 var validator_two = new FieldVal(my_data, error_one, recognized_keys);
-                validator_two.get("valid_one_key", bval.integer(true), bval.minimum(20))//Makes this key invalid on validator_two
+                validator_two.get('valid_one_key', bval.integer(true), bval.minimum(20))//Makes this key invalid on validator_two
 
                 var error_two = validator_two.end();
 
@@ -112,20 +112,20 @@ describe('FieldVal', function() {
 
         it('', function(done) {
             var validator = new FieldVal({
-                "my_value": 13
+                'my_value': 13
             })
             try{
                 var async_check = function(value, emit, callback){
                     assert.equal(13, value);
                     callback({
-                        "error_message": "This is a custom error",
-                        "error": 1000
+                        'error_message': 'This is a custom error',
+                        'error': 1000
                     })
                 }
 
-                validator.get("my_value", async_check);
+                validator.get('my_value', async_check);
             } catch (e){
-                assert.equal(e.message, ".get used with async checks, use .get_async.")
+                assert.equal(e.message, '.get used with async checks, use .get_async.')
                 done();
             }
         })
@@ -133,15 +133,15 @@ describe('FieldVal', function() {
     describe('get_async', function() {
         it('should return value when the value is present', function(done) {
             var validator = new FieldVal({
-                "my_value": 13
+                'my_value': 13
             })
-            var get_async_output = validator.get_async("my_value",[function(value, emit, callback){
+            var get_async_output = validator.get_async('my_value',[function(value, emit, callback){
                 assert.equal(13, value);
 
                 setTimeout(function(){
                     callback({
-                        "error_message": "This is a custom error",
-                        "error": 1000
+                        'error_message': 'This is a custom error',
+                        'error': 1000
                     })
                 },30);
 
@@ -149,14 +149,14 @@ describe('FieldVal', function() {
 
                 validator.end(function(result){
                     assert.deepEqual({
-                        "invalid": {
-                            "my_value" :{
-                                "error": 1000,
-                                "error_message":"This is a custom error"
+                        'invalid': {
+                            'my_value' :{
+                                'error': 1000,
+                                'error_message':'This is a custom error'
                             }
                         },
-                        "error_message":"One or more errors.",
-                        "error": 5
+                        'error_message':'One or more errors.',
+                        'error': 5
                     }, result);
                     done();
                 })
@@ -230,9 +230,9 @@ describe('FieldVal', function() {
         })
         it('should return type and value info (array)', function() {
             var vt = FieldVal.get_value_and_type({
-                    "one":1,
-                    "two":2,
-                    "three":3
+                    'one':1,
+                    'two':2,
+                    'three':3
                 },'array'
             );
 
@@ -240,9 +240,9 @@ describe('FieldVal', function() {
                 type: 'object',
                 desired_type: 'array',
                 value: {
-                    "one":1,
-                    "two":2,
-                    "three":3
+                    'one':1,
+                    'two':2,
+                    'three':3
                 }
             }, vt);
         })
@@ -256,9 +256,9 @@ describe('FieldVal', function() {
         it('should throw an error if the checks are provided incorrectly', function(done) {
             var did_throw_error = false;
             try{
-                var output = FieldVal.use_checks(23, "NOT A VALID CHECK");
+                var output = FieldVal.use_checks(23, 'NOT A VALID CHECK');
             } catch (e){
-                assert.equal(e.message, "A check can only be provided as a function or as an object with a function as the .check property.")
+                assert.equal(e.message, 'A check can only be provided as a function or as an object with a function as the .check property.')
                 did_throw_error = true;
             }
             assert.equal(true, did_throw_error);
@@ -271,9 +271,20 @@ describe('FieldVal', function() {
                 bval.minimum(30)
             ]);
             assert.deepEqual({
-                "error":102,
-                "error_message":"Value is less than 30"
+                'error':102,
+                'error_message':'Value is less than 30'
             }, output);
+        })
+
+        it('should return undefined if none of the checks are async and there are no errors', function() {
+            var emit_output;
+            var output = FieldVal.use_checks(undefined, [bval.integer(false, {parse:true}),bval.minimum(1)],{
+                emit: function(emitted){
+                    emit_output = emitted;
+                }
+            });
+            assert.strictEqual(null, output);
+            assert.strictEqual(undefined, emit_output);
         })
 
         it('should use the emit function if one is provided', function() {
@@ -298,15 +309,15 @@ describe('FieldVal', function() {
 
         it('should allow omitting the options argument', function() {
             var did_respond = false;
-            var output = FieldVal.use_checks("my_value", [
+            var output = FieldVal.use_checks('my_value', [
                 bval.integer(true)
             ], function(response){
                 did_respond = true;
                 assert.deepEqual({
-                    "error_message":"Incorrect field type. Expected integer.",
-                    "error":2,
-                    "expected":"integer",
-                    "received":"string"
+                    'error_message':'Incorrect field type. Expected integer.',
+                    'error':2,
+                    'expected':'integer',
+                    'received':'string'
                 }, response);
             });
 
@@ -329,8 +340,8 @@ describe('FieldVal', function() {
             });
             assert.deepEqual(null, output);
             assert.deepEqual({
-                "error":1,
-                "error_message":"Field missing."
+                'error':1,
+                'error_message':'Field missing.'
             },validator.end())
         })
 
@@ -357,8 +368,8 @@ describe('FieldVal', function() {
             assert.equal(did_respond, true);
             assert.strictEqual(null, output);
             assert.deepEqual({
-                "error":102,
-                "error_message":"Value is less than 30"
+                'error':102,
+                'error_message':'Value is less than 30'
             },validator.end())
         })
 
@@ -373,7 +384,7 @@ describe('FieldVal', function() {
                 ],
                 {//options
                     validator: validator,
-                    field_name: "my_field_name"
+                    field_name: 'my_field_name'
                 },
                 function(response){//callback
                     assert.strictEqual(null, response);
@@ -384,14 +395,14 @@ describe('FieldVal', function() {
             assert.equal(did_respond, true);
             assert.strictEqual(null, output);
             assert.deepEqual({
-                "invalid": {
-                    "my_field_name" :{
-                        "error":102,
-                        "error_message":"Value is less than 30"
+                'invalid': {
+                    'my_field_name' :{
+                        'error':102,
+                        'error_message':'Value is less than 30'
                     }
                 },
-                "error_message":"One or more errors.",
-                "error": 5
+                'error_message':'One or more errors.',
+                'error': 5
             },validator.end())
         })
 
@@ -408,8 +419,8 @@ describe('FieldVal', function() {
                     function(value, emit, callback){
                         setTimeout(function(){
                             callback({
-                                "error_message": "Custom error",
-                                "error": 1000
+                                'error_message': 'Custom error',
+                                'error': 1000
                             })
                         },30);
                     },
@@ -417,7 +428,7 @@ describe('FieldVal', function() {
                 ],
                 {//options
                     validator: validator,
-                    field_name: "my_field_name",
+                    field_name: 'my_field_name',
                     emit: function(emitted){
                         assert.strictEqual(emitted,undefined);
                     },
@@ -433,14 +444,14 @@ describe('FieldVal', function() {
                 assert.equal(did_respond, true);
 
                 assert.deepEqual({
-                    "invalid": {
-                        "my_field_name" :{
-                            "error":1000,
-                            "error_message":"Custom error"
+                    'invalid': {
+                        'my_field_name' :{
+                            'error':1000,
+                            'error_message':'Custom error'
                         }
                     },
-                    "error_message":"One or more errors.",
-                    "error": 5
+                    'error_message':'One or more errors.',
+                    'error': 5
                 }, response);
 
                 done();
@@ -460,8 +471,8 @@ describe('FieldVal', function() {
                     function(value, emit, callback){
                         setTimeout(function(){
                             callback({
-                                "error_message": "Custom error one",
-                                "error": 1000
+                                'error_message': 'Custom error one',
+                                'error': 1000
                             })
                         },30);
                     },
@@ -469,7 +480,7 @@ describe('FieldVal', function() {
                 ],
                 {//options
                     validator: validator,
-                    field_name: "my_field_name_one",
+                    field_name: 'my_field_name_one',
                     emit: function(emitted){
                         assert.strictEqual(emitted,undefined);
                     },
@@ -488,8 +499,8 @@ describe('FieldVal', function() {
                     function(value, emit, callback){
                         setTimeout(function(){
                             callback({
-                                "error_message": "Custom error two",
-                                "error": 1001
+                                'error_message': 'Custom error two',
+                                'error': 1001
                             })
                         },10);
                     },
@@ -497,7 +508,7 @@ describe('FieldVal', function() {
                 ],
                 {//options
                     validator: validator,
-                    field_name: "my_field_name_two",
+                    field_name: 'my_field_name_two',
                     emit: function(emitted){
                         assert.strictEqual(emitted,undefined);
                     },
@@ -513,18 +524,18 @@ describe('FieldVal', function() {
                 assert.equal(did_respond, 2);
 
                 assert.deepEqual({
-                    "invalid": {
-                        "my_field_name_one" :{
-                            "error":1000,
-                            "error_message":"Custom error one"
+                    'invalid': {
+                        'my_field_name_one' :{
+                            'error':1000,
+                            'error_message':'Custom error one'
                         },
-                        "my_field_name_two" :{
-                            "error":1001,
-                            "error_message":"Custom error two"
+                        'my_field_name_two' :{
+                            'error':1001,
+                            'error_message':'Custom error two'
                         }
                     },
-                    "error_message":"One or more errors.",
-                    "error": 5
+                    'error_message':'One or more errors.',
+                    'error': 5
                 }, response);
 
                 done();
@@ -542,8 +553,8 @@ describe('FieldVal', function() {
                     function(value, emit, callback){
                         setTimeout(function(){
                             callback({
-                                "error_message": "Custom error",
-                                "error": 1000
+                                'error_message': 'Custom error',
+                                'error': 1000
                             })
                         },30);
                     },
@@ -551,7 +562,7 @@ describe('FieldVal', function() {
                 ],
                 {//options
                     validator: validator,
-                    field_name: "my_field_name",
+                    field_name: 'my_field_name',
                     emit: function(emitted){
                         assert.strictEqual(emitted,undefined);
                     }
@@ -561,14 +572,14 @@ describe('FieldVal', function() {
             validator.end(function(response){
 
                 assert.deepEqual({
-                    "invalid": {
-                        "my_field_name" :{
-                            "error":1000,
-                            "error_message":"Custom error"
+                    'invalid': {
+                        'my_field_name' :{
+                            'error':1000,
+                            'error_message':'Custom error'
                         }
                     },
-                    "error_message":"One or more errors.",
-                    "error": 5
+                    'error_message':'One or more errors.',
+                    'error': 5
                 }, response);
 
                 done();
@@ -588,8 +599,8 @@ describe('FieldVal', function() {
                     check: function(value, emit, callback){
                         setTimeout(function(){
                             callback({
-                                "error_message": "Custom error",
-                                "error": 1000
+                                'error_message': 'Custom error',
+                                'error': 1000
                             })
                         },30);
                     },
@@ -598,7 +609,7 @@ describe('FieldVal', function() {
                 bval.minimum(30)
             ],{
                 validator: validator,
-                field_name: "my_field_name",
+                field_name: 'my_field_name',
                 emit: function(emitted){
                     assert.strictEqual(emitted,undefined);
                 }
@@ -612,22 +623,22 @@ describe('FieldVal', function() {
                 assert.equal(did_respond, true);
 
                 assert.deepEqual({
-                    "invalid": {
-                        "my_field_name" : {
-                            "error":4,
-                            "error_message":"Multiple errors.",
-                            "errors":[{
-                                "error":1000,
-                                "error_message":"Custom error"
+                    'invalid': {
+                        'my_field_name' : {
+                            'error':4,
+                            'error_message':'Multiple errors.',
+                            'errors':[{
+                                'error':1000,
+                                'error_message':'Custom error'
                             },
                             {
-                                "error":102,
-                                "error_message":"Value is less than 30"
+                                'error':102,
+                                'error_message':'Value is less than 30'
                             }]
                         }
                     },
-                    "error_message":"One or more errors.",
-                    "error": 5
+                    'error_message':'One or more errors.',
+                    'error': 5
                 }, response);
 
                 done();
@@ -640,19 +651,19 @@ describe('FieldVal', function() {
                 bval.integer(true)
             ],{
                 validator: validator,
-                field_name: "my_field_name"
+                field_name: 'my_field_name'
             });
 
             assert.strictEqual(null, output);
             assert.deepEqual({
-                "missing": {
-                    "my_field_name" :{
-                        "error":1,
-                        "error_message":"Field missing."
+                'missing': {
+                    'my_field_name' :{
+                        'error':1,
+                        'error_message':'Field missing.'
                     }
                 },
-                "error_message":"One or more errors.",
-                "error": 5
+                'error_message':'One or more errors.',
+                'error': 5
             },validator.end())
         })
 
@@ -660,18 +671,18 @@ describe('FieldVal', function() {
             var output = FieldVal.use_checks(undefined, [
                 bval.integer(true)
             ],{
-                field_name: "my_field_name"
+                field_name: 'my_field_name'
             });
 
             assert.deepEqual({
-                "missing": {
-                    "my_field_name" :{
-                        "error":1,
-                        "error_message":"Field missing."
+                'missing': {
+                    'my_field_name' :{
+                        'error':1,
+                        'error_message':'Field missing.'
                     }
                 },
-                "error_message":"One or more errors.",
-                "error": 5
+                'error_message':'One or more errors.',
+                'error': 5
             },output)
         })
 
@@ -680,32 +691,32 @@ describe('FieldVal', function() {
             var output = FieldVal.use_checks(undefined, [
                 bval.integer(true)
             ],{
-                field_name: "my_field_name"
+                field_name: 'my_field_name'
             }, function(response){
                 did_respond = true;
                 assert.deepEqual(response, {
-                    "missing": {
-                        "my_field_name" :{
-                            "error":1,
-                            "error_message":"Field missing."
+                    'missing': {
+                        'my_field_name' :{
+                            'error':1,
+                            'error_message':'Field missing.'
                         }
                     },
-                    "error_message":"One or more errors.",
-                    "error": 5
+                    'error_message':'One or more errors.',
+                    'error': 5
                 })
             });
 
             assert.equal(did_respond, true);
 
             assert.deepEqual({
-                "missing": {
-                    "my_field_name" :{
-                        "error":1,
-                        "error_message":"Field missing."
+                'missing': {
+                    'my_field_name' :{
+                        'error':1,
+                        'error_message':'Field missing.'
                     }
                 },
-                "error_message":"One or more errors.",
-                "error": 5
+                'error_message':'One or more errors.',
+                'error': 5
             },output)
         })
 
@@ -719,8 +730,8 @@ describe('FieldVal', function() {
                 ]
             ]);
             assert.deepEqual({
-                "error":103,
-                "error_message":"Value is greater than 20"
+                'error':103,
+                'error_message':'Value is greater than 20'
             }, output);
         })
 
@@ -734,15 +745,15 @@ describe('FieldVal', function() {
                 bval.string(true)//Won't be run
             ]);
             assert.deepEqual({
-                "error":4,
-                "error_message":"Multiple errors.",
-                "errors":[
+                'error':4,
+                'error_message':'Multiple errors.',
+                'errors':[
                     {
-                        "error":102,
-                        "error_message":"Value is less than 30"
+                        'error':102,
+                        'error_message':'Value is less than 30'
                     },{
-                        "error":103,
-                        "error_message":"Value is greater than 20"
+                        'error':103,
+                        'error_message':'Value is greater than 20'
                     }
                 ]
             }, output);
@@ -756,7 +767,7 @@ describe('FieldVal', function() {
                 bval.string({
                     required:true, 
                     missing_error: {
-                        error_message: "I'm a custom missing error!",
+                        error_message: 'I\'m a custom missing error!',
                         error: 1000
                     }
                 })
@@ -765,7 +776,7 @@ describe('FieldVal', function() {
             var expected = {
                 missing: {
                     'required_string': {
-                        error_message: "I'm a custom missing error!",
+                        error_message: 'I\'m a custom missing error!',
                         error: 1000
                     }
                 },
@@ -782,7 +793,7 @@ describe('FieldVal', function() {
                 'required_string',
                 bval.string(true, {
                     missing_error: {
-                        error_message: "I'm a custom missing error!",
+                        error_message: 'I\'m a custom missing error!',
                         error: 1000
                     }
                 })
@@ -791,7 +802,7 @@ describe('FieldVal', function() {
             var expected = {
                 missing: {
                     'required_string': {
-                        error_message: "I'm a custom missing error!",
+                        error_message: 'I\'m a custom missing error!',
                         error: 1000
                     }
                 },
@@ -809,7 +820,7 @@ describe('FieldVal', function() {
                 bval.integer(true, {
                     missing_error: function(){
                         return {
-                            error_message: "I'm a custom missing error (for an integer), provided via a function!",
+                            error_message: 'I\'m a custom missing error (for an integer), provided via a function!',
                             error: 1000
                         }
                     }
@@ -819,7 +830,7 @@ describe('FieldVal', function() {
             var expected = {
                 missing: {
                     'required_integer': {
-                        error_message: "I'm a custom missing error (for an integer), provided via a function!",
+                        error_message: 'I\'m a custom missing error (for an integer), provided via a function!',
                         error: 1000
                     }
                 },
@@ -835,14 +846,14 @@ describe('FieldVal', function() {
             validator.get(
                 'required_integer',
                 bval.integer(true, {
-                    missing_error: "I'm a custom missing error (for an integer), provided as a string!"
+                    missing_error: 'I\'m a custom missing error (for an integer), provided as a string!'
                 })
             );
 
             var expected = {
                 missing: {
                     'required_integer': {
-                        error_message: "I'm a custom missing error (for an integer), provided as a string!"
+                        error_message: 'I\'m a custom missing error (for an integer), provided as a string!'
                         //No error code
                     }
                 },
@@ -875,23 +886,23 @@ describe('FieldVal', function() {
         it('should return an error for an invalid type', function() {
             var output = FieldVal.type('string')(15);
             assert.deepEqual({
-                "error_message": "Incorrect field type. Expected string.",
-                "error": 2,
-                "expected": "string",
-                "received": "number"
+                'error_message': 'Incorrect field type. Expected string.',
+                'error': 2,
+                'expected': 'string',
+                'received': 'number'
             }, output);
         })
 
         it('should return a custom error (object) for an invalid type', function() {
             var output = FieldVal.type('string',{
                 error: {
-                    "error": 1000,
-                    "error_message": "Custom error message"
+                    'error': 1000,
+                    'error_message': 'Custom error message'
                 }
             }).check(15);
             assert.deepEqual({
-                "error": 1000,
-                "error_message": "Custom error message"
+                'error': 1000,
+                'error_message': 'Custom error message'
             }, output);
         })
 
@@ -899,23 +910,23 @@ describe('FieldVal', function() {
             var output = FieldVal.type('string',{
                 error: function(){
                     return {
-                        "error": 1000,
-                        "error_message": "Custom error message"
+                        'error': 1000,
+                        'error_message': 'Custom error message'
                     }
                 }
             }).check(15);
             assert.deepEqual({
-                "error": 1000,
-                "error_message": "Custom error message"
+                'error': 1000,
+                'error_message': 'Custom error message'
             }, output);
         })
 
         it('should return a custom error (string) for an invalid type', function() {
             var output = FieldVal.type('string',{
-                error: "Custom error message"
+                error: 'Custom error message'
             }).check(15);
             assert.deepEqual({
-                "error_message": "Custom error message"
+                'error_message': 'Custom error message'
             }, output);
         })
 
@@ -938,25 +949,10 @@ describe('FieldVal', function() {
             assert.strictEqual(undefined, output);
         })
     })
-    describe('default_value()', function() {
-        it('should use a default if the value is missing', function() {
-            var validator = new FieldVal({});
-            var value = validator.default_value("the_default").get("my_key", bval.string(true));
-            assert.strictEqual(value, "the_default");
-        })
-
-        it('should use the value if it is present', function() {
-            var validator = new FieldVal({
-                "my_key": "actual_value"
-            });
-            var value = validator.default_value("the_default").get("my_key", bval.string(true));
-            assert.strictEqual(value, "actual_value");
-        })
-    })
     describe('missing()', function() {
         it('end() should return an error with the missing key if missing field is added', function() {
             var validator = new FieldVal({});
-            validator.missing("a_missing_field");
+            validator.missing('a_missing_field');
             var expected = {
                 missing: {
                     'a_missing_field': {
@@ -971,14 +967,14 @@ describe('FieldVal', function() {
             assert.deepEqual(expected, actual);
         })
     })
-    describe('invalid()', function() {
+    describe('error()', function() {
         it('end() should return an error with the invalid key if an_invalid_field is added', function() {
             var validator = new FieldVal({});
             var invalid_details = {
                 error: 1000,
                 error_message: 'My custom error'
             }
-            validator.invalid("an_invalid_field", invalid_details);
+            validator.invalid('an_invalid_field', invalid_details);
             var expected = {
                 invalid: {
                     'an_invalid_field': {
@@ -996,34 +992,34 @@ describe('FieldVal', function() {
         it('should build an error of multiple errors if called with the same key', function() {
             var validator = new FieldVal({});
 
-            validator.invalid("my_key", {
-                "error": 1000,
-                "error_message": "The first error"
+            validator.invalid('my_key', {
+                'error': 1000,
+                'error_message': 'The first error'
             })
-            validator.invalid("my_key", {
-                "error": 1001,
-                "error_message": "The second error"
+            validator.invalid('my_key', {
+                'error': 1001,
+                'error_message': 'The second error'
             })
-            validator.invalid("my_key", {
-                "error": 1002,
-                "error_message": "The third error"
+            validator.invalid('my_key', {
+                'error': 1002,
+                'error_message': 'The third error'
             })
 
             var expected = {
                 invalid: {
                     'my_key': {
-                        "error": 4,
-                        "error_message": "Multiple errors.",
-                        "errors": [
+                        'error': 4,
+                        'error_message': 'Multiple errors.',
+                        'errors': [
                             {
-                                "error": 1000,
-                                "error_message": "The first error"
+                                'error': 1000,
+                                'error_message': 'The first error'
                             },{
-                                "error": 1001,
-                                "error_message": "The second error"
+                                'error': 1001,
+                                'error_message': 'The second error'
                             },{
-                                "error": 1002,
-                                "error_message": "The third error"
+                                'error': 1002,
+                                'error_message': 'The third error'
                             }
 
                         ]
@@ -1042,18 +1038,92 @@ describe('FieldVal', function() {
                 error: 1000,
                 error_message: 'My custom error'
             }
-            validator.invalid("first_inner","another_level", invalid_details);
+            validator.error('first_inner','another_level', invalid_details);
             var expected = {
-                invalid: {
+                'invalid': {
                     'first_inner': {
-                        invalid: {
+                        'invalid': {
                             'another_level': {
                                 error: 1000,
                                 error_message: 'My custom error'
                             }
                         },
                         error: 5,
-                        error_message: "One or more errors."
+                        error_message: 'One or more errors.'
+                    }
+                },
+                error_message: 'One or more errors.',
+                error: 5
+            };
+            var actual = validator.end();
+            assert.deepEqual(expected, actual);
+        })
+
+        it('should allow "missing" and "unrecognized" errors to be set using .error - detected using error code', function() {
+            var validator = new FieldVal({});
+            var missing_error = {
+                error: 1,
+                error_message: 'Field missing.'
+            };
+            var unrecognized_error = {
+                error: 3,
+                error_message: 'Unrecognized field.'
+            };
+            
+            validator.error('a_missing', missing_error);
+            validator.error('an_unrecognized', unrecognized_error);
+            
+            var expected = {
+                'missing': {
+                    'a_missing': {
+                        error: 1,
+                        error_message: 'Field missing.'
+                    }
+                },
+                'unrecognized': {
+                    'an_unrecognized': {
+                        error: 3,
+                        error_message: 'Unrecognized field.'
+                    }
+                },
+                error: 5,
+                error_message: 'One or more errors.'
+            };
+            var actual = validator.end();
+            assert.deepEqual(expected, actual);
+        })
+
+        it('should allow "missing" and "unrecognized" errors to be set for multiple levels of keys', function() {
+            var validator = new FieldVal({});
+            var missing_error = {
+                error: 1,
+                error_message: 'Field missing.'
+            };
+            var unrecognized_error = {
+                error: 3,
+                error_message: 'Unrecognized field.'
+            };
+            
+            validator.error('first_level','a_missing', missing_error);
+            validator.error('first_level','an_unrecognized', unrecognized_error);
+            
+            var expected = {
+                'invalid': {
+                    'first_level': {
+                        error: 5,
+                        error_message: 'One or more errors.',
+                        'missing': {
+                            'a_missing': {
+                                error: 1,
+                                error_message: 'Field missing.'
+                            }
+                        },
+                        'unrecognized': {
+                            'an_unrecognized': {
+                                error: 3,
+                                error_message: 'Unrecognized field.'
+                            }
+                        }
                     }
                 },
                 error_message: 'One or more errors.',
@@ -1066,14 +1136,14 @@ describe('FieldVal', function() {
     describe('dig()', function() {
 
         var example_data = JSON.stringify({
-            "one": "not a number",
-            "first_inner": {
-                "shallow_1": "My shallow 1",
-                "shallow_2": 11,
-                "second_inner" : {
-                    "third_inner" : {
-                        "deep_key": 15,
-                        "another_deep_key": "not an integer"
+            'one': 'not a number',
+            'first_inner': {
+                'shallow_1': 'My shallow 1',
+                'shallow_2': 11,
+                'second_inner' : {
+                    'third_inner' : {
+                        'deep_key': 15,
+                        'another_deep_key': 'not an integer'
                     }
                 }
             }
@@ -1082,58 +1152,58 @@ describe('FieldVal', function() {
             return JSON.parse(example_data);
         }
         var example_error = JSON.stringify({
-            "missing": {
-                "two": {
-                    "error_message": "Field missing.",
-                    "error": 1
+            'missing': {
+                'two': {
+                    'error_message': 'Field missing.',
+                    'error': 1
                 }
             },
-            "invalid": {
-                "one": {
-                    "error_message": "Incorrect field type. Expected number.",
-                    "error": 2,
-                    "expected": "number",
-                    "received": "string"
+            'invalid': {
+                'one': {
+                    'error_message': 'Incorrect field type. Expected number.',
+                    'error': 2,
+                    'expected': 'number',
+                    'received': 'string'
                 },
-                "first_inner": {
-                    "missing": {
-                        "shallow_3": {
-                            "error_message": "Field missing.",
-                            "error": 1
+                'first_inner': {
+                    'missing': {
+                        'shallow_3': {
+                            'error_message': 'Field missing.',
+                            'error': 1
                         }
                     },
-                    "invalid": {
-                        "shallow_2": {
-                            "error_message": "Incorrect field type. Expected string.",
-                            "error": 2,
-                            "expected": "string",
-                            "received": "number"
+                    'invalid': {
+                        'shallow_2': {
+                            'error_message': 'Incorrect field type. Expected string.',
+                            'error': 2,
+                            'expected': 'string',
+                            'received': 'number'
                         },
-                        "second_inner": {
-                            "invalid": {
-                                "third_inner": {
-                                    "invalid": {
-                                        "another_deep_key": {
-                                            "error_message": "Incorrect field type. Expected number.",
-                                            "error": 2,
-                                            "expected": "number",
-                                            "received": "string"
+                        'second_inner': {
+                            'invalid': {
+                                'third_inner': {
+                                    'invalid': {
+                                        'another_deep_key': {
+                                            'error_message': 'Incorrect field type. Expected number.',
+                                            'error': 2,
+                                            'expected': 'number',
+                                            'received': 'string'
                                         }
                                     },
-                                    "error_message": "One or more errors.",
-                                    "error": 5
+                                    'error_message': 'One or more errors.',
+                                    'error': 5
                                 }
                             },
-                            "error_message": "One or more errors.",
-                            "error": 5
+                            'error_message': 'One or more errors.',
+                            'error': 5
                         }
                     },
-                    "error_message": "One or more errors.",
-                    "error": 5
+                    'error_message': 'One or more errors.',
+                    'error': 5
                 }
             },
-            "error_message": "One or more errors.",
-            "error": 5
+            'error_message': 'One or more errors.',
+            'error': 5
         });
         var get_example_error = function(){
             return JSON.parse(example_error);
@@ -1145,67 +1215,67 @@ describe('FieldVal', function() {
                 get_example_data(), get_example_error()
             );
 
-            var dug = validator.dig("first_inner","second_inner");
+            var dug = validator.dig('first_inner','second_inner');
             assert.strictEqual(dug instanceof FieldVal, true);
             assert.deepEqual({
-                "invalid": {
-                    "third_inner": {
-                        "invalid": {
-                            "another_deep_key": {
-                                "error_message": "Incorrect field type. Expected number.",
-                                "error": 2,
-                                "expected": "number",
-                                "received": "string"
+                'invalid': {
+                    'third_inner': {
+                        'invalid': {
+                            'another_deep_key': {
+                                'error_message': 'Incorrect field type. Expected number.',
+                                'error': 2,
+                                'expected': 'number',
+                                'received': 'string'
                             }
                         },
-                        "error_message": "One or more errors.",
-                        "error": 5
+                        'error_message': 'One or more errors.',
+                        'error': 5
                     }
                 },
-                "error_message": "One or more errors.",
-                "error": 5
+                'error_message': 'One or more errors.',
+                'error': 5
             },dug.end())
 
 
-            var dug2 = validator.dig("non_existant_key","second_inner");
+            var dug2 = validator.dig('non_existant_key','second_inner');
             assert.strictEqual(dug2, undefined);
         })
     })
     describe('unrecognized()', function(){
         it('should return an unrecognized error when a field is manually unrecognized', function() {
             var validator = new FieldVal({})
-            validator.unrecognized("my_string");
+            validator.unrecognized('my_string');
             assert.deepEqual(
                 validator.end(),
                 {
-                    "unrecognized":{
-                        "my_string":{
-                            "error_message":"Unrecognized field.",
-                            "error":3
+                    'unrecognized':{
+                        'my_string':{
+                            'error_message':'Unrecognized field.',
+                            'error':3
                         }
                     },
-                    "error_message":"One or more errors.",
-                    "error":5
+                    'error_message':'One or more errors.',
+                    'error':5
                 }
             );
         })
 
         it('should retain a single error when a field is manually and automatically unrecognized', function() {
             var validator = new FieldVal({
-                my_string: "my_value"
+                my_string: 'my_value'
             })
-            validator.unrecognized("my_string");
+            validator.unrecognized('my_string');
             assert.deepEqual(
                 validator.end(),
                 {
-                    "unrecognized":{
-                        "my_string":{
-                            "error_message":"Unrecognized field.",
-                            "error":3
+                    'unrecognized':{
+                        'my_string':{
+                            'error_message':'Unrecognized field.',
+                            'error':3
                         }
                     },
-                    "error_message":"One or more errors.",
-                    "error":5
+                    'error_message':'One or more errors.',
+                    'error':5
                 }
             );
         })
@@ -1215,7 +1285,7 @@ describe('FieldVal', function() {
             var validator = new FieldVal({
                 my_string: 'my_value'
             })
-            validator.recognized("my_string");
+            validator.recognized('my_string');
             assert.strictEqual(
                 null,
                 validator.end()
@@ -1242,16 +1312,16 @@ describe('FieldVal', function() {
         })
         it('should return a valid structure if a required field wasn\'t present', function() {
             var validator = new FieldVal({});
-            validator.get("my_integer", FieldVal.required(true))
+            validator.get('my_integer', FieldVal.required(true))
             var expected = {
-                "missing": {
-                    "my_integer": {
-                        "error_message": "Field missing.",
-                        "error": 1
+                'missing': {
+                    'my_integer': {
+                        'error_message': 'Field missing.',
+                        'error': 1
                     }
                 },
-                "error_message": "One or more errors.",
-                "error": 5
+                'error_message': 'One or more errors.',
+                'error': 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -1261,14 +1331,14 @@ describe('FieldVal', function() {
                 my_integer: 57
             });
             var expected = {
-                "unrecognized": {
-                    "my_integer": {
-                        "error_message": "Unrecognized field.",
-                        "error": 3
+                'unrecognized': {
+                    'my_integer': {
+                        'error_message': 'Unrecognized field.',
+                        'error': 3
                     }
                 },
-                "error_message": "One or more errors.",
-                "error": 5
+                'error_message': 'One or more errors.',
+                'error': 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -1278,25 +1348,25 @@ describe('FieldVal', function() {
                 my_integer: 57
             });
             validator.error({
-                "error": 1000,
-                "error_message": "An existing error"
+                'error': 1000,
+                'error_message': 'An existing error'
             });
             var expected = {
-                "error":4,
-                "error_message":"Multiple errors.",
-                "errors":[
+                'error':4,
+                'error_message':'Multiple errors.',
+                'errors':[
                     {
-                        "error": 1000,
-                        "error_message": "An existing error"
+                        'error': 1000,
+                        'error_message': 'An existing error'
                     },{
-                        "unrecognized": {
-                            "my_integer": {
-                                "error_message": "Unrecognized field.",
-                                "error": 3
+                        'unrecognized': {
+                            'my_integer': {
+                                'error_message': 'Unrecognized field.',
+                                'error': 3
                             }
                         },
-                        "error_message": "One or more errors.",
-                        "error": 5
+                        'error_message': 'One or more errors.',
+                        'error': 5
                     }
                 ]
             };
@@ -1305,7 +1375,7 @@ describe('FieldVal', function() {
         })
         it('should return null if only optional fields aren\'t present', function() {
             var validator = new FieldVal({});
-            validator.get("my_integer")
+            validator.get('my_integer')
             assert.equal(null, validator.end());
         })
     })

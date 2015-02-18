@@ -10,4 +10,4 @@ validator.get("multiple_of_three", BasicVal.integer(true), function(val){
   }
 });
 
-document.write("<pre>"+JSON.stringify(validator.end(),null,4)+"</pre>");
+console.log(validator.end());

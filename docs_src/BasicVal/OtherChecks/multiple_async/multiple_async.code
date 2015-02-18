@@ -1,0 +1,26 @@
+var validator = new FieldVal({
+	value: 15//Change to 20 to successfully pass .minimum check
+});
+
+validator.get_async(
+	'value',
+	[
+		BasicVal.multiple_async([
+			[
+				BasicVal.integer(),function(val,emit,done){
+				  setTimeout(function(){
+					done(BasicVal.minimum(20).check(val));
+				  },1);
+				}
+			],
+			[
+				BasicVal.prefix("abc")
+			]
+		])
+	]
+)
+
+validator.end(function(error){
+	console.log(error);
+});
+

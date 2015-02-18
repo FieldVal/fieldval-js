@@ -77,6 +77,10 @@
             ]
         },
         {
+            "name": "Chaining",
+            "text": "Chaining/Chaining.md"
+        },
+        {
             "name": "Errors",
             "text": "Errors/Errors.md",
             "code": "Errors/Errors.code",
@@ -109,6 +113,17 @@
                     "code": "Checks/emit/emit.code"
                 }
             ]
+        },
+        {
+            "name": "Async",
+            "text": "Async/Async.md",
+            "code": {
+                "path": "Async/Async.code",
+                "runnable_path": "Async/Async_runnable.code",
+                "type": "js",
+                "runnable": true,
+                "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
+            }
         },
         {
             "name": "BasicVal",
@@ -179,6 +194,19 @@
                             ]
                         },
                         {
+                            "name": "each_async",
+                            "text": "BasicVal/OtherChecks/each_async/each_async.md",
+                            "code": [
+                                {
+                                    "path": "BasicVal/OtherChecks/each_async/each_async.code",
+                                    "runnable_path": "BasicVal/OtherChecks/each_async/each_async_runnable.code",
+                                    "type": "js",
+                                    "runnable": true,
+                                    "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
+                                }
+                            ]
+                        },
+                        {
                             "name": "equal_to",
                             "text": "BasicVal/OtherChecks/equal_to/equal_to.md"
                         },
@@ -209,6 +237,19 @@
                                 {
                                     "path": "BasicVal/OtherChecks/multiple/multiple.code",
                                     "type": "js",
+                                    "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "multiple_async",
+                            "text": "BasicVal/OtherChecks/multiple_async/multiple_async.md",
+                            "code": [
+                                {
+                                    "path": "BasicVal/OtherChecks/multiple_async/multiple_async.code",
+                                    "runnable_path": "BasicVal/OtherChecks/multiple_async/multiple_async_runnable.code",
+                                    "type": "js",
+                                    "runnable": true,
                                     "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js"
                                 }
                             ]
@@ -248,10 +289,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "name": "Chaining",
-            "text": "Chaining/Chaining.md"
         },
         {
             "name": "Flags",

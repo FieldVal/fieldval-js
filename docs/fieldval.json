@@ -12,10 +12,10 @@
             "runnable": true,
             "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js",
             "runnable_contents": "var data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\nvar validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true)());\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\ndocument.write(\"<pre>\"+JSON.stringify(validator.end(),null,4)+\"</pre>\");",
-            "contents": "var validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true)());\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\ndocument.write(\"<pre>\"+JSON.stringify(validator.end(),null,4)+\"</pre>\");"
+            "contents": "var validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true)());\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\nconsole.log(validator.end());"
         }
     ],
-    "text": "<p>FieldVal is a Javascript library that allows you to easily create readable and structured error reports for any data.</p>\n<p>It works on both the front end in the browser and on the back end using Node.</p>\n<p>FieldVal comes with a collection of checks called BasicVal. These are standard checks such as email, numeric limits etc., but you can write your own FieldVal checks with simple functions.</p>\n<p>To start validating, pass your data to a new instance of <code>FieldVal</code>.</p>\n<p>Then use <code>.get()</code> to retrieve values whilst simultaneously building an error report.</p>\n<p>When you&#39;ve finished validating, use <code>.end()</code> to retrieve the error report or null if there were no errors.</p>\n<h4 id=\"run-the-code-example-to-the-right\">Run the code example to the right</h4>\n<p>Try out FieldVal using CodePen by clicking the &quot;Run on Codepen&quot; button below the example.</p>\n<p>Try changing the data provided to <code>FieldVal</code> to see how the error changes.</p>\n",
+    "text": "<p>FieldVal is a Javascript library that allows you to easily create readable and structured error reports for any data.</p>\n<p>It works on both the front end in the browser and on the back end using Node.</p>\n<p>FieldVal comes with a collection of checks called BasicVal. These are standard checks such as email, numeric limits etc., but you can write your own FieldVal checks with simple functions.</p>\n<p>To start validating, pass your data to a new instance of <code>FieldVal</code>.</p>\n<p>Then use <code>.get(key_name, checks...)</code> to retrieve values whilst simultaneously building an error report.</p>\n<p>When you&#39;ve finished validating, use <code>.end()</code> to retrieve the error report or null if there were no errors.</p>\n<h4 id=\"run-the-code-example-to-the-right\">Run the code example to the right</h4>\n<p>Try out FieldVal using CodePen by clicking the &quot;Run on Codepen&quot; button below the example.</p>\n<p>Try changing the data provided to <code>FieldVal</code> to see how the error changes.</p>\n",
     "sections": [
         {
             "name": "Node Usage",
@@ -107,6 +107,10 @@
             ]
         },
         {
+            "name": "Chaining",
+            "text": "<p>FieldVal uses checks that can be &quot;chained&quot; in series to validate a single value. This allows code re-use and improves readability of validation checks.</p>\n<pre><code class=\"lang-javascript\">var my_integer = validator.get(&quot;my_integer&quot;, BasicVal.integer(true))\n</code></pre>\n<p>checks that the value is an integer and the <code>true</code> argument indicates that it is required.</p>\n<pre><code class=\"lang-javascript\">var my_integer = validator.get(&quot;my_integer&quot;, BasicVal.integer(true), BasicVal.minimum(42))\n</code></pre>\n<p>now also checks that the integer is at least <code>42</code>. </p>\n<p>You can build combinations from <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> or just write your own as explained <a href=\"/docs/fieldval/Check Functions\">here</a> - they&#39;re just functions that return errors.</p>\n"
+        },
+        {
             "name": "Errors",
             "code": [
                 {
@@ -163,6 +167,19 @@
                     "text": "<p>The <code>emit</code> function allows a check to not just validate a value, but also modify it - an example use case is shown to the right.</p>\n<p><code>emit</code> is most useful when the data is manipulated significantly in order to perform further validation, such as splitting into an array or parsing numeric strings.</p>\n"
                 }
             ]
+        },
+        {
+            "name": "Async",
+            "code": [
+                {
+                    "type": "js",
+                    "runnable": true,
+                    "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js",
+                    "runnable_contents": "var validator = new FieldVal({\n    my_number: 56,\n    my_email: \"test@example.com\"\n});\n\nvalidator.get_async(\n\t\"my_email\",\n\t[\n\t\tBasicVal.email({required: true}),\n\t\tfunction(val,emit,done){\n\t\t\tsetTimeout(function(){\n\t\t\t\tdone({\n\t\t\t\t\t\"error_message\": \"I couldn't find that email address\"\n\t\t\t\t});\n\t\t\t},500);\n\t\t}\n\t],\n\tfunction(my_email){\n\t\tvar element = document.createElement(\"div\");\n\t\telement.innerHTML = \"my_email: \"+my_email\n\t\tdocument.body.appendChild(element);\n\t}\n);\n\nvar my_number = validator.get(\"my_number\", BasicVal.number({required:true}));\n\nvalidator.end(function(error){\n\tvar element = document.createElement(\"pre\");\n\telement.innerHTML = JSON.stringify(error, null, 4);\n\tdocument.body.appendChild(element);\n});",
+                    "contents": "var validator = new FieldVal({\n    my_number: 56,\n    my_email: \"test@example.com\"\n});\n\nvalidator.get_async(\n\t\"my_email\",\n\t[\n\t\tBasicVal.email({required: true}),\n\t\tfunction(val,emit,done){\n\t\t\tsetTimeout(function(){\n\t\t\t\tdone({\n\t\t\t\t\t\"error_message\": \"I couldn't find that email address\"\n\t\t\t\t})\n\t\t\t},500);\n\t\t}\n\t],\n\tfunction(my_email){\n\t\tconsole.log(\"my_email: \",my_email);\n\t}\n);\n\nvar my_number = validator.get(\"my_number\", BasicVal.number({required:true}));\n\nvalidator.end(function(error){\n\tconsole.log(error);\n});"
+                }
+            ],
+            "text": "<p>Requiring an asynchronous action to validate a parameter is a common validation scenario.</p>\n<p>To use asynchronous checks, call <code>.get_async(key_name, check_array, [callback])</code> on the FieldVal instance.</p>\n<p><code>check_array</code> is an array of checks and <code>callback</code> is a function to call after validation has finished.</p>\n<p>You can use synchronous <code>.get</code> and asynchronous <code>.get_async</code> within the same FieldVal instance.</p>\n<p>Synchronous checks work with <code>.get_async</code>, but asynchronous checks will not work with <code>.get</code>.</p>\n<p>The <code>.end</code> function of the FieldVal instance takes a callback that will be called with the error if one is present.</p>\n<p><code>.end</code> waits for all fields to finish validating before calling the callback.</p>\n"
         },
         {
             "name": "BasicVal",
@@ -230,7 +247,20 @@
                                     "contents": "//CODE\nvar validator = new FieldVal({\n\tan_array: [44, 56, 3]\n});\n\nvalidator.get(\n\t'an_array',\n\tBasicVal.array(true),\n\tBasicVal.each(function(val,index,emit){\n\t\tvar error = BasicVal.integer().check(val); \n\t\tif(error)return error;\n\t\treturn BasicVal.minimum(40).check(val);\n\t})\n)\n\nconsole.log(JSON.stringify(validator.end(), null, 4));\n\n//OUTPUT\n{\n    \"invalid\": {\n        \"an_array\": {\n            \"invalid\": {\n                \"2\": {\n                    \"error\": 102,\n                    \"error_message\": \"Value is less than 40\"\n                }\n            },\n            \"error_message\": \"One or more errors.\",\n            \"error\": 5\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
                                 }
                             ],
-                            "text": "<p><code>BasicVal.each(on_each, [flags])</code></p>\n<p>Iterates through the array value and calls <code>on_each</code> function on each value.</p>\n<p>Iterates through the provided array and calls the <code>on_each</code> function on each array&#39;s value.</p>\n<p><code>on_each(value, index, emit)</code></p>\n<p>The provided function should return a FieldVal <a href=\"/docs/fieldval/Errors\">error</a> or null if there are no errors.</p>\n"
+                            "text": "<p><code>BasicVal.each(on_each, [flags])</code></p>\n<p>Iterates through the provided array and calls the <code>on_each</code> function on each array&#39;s value.</p>\n<p><code>on_each(value, index, emit)</code></p>\n<p>The provided function should return a FieldVal <a href=\"/docs/fieldval/Errors\">error</a> or null if there are no errors.</p>\n"
+                        },
+                        {
+                            "name": "each_async",
+                            "code": [
+                                {
+                                    "type": "js",
+                                    "runnable": true,
+                                    "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js",
+                                    "runnable_contents": "var validator = new FieldVal({\n\tan_array: [44, 56, 3]\n});\n\nvalidator.get_async(\n\t'an_array',\n\t[\n\t\tBasicVal.array(true),\n\t\tBasicVal.each_async(function(val,index,emit,done){\n\t\t\tsetTimeout(function(){\n\t\t\t\tvar error = BasicVal.integer().check(val); \n\t\t\t\tif(error){\n\t\t\t\t\tdone(error);\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\tdone(BasicVal.minimum(40).check(val));\n\t\t\t},1);\n\t\t})\n\t]\n)\n\nvalidator.end(function(error){\n\tvar element = document.createElement(\"pre\");\n\telement.innerHTML = JSON.stringify(error, null, 4);\n\tdocument.body.appendChild(element);\n});",
+                                    "contents": "//CODE\nvar validator = new FieldVal({\n\tan_array: [44, 56, 3]\n});\n\nvalidator.get_async(\n\t'an_array',\n\t[\n\t\tBasicVal.array(true),\n\t\tBasicVal.each_async(function(val,index,emit,done){\n\t\t\tsetTimeout(function(){\n\t\t\t\tvar error = BasicVal.integer().check(val); \n\t\t\t\tif(error){\n\t\t\t\t\tdone(error);\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\tdone(BasicVal.minimum(40).check(val));\n\t\t\t},1);\n\t\t})\n\t]\n)\n\nvalidator.end(function(error){\n\tvar element = document.createElement(\"pre\");\n\telement.innerHTML = JSON.stringify(error, null, 4);\n\tdocument.body.appendChild(element);\n});"
+                                }
+                            ],
+                            "text": "<p><code>BasicVal.each_async(on_each, [flags])</code></p>\n<p>Iterates through the provided array and calls the <code>on_each</code> function on each array&#39;s value. The <code>on_each</code> function for <code>each_async</code> uses a callback to provide its response.</p>\n<p><code>on_each(value, index, emit, done)</code></p>\n<p>The provided function should call <code>done</code> with a FieldVal <a href=\"/docs/fieldval/Errors\">error</a> or with no arguments if there are no errors.</p>\n"
                         },
                         {
                             "name": "equal_to",
@@ -268,6 +298,19 @@
                             "text": "<p><code>BasicVal.multiple(possibles, [flags])</code></p>\n<p>Validates the value with multiple checks. Only one of the checks need to pass for the value to be valid.</p>\n<p><code>possibles</code> is an array of multiple checks</p>\n<p>In the example provided, a valid input would be either an integer or a string that begins with &quot;abc&quot;.</p>\n"
                         },
                         {
+                            "name": "multiple_async",
+                            "code": [
+                                {
+                                    "type": "js",
+                                    "runnable": true,
+                                    "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js",
+                                    "runnable_contents": "var validator = new FieldVal({\n\tvalue: 15//Change to 20 to successfully pass .minimum check\n});\n\nvalidator.get_async(\n\t'value',\n\t[\n\t\tBasicVal.multiple_async([\n\t\t\t[\n\t\t\t\tBasicVal.integer(),function(val,emit,done){\n\t\t\t\t  setTimeout(function(){\n\t\t\t\t\tdone(BasicVal.minimum(20).check(val));\n\t\t\t\t  },1);\n\t\t\t\t}\n\t\t\t],\n\t\t\t[\n\t\t\t\tBasicVal.prefix(\"abc\")\n\t\t\t]\n\t\t])\n\t]\n)\n\nvalidator.end(function(error){\n\tvar element = document.createElement(\"pre\");\n\telement.innerHTML = JSON.stringify(error, null, 4);\n\tdocument.body.appendChild(element);\n});",
+                                    "contents": "var validator = new FieldVal({\n\tvalue: 15//Change to 20 to successfully pass .minimum check\n});\n\nvalidator.get_async(\n\t'value',\n\t[\n\t\tBasicVal.multiple_async([\n\t\t\t[\n\t\t\t\tBasicVal.integer(),function(val,emit,done){\n\t\t\t\t  setTimeout(function(){\n\t\t\t\t\tdone(BasicVal.minimum(20).check(val));\n\t\t\t\t  },1);\n\t\t\t\t}\n\t\t\t],\n\t\t\t[\n\t\t\t\tBasicVal.prefix(\"abc\")\n\t\t\t]\n\t\t])\n\t]\n)\n\nvalidator.end(function(error){\n\tconsole.log(error);\n});\n\n"
+                                }
+                            ],
+                            "text": "<p><code>BasicVal.multiple_async(possibles, [flags])</code></p>\n<p>Validates the value with multiple checks, allowing one or more of the checks to be asynchronous. Only one of the checks need to pass for the value to be valid.</p>\n<p><code>possibles</code> is an array of multiple checks.</p>\n<p>In the example provided, a valid input would be either an integer or a string that begins with &quot;abc&quot;.</p>\n"
+                        },
+                        {
                             "name": "no_whitespace",
                             "text": "<p><code>BasicVal.no_whitespace([flags])</code></p>\n<p>Checks that there is no whitespace in the value.</p>\n"
                         },
@@ -302,10 +345,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "name": "Chaining",
-            "text": "<p>FieldVal allows multiple checks to be &quot;chained&quot; in series to validate a single value. This allows code re-use and improves readability of validation checks.</p>\n<pre><code class=\"lang-javascript\">var my_integer = validator.get(&quot;my_integer&quot;, BasicVal.integer(true))\n</code></pre>\n<p>checks that the value is an integer and the <code>true</code> argument indicates that it is required.</p>\n<pre><code class=\"lang-javascript\">var my_integer = validator.get(&quot;my_integer&quot;, BasicVal.integer(true), BasicVal.minimum(42))\n</code></pre>\n<p>now also checks that the integer is at least <code>42</code>. </p>\n<p>You can add as many checks as you like from <a href=\"https://github.com/FieldVal/fieldval-basicval-js/\">here</a>, or just write your own - they&#39;re just functions that return errors.</p>\n"
         },
         {
             "name": "Flags",
