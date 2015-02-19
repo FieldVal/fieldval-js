@@ -576,7 +576,7 @@ var FieldVal = (function(){
                 return FieldVal.ASYNC;
             } else {
                 flags = this_check;
-                this_check_function = flags.check;
+                this_check_function = flags;
                 if (flags && (flags.stop_on_error !== undefined)) {
                     stop_on_error = flags.stop_on_error;
                 }
@@ -637,11 +637,22 @@ var FieldVal = (function(){
             }
         };
 
-        var check_response = this_check_function(shared_options.value, shared_options.emit, function(response){
-            //Response callback
-            with_response(response);
-        });
-        if (this_check_function.length===3){//Is async - it has a third (callback) parameter
+        var check_response;
+        var actual_function;
+        if(typeof this_check_function === 'function') {
+            actual_function = this_check_function;
+            check_response = this_check_function(shared_options.value, shared_options.emit, function(response){
+                //Response callback
+                with_response(response);
+            });
+        } else {
+            actual_function = this_check_function.check;
+            check_response = this_check_function.check(shared_options.value, shared_options.emit, function(response){
+                //Response callback
+                with_response(response);
+            });
+        }
+        if (actual_function.length===3){//Is async - it has a third (callback) parameter
             //Waiting for async
             return FieldVal.ASYNC;
         } else {
