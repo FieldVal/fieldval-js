@@ -84,20 +84,16 @@ describe('FieldVal', function() {
                 var error_two = validator_two.end();
 
                 assert.deepEqual(error_two, { 
-                    missing: { 
+                    invalid: { 
                         my_missing_key: { 
                             error_message: 'Field missing.', error: 1 
-                        }
-                    },
-                    invalid: { 
+                        },
                         my_invalid_key: { 
                             error: 102, error_message: 'Value is less than 20' 
                         },
                         valid_one_key: { 
                             error: 102, error_message: 'Value is less than 20' 
-                        }
-                    },
-                    unrecognized: { 
+                        },
                         my_unrecognized_key: { 
                             error_message: 'Unrecognized field.', error: 3 
                         }
@@ -656,7 +652,7 @@ describe('FieldVal', function() {
 
             assert.strictEqual(null, output);
             assert.deepEqual({
-                'missing': {
+                'invalid': {
                     'my_field_name' :{
                         'error':1,
                         'error_message':'Field missing.'
@@ -675,7 +671,7 @@ describe('FieldVal', function() {
             });
 
             assert.deepEqual({
-                'missing': {
+                'invalid': {
                     'my_field_name' :{
                         'error':1,
                         'error_message':'Field missing.'
@@ -695,7 +691,7 @@ describe('FieldVal', function() {
             }, function(response){
                 did_respond = true;
                 assert.deepEqual(response, {
-                    'missing': {
+                    'invalid': {
                         'my_field_name' :{
                             'error':1,
                             'error_message':'Field missing.'
@@ -709,7 +705,7 @@ describe('FieldVal', function() {
             assert.equal(did_respond, true);
 
             assert.deepEqual({
-                'missing': {
+                'invalid': {
                     'my_field_name' :{
                         'error':1,
                         'error_message':'Field missing.'
@@ -765,23 +761,23 @@ describe('FieldVal', function() {
             validator.get(
                 'required_string',
                 bval.string({
-                    required:true, 
-                    missing_error: {
-                        error_message: 'I\'m a custom missing error!',
-                        error: 1000
+                    'required': true, 
+                    'missing_error': {
+                        'error_message': 'I\'m a custom missing error!',
+                        'error': 1000
                     }
                 })
             );
 
             var expected = {
-                missing: {
+                'invalid': {
                     'required_string': {
-                        error_message: 'I\'m a custom missing error!',
-                        error: 1000
+                        'error_message': 'I\'m a custom missing error!',
+                        'error': 1000
                     }
                 },
-                error_message: 'One or more errors.',
-                error: 5
+                'error_message': 'One or more errors.',
+                'error': 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -800,7 +796,7 @@ describe('FieldVal', function() {
             );
 
             var expected = {
-                missing: {
+                'invalid': {
                     'required_string': {
                         error_message: 'I\'m a custom missing error!',
                         error: 1000
@@ -828,10 +824,10 @@ describe('FieldVal', function() {
             );
 
             var expected = {
-                missing: {
+                'invalid': {
                     'required_integer': {
-                        error_message: 'I\'m a custom missing error (for an integer), provided via a function!',
-                        error: 1000
+                        'error_message': 'I\'m a custom missing error (for an integer), provided via a function!',
+                        'error': 1000
                     }
                 },
                 error_message: 'One or more errors.',
@@ -851,9 +847,9 @@ describe('FieldVal', function() {
             );
 
             var expected = {
-                missing: {
+                'invalid': {
                     'required_integer': {
-                        error_message: 'I\'m a custom missing error (for an integer), provided as a string!'
+                        'error_message': 'I\'m a custom missing error (for an integer), provided as a string!'
                         //No error code
                     }
                 },
@@ -954,14 +950,14 @@ describe('FieldVal', function() {
             var validator = new FieldVal({});
             validator.missing('a_missing_field');
             var expected = {
-                missing: {
+                'invalid': {
                     'a_missing_field': {
-                        error_message: 'Field missing.',
-                        error: 1
+                        'error_message': 'Field missing.',
+                        'error': 1
                     }
                 },
-                error_message: 'One or more errors.',
-                error: 5
+                'error_message': 'One or more errors.',
+                'error': 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -971,19 +967,19 @@ describe('FieldVal', function() {
         it('end() should return an error with the invalid key if an_invalid_field is added', function() {
             var validator = new FieldVal({});
             var invalid_details = {
-                error: 1000,
-                error_message: 'My custom error'
+                'error': 1000,
+                'error_message': 'My custom error'
             }
             validator.invalid('an_invalid_field', invalid_details);
             var expected = {
-                invalid: {
+                'invalid': {
                     'an_invalid_field': {
-                        error: 1000,
-                        error_message: 'My custom error'
+                        'error': 1000,
+                        'error_message': 'My custom error'
                     }
                 },
-                error_message: 'One or more errors.',
-                error: 5
+                'error_message': 'One or more errors.',
+                'error': 5
             };
             var actual = validator.end();
             assert.deepEqual(expected, actual);
@@ -1074,13 +1070,11 @@ describe('FieldVal', function() {
             validator.error('an_unrecognized', unrecognized_error);
             
             var expected = {
-                'missing': {
+                'invalid': {
                     'a_missing': {
                         error: 1,
                         error_message: 'Field missing.'
-                    }
-                },
-                'unrecognized': {
+                    },
                     'an_unrecognized': {
                         error: 3,
                         error_message: 'Unrecognized field.'
@@ -1110,18 +1104,16 @@ describe('FieldVal', function() {
             var expected = {
                 'invalid': {
                     'first_level': {
-                        error: 5,
-                        error_message: 'One or more errors.',
-                        'missing': {
+                        'error': 5,
+                        'error_message': 'One or more errors.',
+                        'invalid': {
                             'a_missing': {
-                                error: 1,
-                                error_message: 'Field missing.'
-                            }
-                        },
-                        'unrecognized': {
+                                'error': 1,
+                                'error_message': 'Field missing.'
+                            },
                             'an_unrecognized': {
-                                error: 3,
-                                error_message: 'Unrecognized field.'
+                                'error': 3,
+                                'error_message': 'Unrecognized field.'
                             }
                         }
                     }
@@ -1152,13 +1144,11 @@ describe('FieldVal', function() {
             return JSON.parse(example_data);
         }
         var example_error = JSON.stringify({
-            'missing': {
+            'invalid': {
                 'two': {
                     'error_message': 'Field missing.',
                     'error': 1
-                }
-            },
-            'invalid': {
+                },
                 'one': {
                     'error_message': 'Incorrect field type. Expected number.',
                     'error': 2,
@@ -1166,13 +1156,11 @@ describe('FieldVal', function() {
                     'received': 'string'
                 },
                 'first_inner': {
-                    'missing': {
+                    'invalid': {
                         'shallow_3': {
                             'error_message': 'Field missing.',
                             'error': 1
-                        }
-                    },
-                    'invalid': {
+                        },
                         'shallow_2': {
                             'error_message': 'Incorrect field type. Expected string.',
                             'error': 2,
@@ -1248,7 +1236,7 @@ describe('FieldVal', function() {
             assert.deepEqual(
                 validator.end(),
                 {
-                    'unrecognized':{
+                    'invalid':{
                         'my_string':{
                             'error_message':'Unrecognized field.',
                             'error':3
@@ -1268,7 +1256,7 @@ describe('FieldVal', function() {
             assert.deepEqual(
                 validator.end(),
                 {
-                    'unrecognized':{
+                    'invalid':{
                         'my_string':{
                             'error_message':'Unrecognized field.',
                             'error':3
@@ -1314,7 +1302,7 @@ describe('FieldVal', function() {
             var validator = new FieldVal({});
             validator.get('my_integer', FieldVal.required(true))
             var expected = {
-                'missing': {
+                'invalid': {
                     'my_integer': {
                         'error_message': 'Field missing.',
                         'error': 1
@@ -1331,7 +1319,7 @@ describe('FieldVal', function() {
                 my_integer: 57
             });
             var expected = {
-                'unrecognized': {
+                'invalid': {
                     'my_integer': {
                         'error_message': 'Unrecognized field.',
                         'error': 3
@@ -1359,7 +1347,7 @@ describe('FieldVal', function() {
                         'error': 1000,
                         'error_message': 'An existing error'
                     },{
-                        'unrecognized': {
+                        'invalid': {
                             'my_integer': {
                                 'error_message': 'Unrecognized field.',
                                 'error': 3

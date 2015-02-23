@@ -513,7 +513,7 @@ describe('BasicVal', function() {
             })
             var email = my_validator.get("my_email", bval.email({required:true}));
             assert.deepEqual({
-                "missing":{
+                "invalid":{
                     "my_email":{
                         "error_message":"Field missing.",
                         "error":1

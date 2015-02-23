@@ -22,9 +22,7 @@ var FieldVal = (function(){
         fv.async_waiting = 0;
 
         fv.validating = validating;
-        fv.missing_keys = {};
         fv.invalid_keys = {};
-        fv.unrecognized_keys = {};
         fv.recognized_keys = {};
 
         //Top level errors - added using .error() 
@@ -60,9 +58,6 @@ var FieldVal = (function(){
                         if(validating.hasOwnProperty(j)) {
                             fv.recognized_keys[j] = true;
                         }
-                    }
-                    if(key_error.missing){
-                        fv.missing_keys = key_error.missing;
                     }
                     if(key_error.unrecognized){
                         fv.unrecognized_keys = key_error.unrecognized;
@@ -142,17 +137,6 @@ var FieldVal = (function(){
 
                 var key_name = arguments[0];
 
-                var error_code = error.error;
-                if(error_code!==undefined){
-                    if(error_code===FieldVal.FIELD_MISSING){
-                        fv.missing_keys[key_name] = error;
-                        return fv;
-                    } else if(error_code===FieldVal.FIELD_UNRECOGNIZED){
-                        fv.unrecognized_keys[key_name] = error;
-                        return fv;
-                    }
-                }
-
                 fv.invalid_keys[key_name] = FieldVal.add_to_invalid(
                     error, 
                     fv.invalid_keys[key_name]
@@ -191,29 +175,14 @@ var FieldVal = (function(){
             if(current_error instanceof FieldVal){
                 current_error.invalid(this_key, new_error);
             } else {
-                var error_code = error.error;
-
-                if(error_code===FieldVal.FIELD_MISSING){
-                    if(!current_error.missing){
-                        current_error.missing = {};
-                    }
-                    current_error.missing[this_key] = error;
-                } else if(error_code===FieldVal.FIELD_UNRECOGNIZED){
-                    if(!current_error.unrecognized){
-                        current_error.unrecognized = {};
-                    }
-                    current_error.unrecognized[this_key] = error;
-                } else {
-
-                    if(!current_invalid){
-                        current_invalid = current_error.invalid = {};
-                    }
-
-                    current_invalid[this_key] = FieldVal.add_to_invalid(
-                        new_error, 
-                        current_invalid[this_key]
-                    );
+                if(!current_invalid){
+                    current_invalid = current_error.invalid = {};
                 }
+
+                current_invalid[this_key] = FieldVal.add_to_invalid(
+                    new_error, 
+                    current_invalid[this_key]
+                );
             }
 
             current_error = new_error;
@@ -306,18 +275,13 @@ var FieldVal = (function(){
     FieldVal.prototype.missing = function (field_name, flags) {
         var fv = this;
 
-        fv.missing_keys[field_name] = FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
-        return fv;
+        return fv.error(field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, flags));
     };
 
-    FieldVal.prototype.unrecognized = function (field_name) {
+    FieldVal.prototype.unrecognized = function (field_name, flags) {
         var fv = this;
 
-        fv.unrecognized_keys[field_name] = {
-            error_message: FieldVal.FIELD_UNRECOGNIZED_STRING,
-            error: FieldVal.FIELD_UNRECOGNIZED
-        };
-        return fv;
+        return fv.error(field_name, FieldVal.create_error(FieldVal.UNRECOGNIZED_ERROR, flags));
     };
 
     FieldVal.prototype.recognized = function (field_name) {
@@ -365,6 +329,7 @@ var FieldVal = (function(){
         var has_error = false;
 
         var returning_unrecognized = {};
+        var returning_invalid = {};
 
         //Iterate through manually unrecognized keys
         var key;
@@ -379,25 +344,25 @@ var FieldVal = (function(){
         var i, auto_key;
         for (i = 0; i < auto_unrecognized.length; i++) {
             auto_key = auto_unrecognized[i];
-            if (!returning_unrecognized[auto_key]) {
-                returning_unrecognized[auto_key] = {
-                    error_message: "Unrecognized field.",
-                    error: FieldVal.FIELD_UNRECOGNIZED
-                };
-            }
+            returning_invalid[auto_key] = {
+                error_message: "Unrecognized field.",
+                error: FieldVal.FIELD_UNRECOGNIZED
+            };
+            has_error = true;
         }
 
-        if (!is_empty(fv.missing_keys)) {
-            returning.missing = fv.missing_keys;
-            has_error = true;
-        }
         if (!is_empty(fv.invalid_keys)) {
-            returning.invalid = fv.invalid_keys;
+            for(var i in fv.invalid_keys){
+                if(fv.invalid_keys.hasOwnProperty(i)){
+                    returning_invalid[i] = fv.invalid_keys[i];
+                }
+            }
             has_error = true;
         }
-        if (!is_empty(returning_unrecognized)) {
-            returning.unrecognized = returning_unrecognized;
-            has_error = true;
+
+
+        if(has_error){
+            returning.invalid = returning_invalid;
         }
 
         if (has_error) {
@@ -488,6 +453,13 @@ var FieldVal = (function(){
             error: FieldVal.FIELD_MISSING
         };
     };
+
+    FieldVal.UNRECOGNIZED_ERROR = function(){
+        return {
+            error_message: FieldVal.FIELD_UNRECOGNIZED_STRING,
+            error: FieldVal.FIELD_UNRECOGNIZED
+        };
+    }
 
     FieldVal.get_value_and_type = function (value, desired_type, flags) {
         if (!flags) {
@@ -598,7 +570,7 @@ var FieldVal = (function(){
                 if (response === FieldVal.REQUIRED_ERROR) {
 
                     if (shared_options.field_name!==undefined) {
-                        shared_options.validator.missing(shared_options.field_name, flags);
+                        shared_options.validator.error(shared_options.field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, flags));
                         use_check_done();
                         return;
                     } else {
