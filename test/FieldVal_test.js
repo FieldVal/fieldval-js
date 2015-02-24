@@ -1,5 +1,5 @@
 var FieldVal = require('../fieldval');
-var bval = FieldVal.BasicVal;
+var BasicVal = FieldVal.BasicVal;
 var assert = require('assert')
 
 describe('FieldVal', function() {
@@ -66,40 +66,90 @@ describe('FieldVal', function() {
 
         it('should be able to continue from a previous validator', function(done) {
             var my_data = {
-                'valid_one_key': 10,
+                'valid_one_key': "AB",
                 'my_invalid_key': 15,
                 'my_unrecognized_key': 13,
+                'my_initially_unrecognized_key': true,
+                'my_object': {
+                    'inner_valid_one_key': "DE",
+                    'inner_my_invalid_key': 15,
+                    'inner_my_unrecognized_key': 13,
+                    'inner_my_initially_unrecognized_key': true
+                }
             };
             var validator_one = new FieldVal(my_data);
 
-            validator_one.get('valid_one_key', bval.integer(true));
-            validator_one.get('my_invalid_key', bval.integer(true), bval.minimum(20));
-            validator_one.get('my_missing_key', bval.integer(true));
+            validator_one.get('valid_one_key', BasicVal.string(true));
+            validator_one.get('my_invalid_key', BasicVal.integer(true), BasicVal.minimum(20));
+            validator_one.get('my_missing_key', BasicVal.integer(true));
+            validator_one.get('my_object', BasicVal.object(true), function(val){
+                var inner_validator_one = new FieldVal(val);
+                inner_validator_one.get('inner_valid_one_key', BasicVal.string(true));
+                inner_validator_one.get('inner_my_invalid_key', BasicVal.integer(true), BasicVal.minimum(20));
+                inner_validator_one.get('inner_my_missing_key', BasicVal.integer(true));
+                return inner_validator_one.end();
+            });
 
-            validator_one.end(function(error_one, recognized_keys){
+            validator_one.end(function(error_one){
 
-                var validator_two = new FieldVal(my_data, error_one, recognized_keys);
-                validator_two.get('valid_one_key', bval.integer(true), bval.minimum(20))//Makes this key invalid on validator_two
+                var validator_two = new FieldVal(my_data, error_one);
+                //Make this key invalid on validator_two
+                validator_two.get('valid_one_key', BasicVal.string(true), BasicVal.prefix("ABC"))
+                validator_two.get("my_initially_unrecognized_key", BasicVal.boolean(true));
+
+                validator_two.get('my_object', BasicVal.object(true), function(val){
+                    var inner_error_one = FieldVal.get_error("my_object", error_one);
+                    var inner_validator_two = new FieldVal(val, inner_error_one);
+                    inner_validator_two.get("inner_valid_one_key", BasicVal.string(true), BasicVal.prefix("DEF"));
+                    inner_validator_two.get("inner_my_initially_unrecognized_key", BasicVal.boolean(true));
+                    return inner_validator_two.end();
+                })
 
                 var error_two = validator_two.end();
 
-                assert.deepEqual(error_two, { 
-                    invalid: { 
-                        my_missing_key: { 
-                            error_message: 'Field missing.', error: 1 
+                assert.deepEqual(error_two, {
+                    "invalid": {
+                        "my_unrecognized_key": {
+                            "error_message": "Unrecognized field.",
+                            "error": 3
                         },
-                        my_invalid_key: { 
-                            error: 102, error_message: 'Value is less than 20' 
+                        "my_invalid_key": {
+                            "error": 102,
+                            "error_message": "Value is less than 20"
                         },
-                        valid_one_key: { 
-                            error: 102, error_message: 'Value is less than 20' 
+                        "my_missing_key": {
+                            "error_message": "Field missing.",
+                            "error": 1
                         },
-                        my_unrecognized_key: { 
-                            error_message: 'Unrecognized field.', error: 3 
+                        "my_object": {
+                            "invalid": {
+                                "inner_my_unrecognized_key": {
+                                    "error_message": "Unrecognized field.",
+                                    "error": 3
+                                },
+                                "inner_my_invalid_key": {
+                                    "error": 102,
+                                    "error_message": "Value is less than 20"
+                                },
+                                "inner_my_missing_key": {
+                                    "error_message": "Field missing.",
+                                    "error": 1
+                                },
+                                "inner_valid_one_key": {
+                                    "error": 106,
+                                    "error_message": "Value does not have prefix: DEF"
+                                }
+                            },
+                            "error_message": "One or more errors.",
+                            "error": 5
+                        },
+                        "valid_one_key": {
+                            "error": 106,
+                            "error_message": "Value does not have prefix: ABC"
                         }
                     },
-                    error_message: 'One or more errors.',
-                    error: 5 
+                    "error_message": "One or more errors.",
+                    "error": 5
                 });
 
                 done();
@@ -263,8 +313,8 @@ describe('FieldVal', function() {
 
         it('should return an error if any of the checks throw one (without validator)', function() {
             var output = FieldVal.use_checks(27, [
-                bval.integer(true),
-                bval.minimum(30)
+                BasicVal.integer(true),
+                BasicVal.minimum(30)
             ]);
             assert.deepEqual({
                 'error':102,
@@ -274,7 +324,7 @@ describe('FieldVal', function() {
 
         it('should return undefined if none of the checks are async and there are no errors', function() {
             var emit_output;
-            var output = FieldVal.use_checks(undefined, [bval.integer(false, {parse:true}),bval.minimum(1)],{
+            var output = FieldVal.use_checks(undefined, [BasicVal.integer(false, {parse:true}),BasicVal.minimum(1)],{
                 emit: function(emitted){
                     emit_output = emitted;
                 }
@@ -286,7 +336,7 @@ describe('FieldVal', function() {
         it('should use the emit function if one is provided', function() {
             var called_emit = false;
             var output = FieldVal.use_checks('17', [
-                bval.integer(true, {parse: true})
+                BasicVal.integer(true, {parse: true})
             ],{
                 emit: function(new_value){
                     assert.strictEqual(17, new_value);
@@ -298,7 +348,7 @@ describe('FieldVal', function() {
 
         it('should return a missing error (FieldVal.REQUIRED_ERROR) (without validator)', function() {
             var output = FieldVal.use_checks(undefined, [
-                bval.string(true)
+                BasicVal.string(true)
             ]);
             assert.deepEqual(FieldVal.REQUIRED_ERROR, output);
         })
@@ -306,11 +356,11 @@ describe('FieldVal', function() {
         it('should allow omitting the options argument', function() {
             var did_respond = false;
             var output = FieldVal.use_checks('my_value', [
-                bval.integer(true)
+                BasicVal.integer(true)
             ], function(response){
                 did_respond = true;
                 assert.deepEqual({
-                    'error_message':'Incorrect field type. Expected integer.',
+                    'error_message':'Incorrect field type. Expected integer, but received string.',
                     'error':2,
                     'expected':'integer',
                     'received':'string'
@@ -322,7 +372,7 @@ describe('FieldVal', function() {
 
         it('should return undefined if required false and value is undefined', function() {
             var output = FieldVal.use_checks(undefined, [
-                bval.string(false),
+                BasicVal.string(false),
             ]);
             assert.deepEqual(null, output);
         })
@@ -330,7 +380,7 @@ describe('FieldVal', function() {
         it('should return a missing error (FieldVal.REQUIRED_ERROR) (with validator, without field name)', function() {
             var validator = new FieldVal();
             var output = FieldVal.use_checks(undefined, [
-                bval.string(true)
+                BasicVal.string(true)
             ],{
                 validator: validator
             });
@@ -349,8 +399,8 @@ describe('FieldVal', function() {
             var output = FieldVal.use_checks(
                 27,//value
                 [//checks
-                    bval.integer(true),
-                    bval.minimum(30)
+                    BasicVal.integer(true),
+                    BasicVal.minimum(30)
                 ],
                 {//options
                     validator: validator
@@ -375,8 +425,8 @@ describe('FieldVal', function() {
             var output = FieldVal.use_checks(
                 27,//value
                 [//checks
-                    bval.integer(true),
-                    bval.minimum(30)
+                    BasicVal.integer(true),
+                    BasicVal.minimum(30)
                 ],
                 {//options
                     validator: validator,
@@ -410,8 +460,8 @@ describe('FieldVal', function() {
             var output = FieldVal.use_checks(
                 27,//value
                 [//checks
-                    bval.integer(true),
-                    bval.minimum(10),
+                    BasicVal.integer(true),
+                    BasicVal.minimum(10),
                     function(value, emit, callback){
                         setTimeout(function(){
                             callback({
@@ -420,7 +470,7 @@ describe('FieldVal', function() {
                             })
                         },30);
                     },
-                    bval.minimum(30)
+                    BasicVal.minimum(30)
                 ],
                 {//options
                     validator: validator,
@@ -462,8 +512,8 @@ describe('FieldVal', function() {
             FieldVal.use_checks(
                 27,//value
                 [//checks
-                    bval.integer(true),
-                    bval.minimum(10),
+                    BasicVal.integer(true),
+                    BasicVal.minimum(10),
                     function(value, emit, callback){
                         setTimeout(function(){
                             callback({
@@ -472,7 +522,7 @@ describe('FieldVal', function() {
                             })
                         },30);
                     },
-                    bval.minimum(30)
+                    BasicVal.minimum(30)
                 ],
                 {//options
                     validator: validator,
@@ -490,8 +540,8 @@ describe('FieldVal', function() {
             FieldVal.use_checks(
                 28,//value
                 [//checks
-                    bval.integer(true),
-                    bval.minimum(10),
+                    BasicVal.integer(true),
+                    BasicVal.minimum(10),
                     function(value, emit, callback){
                         setTimeout(function(){
                             callback({
@@ -500,7 +550,7 @@ describe('FieldVal', function() {
                             })
                         },10);
                     },
-                    bval.minimum(30)
+                    BasicVal.minimum(30)
                 ],
                 {//options
                     validator: validator,
@@ -544,8 +594,8 @@ describe('FieldVal', function() {
             var output = FieldVal.use_checks(
                 27,//value
                 [//checks
-                    bval.integer(true),
-                    bval.minimum(10),
+                    BasicVal.integer(true),
+                    BasicVal.minimum(10),
                     function(value, emit, callback){
                         setTimeout(function(){
                             callback({
@@ -554,7 +604,7 @@ describe('FieldVal', function() {
                             })
                         },30);
                     },
-                    bval.minimum(30)
+                    BasicVal.minimum(30)
                 ],
                 {//options
                     validator: validator,
@@ -589,8 +639,8 @@ describe('FieldVal', function() {
             var did_respond = false;
 
             var output = FieldVal.use_checks(27, [
-                bval.integer(true),
-                bval.minimum(10),
+                BasicVal.integer(true),
+                BasicVal.minimum(10),
                 {
                     check: function(value, emit, callback){
                         setTimeout(function(){
@@ -602,7 +652,7 @@ describe('FieldVal', function() {
                     },
                     stop_on_error: false
                 },
-                bval.minimum(30)
+                BasicVal.minimum(30)
             ],{
                 validator: validator,
                 field_name: 'my_field_name',
@@ -644,7 +694,7 @@ describe('FieldVal', function() {
         it('should return a missing error (with validator, with field name)', function() {
             var validator = new FieldVal();
             var output = FieldVal.use_checks(undefined, [
-                bval.integer(true)
+                BasicVal.integer(true)
             ],{
                 validator: validator,
                 field_name: 'my_field_name'
@@ -665,7 +715,7 @@ describe('FieldVal', function() {
 
         it('should return a missing error (without validator, with field name)', function() {
             var output = FieldVal.use_checks(undefined, [
-                bval.integer(true)
+                BasicVal.integer(true)
             ],{
                 field_name: 'my_field_name'
             });
@@ -685,7 +735,7 @@ describe('FieldVal', function() {
         it('should return a missing error (without validator, with field name, async)', function() {
             var did_respond = false;
             var output = FieldVal.use_checks(undefined, [
-                bval.integer(true)
+                BasicVal.integer(true)
             ],{
                 field_name: 'my_field_name'
             }, function(response){
@@ -719,10 +769,10 @@ describe('FieldVal', function() {
 
         it('should work with nested arrays of checks', function() {
             var output = FieldVal.use_checks(27, [
-                bval.integer(true),
+                BasicVal.integer(true),
                 [
-                    bval.minimum(10),
-                    bval.maximum(20)
+                    BasicVal.minimum(10),
+                    BasicVal.maximum(20)
                 ]
             ]);
             assert.deepEqual({
@@ -733,12 +783,12 @@ describe('FieldVal', function() {
 
         it('stop_on_error should be respected, even in nested checks', function() {
             var output = FieldVal.use_checks(27, [
-                bval.integer(true),
+                BasicVal.integer(true),
                 [
-                    bval.minimum(30, {stop_on_error: false}),
-                    bval.maximum(20)
+                    BasicVal.minimum(30, {stop_on_error: false}),
+                    BasicVal.maximum(20)
                 ],
-                bval.string(true)//Won't be run
+                BasicVal.string(true)//Won't be run
             ]);
             assert.deepEqual({
                 'error':4,
@@ -760,7 +810,7 @@ describe('FieldVal', function() {
             var validator = new FieldVal({});
             validator.get(
                 'required_string',
-                bval.string({
+                BasicVal.string({
                     'required': true, 
                     'missing_error': {
                         'error_message': 'I\'m a custom missing error!',
@@ -787,7 +837,7 @@ describe('FieldVal', function() {
             var validator = new FieldVal({});
             validator.get(
                 'required_string',
-                bval.string(true, {
+                BasicVal.string(true, {
                     missing_error: {
                         error_message: 'I\'m a custom missing error!',
                         error: 1000
@@ -813,7 +863,7 @@ describe('FieldVal', function() {
             var validator = new FieldVal({});
             validator.get(
                 'required_integer',
-                bval.integer(true, {
+                BasicVal.integer(true, {
                     missing_error: function(){
                         return {
                             error_message: 'I\'m a custom missing error (for an integer), provided via a function!',
@@ -841,7 +891,7 @@ describe('FieldVal', function() {
             var validator = new FieldVal({});
             validator.get(
                 'required_integer',
-                bval.integer(true, {
+                BasicVal.integer(true, {
                     missing_error: 'I\'m a custom missing error (for an integer), provided as a string!'
                 })
             );
@@ -882,7 +932,7 @@ describe('FieldVal', function() {
         it('should return an error for an invalid type', function() {
             var output = FieldVal.type('string')(15);
             assert.deepEqual({
-                'error_message': 'Incorrect field type. Expected string.',
+                'error_message': 'Incorrect field type. Expected string, but received number.',
                 'error': 2,
                 'expected': 'string',
                 'received': 'number'
@@ -1150,7 +1200,7 @@ describe('FieldVal', function() {
                     'error': 1
                 },
                 'one': {
-                    'error_message': 'Incorrect field type. Expected number.',
+                    'error_message': 'Incorrect field type. Expected number, but received string.',
                     'error': 2,
                     'expected': 'number',
                     'received': 'string'
@@ -1162,7 +1212,7 @@ describe('FieldVal', function() {
                             'error': 1
                         },
                         'shallow_2': {
-                            'error_message': 'Incorrect field type. Expected string.',
+                            'error_message': 'Incorrect field type. Expected string, but received number.',
                             'error': 2,
                             'expected': 'string',
                             'received': 'number'
@@ -1172,7 +1222,7 @@ describe('FieldVal', function() {
                                 'third_inner': {
                                     'invalid': {
                                         'another_deep_key': {
-                                            'error_message': 'Incorrect field type. Expected number.',
+                                            'error_message': 'Incorrect field type. Expected number, but received string.',
                                             'error': 2,
                                             'expected': 'number',
                                             'received': 'string'
@@ -1210,7 +1260,7 @@ describe('FieldVal', function() {
                     'third_inner': {
                         'invalid': {
                             'another_deep_key': {
-                                'error_message': 'Incorrect field type. Expected number.',
+                                'error_message': 'Incorrect field type. Expected number, but received string.',
                                 'error': 2,
                                 'expected': 'number',
                                 'received': 'string'
