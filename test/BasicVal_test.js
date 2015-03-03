@@ -47,7 +47,7 @@ describe('BasicVal', function() {
             assert.deepEqual({
                 "invalid":{
                     "my_integer":{
-                        "error_message":"Incorrect field type. Expected integer.",
+                        "error_message":"Incorrect field type. Expected integer, but received string.",
                         "error":2,
                         "expected":"integer",
                         "received":"string"
@@ -108,7 +108,7 @@ describe('BasicVal', function() {
                     "my_value": {
                         "invalid": {
                             "2": {
-                                "error_message": "Incorrect field type. Expected integer.",
+                                "error_message": "Incorrect field type. Expected integer, but received string.",
                                 "error": 2,
                                 "expected": "integer",
                                 "received": "string"
@@ -513,7 +513,7 @@ describe('BasicVal', function() {
             })
             var email = my_validator.get("my_email", bval.email({required:true}));
             assert.deepEqual({
-                "missing":{
+                "invalid":{
                     "my_email":{
                         "error_message":"Field missing.",
                         "error":1
@@ -534,7 +534,7 @@ describe('BasicVal', function() {
                 "invalid":{
                     "my_email":{
                         "error":2,
-                        "error_message":"Incorrect field type. Expected string.",
+                        "error_message":"Incorrect field type. Expected string, but received number.",
                         "expected": "string",
                         "received": "number"
                     }
@@ -603,7 +603,7 @@ describe('BasicVal', function() {
                 "my_number": "43.5"
             })
             assert.strictEqual(undefined, my_validator.get("my_number", bval.number(true)));
-            assert.deepEqual({"invalid":{"my_number":{"error_message":"Incorrect field type. Expected number.","error":2,"expected":"number","received":"string"}},"error_message":"One or more errors.","error":5}, my_validator.end());
+            assert.deepEqual({"invalid":{"my_number":{"error_message":"Incorrect field type. Expected number, but received string.","error":2,"expected":"number","received":"string"}},"error_message":"One or more errors.","error":5}, my_validator.end());
         })
 
         it('should create a custom error when one is provided (number)', function() {
@@ -646,7 +646,7 @@ describe('BasicVal', function() {
                 "my_string": 13
             })
             assert.strictEqual(undefined, my_validator.get("my_string", bval.string(true)));
-            assert.deepEqual({"invalid":{"my_string":{"error_message":"Incorrect field type. Expected string.","error":2,"expected":"string","received":"number"}},"error_message":"One or more errors.","error":5}, my_validator.end())
+            assert.deepEqual({"invalid":{"my_string":{"error_message":"Incorrect field type. Expected string, but received number.","error":2,"expected":"string","received":"number"}},"error_message":"One or more errors.","error":5}, my_validator.end())
         })
     })
 })
