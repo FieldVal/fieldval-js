@@ -18,7 +18,7 @@ There are three main keys for errors:
 
 * ```invalid```
 	
-	These fields are errornous. Either they were not provided, but are required (missing), unrecognized because they were not looked for when validating or they contain an invalid value.
+	These fields have errors. Either they were not provided, but are required (missing), unrecognized because they were not looked for when validating or they contain an invalid value.
 	
 	* ```my_integer``` isn't an integer - it's a string
 	* ```my_object``` contains invalid fields
