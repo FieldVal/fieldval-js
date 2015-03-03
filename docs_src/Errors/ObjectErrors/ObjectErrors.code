@@ -1,38 +1,50 @@
 //Example input
 {
-	"my_integer": "Not an integer",
-	"my_string": 23,
-	"curveball": "Not expected!"
+    "my_integer": "Not an integer",
+    "my_object": {
+        "inner_field": "AB123DE"
+    },
+    "curveball": "Not expected!"
 }
 
 //Example error
 {
-	"error_message": "One or more errors.",
-	"error": 5,
-	"invalid": {
-		"my_string": {
-			"error_message": "Incorrect field type. Expected string.",
-			"error": 2,
-			"expected": "string",
-			"received": "number"
-		},
-		"my_integer": {
-			"error_message": "Incorrect field type. Expected integer.",
-			"error": 2,
-			"expected": "integer",
-			"received": "string"
-		}
-	},
-	"missing": {
-		"my_array": {
-			"error_message": "Field missing.",
-			"error": 1
-		}
-	},
-	"unrecognized": {
-		"curveball": {
-			"error_message": "Unrecognized field.",
-			"error": 3
-		}
-	}
+    "invalid": {
+        "curveball": {
+            "error_message": "Unrecognized field.",
+            "error": 3
+        },
+        "my_array": {
+            "error_message": "Field missing.",
+            "error": 1
+        },
+        "my_integer": {
+            "error_message": "Incorrect field type. Expected integer, but received string.",
+            "error": 2,
+            "expected": "integer",
+            "received": "string"
+        },
+        "my_object": {
+            "invalid": {
+                "inner_field": {
+                    "error": 4,
+                    "error_message": "Multiple errors.",
+                    "errors": [
+                        {
+                            "error": 106,
+                            "error_message": "Value does not have prefix: ABC"
+                        },
+                        {
+                            "error": 110,
+                            "error_message": "Value does not have suffix: DEF"
+                        }
+                    ]
+                }
+            },
+            "error_message": "One or more errors.",
+            "error": 5
+        }
+    },
+    "error_message": "One or more errors.",
+    "error": 5
 }
