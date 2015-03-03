@@ -1,6 +1,6 @@
 {
     "name": "fieldval",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "description": "fieldval",
     "main": "fieldval.js",
     "scripts": {
