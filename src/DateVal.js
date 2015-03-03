@@ -24,6 +24,8 @@ var DateVal = (function(){
         },
     	date_format: function(flags){
 
+            flags = flags || {};
+
             var check = function(format, emit) {
 
                 var format_array = [];
@@ -49,7 +51,13 @@ var DateVal = (function(){
                 if(error){
                     return FieldVal.create_error(DateVal.errors.invalid_date_format_string, flags);
                 } else {
-                    emit(format_array);
+                    
+                    if (flags.emit == DateVal.EMIT_STRING) {
+                        emit(format);
+                    } else {
+                        emit(format_array);
+                    }
+
                 }
             };
             if(flags){
@@ -328,6 +336,7 @@ var DateVal = (function(){
     DateVal.EMIT_COMPONENT_ARRAY = {};
     DateVal.EMIT_DATE = {};
     DateVal.EMIT_OBJECT = {};
+    DateVal.EMIT_STRING = {};
 
     DateVal.date_components = {
         "yyyy": [4],
