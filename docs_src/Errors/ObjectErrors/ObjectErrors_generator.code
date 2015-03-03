@@ -1,0 +1,18 @@
+var data = {
+    "my_integer": "Not an integer",
+    "my_object": {
+        "inner_field": "AB123DE"
+    },
+    "curveball": "Not expected!"
+}
+
+var validator = new FieldVal(data);
+validator.get("my_array", bval.array())
+validator.get("my_integer", bval.integer())
+validator.get("my_object", bval.object(), function(val){
+    var inner_validator = new FieldVal(val);
+    inner_validator.get("inner_field",bval.string(),bval.prefix("ABC",{stop_on_error:false}),bval.suffix("DEF"));
+    return inner_validator.end();
+})
+
+console.log(JSON.stringify(validator.end(),null,4));

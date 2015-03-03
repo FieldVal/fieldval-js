@@ -22,9 +22,7 @@ var FieldVal = (function(){
         fv.async_waiting = 0;
 
         fv.validating = validating;
-        fv.missing_keys = {};
         fv.invalid_keys = {};
-        fv.unrecognized_keys = {};
         fv.recognized_keys = {};
 
         //Top level errors - added using .error() 
@@ -60,9 +58,6 @@ var FieldVal = (function(){
                         if(validating.hasOwnProperty(j)) {
                             fv.recognized_keys[j] = true;
                         }
-                    }
-                    if(key_error.missing){
-                        fv.missing_keys = key_error.missing;
                     }
                     if(key_error.unrecognized){
                         fv.unrecognized_keys = key_error.unrecognized;
@@ -121,12 +116,47 @@ var FieldVal = (function(){
         return new FieldVal(current_value,current_error);
     };
 
-    //TODO guard against invalid arguments
-    FieldVal.prototype.invalid = function(){
+    FieldVal.get_error = function(){
+        var keys;
+        var first_argument = arguments[0];
+        var last_argument = arguments[arguments.length-1];
+
+        if(typeof last_argument !== "object" || Array.isArray(last_argument)){
+            throw new Error("Last argument to .get_error is not an error");
+        }
+        
+        if(Array.isArray(first_argument)){
+            keys = first_argument;
+        } else {
+            keys = [];
+            for(var i=0; i < arguments.length-1; i++){
+                keys.push(arguments[i]);
+            }
+        }
+
+        var current_error = last_argument;
+        for(var k = 0; k < keys.length; k++){
+            var this_key = keys[k];
+            if(current_error){
+                var invalid = current_error.invalid;
+                if(invalid){
+                    current_error = invalid[this_key];
+                }
+            }
+        }
+
+        return current_error;
+    };
+
+    FieldVal.prototype.error = function(){
         var fv = this;
 
         //error is the last argument, previous arguments are keys
         var error = arguments[arguments.length-1];
+
+        if(arguments.length===1){
+            fv.errors.push(error);
+        }
 
         var keys, keys_length;
         if(arguments.length===2){
@@ -137,11 +167,12 @@ var FieldVal = (function(){
                 keys_length = first_argument.length;
             } else {
 
-                fv.invalid_keys[arguments[0]] = FieldVal.add_to_invalid(
-                    error, 
-                    fv.invalid_keys[arguments[0]]
-                );
+                var key_name = arguments[0];
 
+                fv.invalid_keys[key_name] = FieldVal.add_to_invalid(
+                    error, 
+                    fv.invalid_keys[key_name]
+                );
                 return fv;
             }
         } else {
@@ -169,14 +200,17 @@ var FieldVal = (function(){
             if(!new_error){
                 new_error = {
                     error: FieldVal.ONE_OR_MORE_ERRORS,
-                    error_message: FieldVal.ONE_OR_MORE_ERRORS_STRING,
-                    invalid: {}
+                    error_message: FieldVal.ONE_OR_MORE_ERRORS_STRING
                 };
             }
 
             if(current_error instanceof FieldVal){
                 current_error.invalid(this_key, new_error);
             } else {
+                if(!current_invalid){
+                    current_invalid = current_error.invalid = {};
+                }
+
                 current_invalid[this_key] = FieldVal.add_to_invalid(
                     new_error, 
                     current_invalid[this_key]
@@ -189,20 +223,7 @@ var FieldVal = (function(){
         return fv;
     };
 
-    FieldVal.prototype.default_value = function (default_value) {
-        var fv = this;
-
-        return {
-            get: function () {
-                var get_result = fv.get.apply(fv, arguments);
-                if (get_result !== undefined) {
-                    return get_result;
-                }
-                //No value. Return the default
-                return default_value;
-            }
-        };
-    };
+    FieldVal.prototype.invalid = FieldVal.prototype.error;
 
     FieldVal.prototype.get = function (field_name) {//Additional arguments are checks
         var fv = this;
@@ -233,6 +254,13 @@ var FieldVal = (function(){
 
         var value = fv.validating[field_name];
         fv.recognized_keys[field_name] = true;
+        var existing_invalid = fv.invalid_keys[field_name];
+        if(existing_invalid!==undefined){
+            if(existing_invalid.error!==undefined && existing_invalid.error===FieldVal.FIELD_UNRECOGNIZED){
+                //This key was previously unrecognized, but is now being checked - remove the error
+                delete fv.invalid_keys[field_name];
+            }
+        }
 
         var use_checks_res = FieldVal.use_checks(value, checks, {
             validator: fv, 
@@ -247,15 +275,6 @@ var FieldVal = (function(){
         });
 
         return (use_checks_res === FieldVal.ASYNC) ? FieldVal.ASYNC : undefined;
-    };
-
-    //Top level error - something that cannot be assigned to a particular key
-    FieldVal.prototype.error = function (error) {
-        var fv = this;
-
-        fv.errors.push(error);
-
-        return fv;
     };
 
     FieldVal.add_to_invalid = function(this_error, existing){
@@ -282,7 +301,7 @@ var FieldVal = (function(){
                 } else {
                     existing = {
                         error: FieldVal.MULTIPLE_ERRORS,
-                        error_message: "Multiple errors.",
+                        error_message: FieldVal.MULTIPLE_ERRORS_STRING,
                         errors: [existing, this_error]
                     };
                 }
@@ -295,18 +314,13 @@ var FieldVal = (function(){
     FieldVal.prototype.missing = function (field_name, flags) {
         var fv = this;
 
-        fv.missing_keys[field_name] = FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
-        return fv;
+        return fv.error(field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, flags));
     };
 
-    FieldVal.prototype.unrecognized = function (field_name) {
+    FieldVal.prototype.unrecognized = function (field_name, flags) {
         var fv = this;
 
-        fv.unrecognized_keys[field_name] = {
-            error_message: "Unrecognized field.",
-            error: FieldVal.FIELD_UNRECOGNIZED
-        };
-        return fv;
+        return fv.error(field_name, FieldVal.create_error(FieldVal.UNRECOGNIZED_ERROR, flags));
     };
 
     FieldVal.prototype.recognized = function (field_name) {
@@ -341,7 +355,7 @@ var FieldVal = (function(){
 
         if(fv.async_waiting<=0){
             if(fv.end_callback){
-                fv.end_callback(fv.generate_response(), fv.recognized_keys);
+                fv.end_callback(fv.generate_response());
             }
         }
     };
@@ -354,6 +368,7 @@ var FieldVal = (function(){
         var has_error = false;
 
         var returning_unrecognized = {};
+        var returning_invalid = {};
 
         //Iterate through manually unrecognized keys
         var key;
@@ -368,25 +383,25 @@ var FieldVal = (function(){
         var i, auto_key;
         for (i = 0; i < auto_unrecognized.length; i++) {
             auto_key = auto_unrecognized[i];
-            if (!returning_unrecognized[auto_key]) {
-                returning_unrecognized[auto_key] = {
-                    error_message: "Unrecognized field.",
-                    error: FieldVal.FIELD_UNRECOGNIZED
-                };
-            }
+            returning_invalid[auto_key] = {
+                error_message: "Unrecognized field.",
+                error: FieldVal.FIELD_UNRECOGNIZED
+            };
+            has_error = true;
         }
 
-        if (!is_empty(fv.missing_keys)) {
-            returning.missing = fv.missing_keys;
-            has_error = true;
-        }
         if (!is_empty(fv.invalid_keys)) {
-            returning.invalid = fv.invalid_keys;
+            for(var k in fv.invalid_keys){
+                if(fv.invalid_keys.hasOwnProperty(k)){
+                    returning_invalid[k] = fv.invalid_keys[k];
+                }
+            }
             has_error = true;
         }
-        if (!is_empty(returning_unrecognized)) {
-            returning.unrecognized = returning_unrecognized;
-            has_error = true;
+
+
+        if(has_error){
+            returning.invalid = returning_invalid;
         }
 
         if (has_error) {
@@ -426,7 +441,7 @@ var FieldVal = (function(){
             fv.end_callback = callback;
 
             if(fv.async_waiting<=0){
-                callback(fv.generate_response(), fv.recognized_keys);
+                callback(fv.generate_response());
             }
         } else {
             return fv.generate_response();
@@ -440,7 +455,7 @@ var FieldVal = (function(){
             fv.end(callback);
         } else {
             if(fv.async_waiting>0){
-                return [fv.generate_response(), fv.recognized_keys];
+                return [fv.generate_response()];
             }
         }
     };
@@ -453,15 +468,18 @@ var FieldVal = (function(){
     FieldVal.NOT_REQUIRED_BUT_MISSING = Math.floor;
 
     FieldVal.FIELD_MISSING = 1;
+    FieldVal.FIELD_MISSING_STRING = "Field missing.";
     FieldVal.INCORRECT_FIELD_TYPE = 2;
     FieldVal.FIELD_UNRECOGNIZED = 3;
+    FieldVal.FIELD_UNRECOGNIZED_STRING = "Unrecognized field.";
     FieldVal.MULTIPLE_ERRORS = 4;
+    FieldVal.MULTIPLE_ERRORS_STRING = "Multiple errors.";
     FieldVal.ONE_OR_MORE_ERRORS = 5;
     FieldVal.ONE_OR_MORE_ERRORS_STRING = "One or more errors.";
 
     FieldVal.INCORRECT_TYPE_ERROR = function (expected_type, type) {
         return {
-            error_message: "Incorrect field type. Expected " + expected_type + ".",
+            error_message: "Incorrect field type. Expected " + expected_type + ", but received "+type+".",
             error: FieldVal.INCORRECT_FIELD_TYPE,
             expected: expected_type,
             received: type
@@ -470,8 +488,15 @@ var FieldVal = (function(){
 
     FieldVal.MISSING_ERROR = function () {
         return {
-            error_message: "Field missing.",
+            error_message: FieldVal.FIELD_MISSING_STRING,
             error: FieldVal.FIELD_MISSING
+        };
+    };
+
+    FieldVal.UNRECOGNIZED_ERROR = function(){
+        return {
+            error_message: FieldVal.FIELD_UNRECOGNIZED_STRING,
+            error: FieldVal.FIELD_UNRECOGNIZED
         };
     };
 
@@ -562,7 +587,7 @@ var FieldVal = (function(){
                 return FieldVal.ASYNC;
             } else {
                 flags = this_check;
-                this_check_function = flags.check;
+                this_check_function = flags;
                 if (flags && (flags.stop_on_error !== undefined)) {
                     stop_on_error = flags.stop_on_error;
                 }
@@ -584,7 +609,7 @@ var FieldVal = (function(){
                 if (response === FieldVal.REQUIRED_ERROR) {
 
                     if (shared_options.field_name!==undefined) {
-                        shared_options.validator.missing(shared_options.field_name, flags);
+                        shared_options.validator.error(shared_options.field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, flags));
                         use_check_done();
                         return;
                     } else {
@@ -623,11 +648,22 @@ var FieldVal = (function(){
             }
         };
 
-        var check_response = this_check_function(shared_options.value, shared_options.emit, function(response){
-            //Response callback
-            with_response(response);
-        });
-        if (this_check_function.length===3){//Is async - it has a third (callback) parameter
+        var check_response;
+        var actual_function;
+        if(typeof this_check_function === 'function') {
+            actual_function = this_check_function;
+            check_response = this_check_function(shared_options.value, shared_options.emit, function(response){
+                //Response callback
+                with_response(response);
+            });
+        } else {
+            actual_function = this_check_function.check;
+            check_response = this_check_function.check(shared_options.value, shared_options.emit, function(response){
+                //Response callback
+                with_response(response);
+            });
+        }
+        if (actual_function.length===3){//Is async - it has a third (callback) parameter
             //Waiting for async
             return FieldVal.ASYNC;
         } else {
@@ -828,6 +864,8 @@ var FieldVal = (function(){
         },
     	date_format: function(flags){
 
+            flags = flags || {};
+
             var check = function(format, emit) {
 
                 var format_array = [];
@@ -853,7 +891,13 @@ var FieldVal = (function(){
                 if(error){
                     return FieldVal.create_error(DateVal.errors.invalid_date_format_string, flags);
                 } else {
-                    emit(format_array);
+                    
+                    if (flags.emit == DateVal.EMIT_STRING) {
+                        emit(format);
+                    } else {
+                        emit(format_array);
+                    }
+
                 }
             };
             if(flags){
@@ -1132,6 +1176,7 @@ var FieldVal = (function(){
     DateVal.EMIT_COMPONENT_ARRAY = {};
     DateVal.EMIT_DATE = {};
     DateVal.EMIT_OBJECT = {};
+    DateVal.EMIT_STRING = {};
 
     DateVal.date_components = {
         "yyyy": [4],
@@ -1746,7 +1791,7 @@ var FieldVal = (function(){
                     var emitted_value;
                     var option_error = FieldVal.use_checks(value, option, null, null, function(emitted){
                         emitted_value = emitted;
-                    })
+                    });
                     if(option_error===FieldVal.ASYNC){
                         throw new Error(".multiple used with async checks, use .multiple_async.");
                     }
@@ -1850,7 +1895,8 @@ var FieldVal = (function(){
             return {
                 check: check
             };
-        }
+        },
+        required: FieldVal.required
     };
 
     BasicVal.email_regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

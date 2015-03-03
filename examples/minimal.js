@@ -1,6 +1,6 @@
 //Import FieldVal and FieldVal-BasicVal (some simple checks)
-var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
+var FieldVal = require('../fieldval')
+var bval = FieldVal.BasicVal;
 
 //Have some data to validate
 var data = {

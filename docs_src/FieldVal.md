@@ -6,7 +6,7 @@ FieldVal comes with a collection of checks called BasicVal. These are standard c
 
 To start validating, pass your data to a new instance of ```FieldVal```.
 
-Then use ```.get()``` to retrieve values whilst simultaneously building an error report.
+Then use ```.get(key_name, checks...)``` to retrieve values whilst simultaneously building an error report.
 
 When you've finished validating, use ```.end()``` to retrieve the error report or null if there were no errors.
 

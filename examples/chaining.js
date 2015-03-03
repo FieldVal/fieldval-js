@@ -1,5 +1,5 @@
-var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
+var FieldVal = require('../fieldval')
+var bval = FieldVal.BasicVal;
 
 console.log('=============\n\
 This example shows chaining usage of FieldVal.js. By default an error returned by a\n\
@@ -60,10 +60,10 @@ console.log(
 		'an_array',
 		bval.array(true),
 		bval.each(function(val,index){
-			var error = bval.integer()(val); 
+			var error = bval.integer().check(val); 
 			if(error)return error;
 
-			return bval.minimum(40)(val);
+			return bval.minimum(40).check(val);
 		})
 	)
 );

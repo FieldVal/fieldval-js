@@ -1,0 +1,31 @@
+var validator = new FieldVal({
+    my_number: 56,
+    my_email: "test@example.com"
+});
+
+validator.get_async(
+	"my_email",
+	[
+		BasicVal.email({required: true}),
+		function(val,emit,done){
+			setTimeout(function(){
+				done({
+					"error_message": "I couldn't find that email address"
+				});
+			},500);
+		}
+	],
+	function(my_email){
+		var element = document.createElement("div");
+		element.innerHTML = "my_email: "+my_email
+		document.body.appendChild(element);
+	}
+);
+
+var my_number = validator.get("my_number", BasicVal.number({required:true}));
+
+validator.end(function(error){
+	var element = document.createElement("pre");
+	element.innerHTML = JSON.stringify(error, null, 4);
+	document.body.appendChild(element);
+});

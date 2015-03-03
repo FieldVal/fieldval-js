@@ -1,12 +1,6 @@
-var FieldVal = require('fieldval');
-var bval = require('fieldval-basicval');
-
-console.log('=============\n\
-This example shows simple usage of FieldVal.js\n\
-=============');
-
-
-
+//Import FieldVal and BasicVal
+var FieldVal = require('../fieldval')
+var bval = FieldVal.BasicVal;
 
 // The data to be validated (my_data) contains 3 keys.
 var my_data = {

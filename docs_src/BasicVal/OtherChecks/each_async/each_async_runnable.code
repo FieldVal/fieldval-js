@@ -1,0 +1,27 @@
+var validator = new FieldVal({
+	an_array: [44, 56, 3]
+});
+
+validator.get_async(
+	'an_array',
+	[
+		BasicVal.array(true),
+		BasicVal.each_async(function(val,index,emit,done){
+			setTimeout(function(){
+				var error = BasicVal.integer().check(val); 
+				if(error){
+					done(error);
+					return;
+				}
+				
+				done(BasicVal.minimum(40).check(val));
+			},1);
+		})
+	]
+)
+
+validator.end(function(error){
+	var element = document.createElement("pre");
+	element.innerHTML = JSON.stringify(error, null, 4);
+	document.body.appendChild(element);
+});

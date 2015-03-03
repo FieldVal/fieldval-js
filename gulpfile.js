@@ -24,7 +24,7 @@ gulp.task('js', function(){
     .pipe(gulp.dest('./'))
     .on('error', gutil.log)
     .on('end', function(){
-        return gulp.start('test','jshint');
+        return gulp.start('mocha','jshint');
     })
 })
 
@@ -32,16 +32,26 @@ gulp.task('js', function(){
 gulp.task('test', function(cb){
     gulp.src(['./fieldval.js'])
     .pipe(istanbul())
+    .pipe(istanbul.hookRequire())
     .on( 'finish', function () {
-        gulp.src( ['test/test.js'] )
+        gulp.src(['test/test.js'] )
         .pipe( mocha( {
-            reporter: 'spec'
+            // reporter: 'spec'
         }))
-        .on('error', gutil.log)
         .pipe(istanbul.writeReports())
-        .on('end', cb);
-    });
+        .on('end', cb)
+        .on('error', gutil.log)
+    })
+    .on('error', gutil.log)
 });
+
+gulp.task('mocha', function(){
+    return gulp.src(['test/test.js'])
+    .pipe( mocha( {
+        reporter: 'spec'
+    }))
+    .on('error', gutil.log)
+})
 
 gulp.task('jshint', function () {
     return gulp.src(['src/**/*.js'])
@@ -54,7 +64,7 @@ gulp.task('jshint', function () {
 gulp.task('default', function(){
     gulp.start('js');
     gulp.watch(['src/**/*.js'], ['js']);
-    gulp.watch(['test/**/*.js'], ['test']);
+    gulp.watch(['test/**/*.js'], ['mocha']);
     gulp.watch(['docs_src/**/*'], ['docs']);
 });
 

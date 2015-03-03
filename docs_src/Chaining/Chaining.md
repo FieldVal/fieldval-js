@@ -1,4 +1,4 @@
-FieldVal allows multiple checks to be "chained" in series to validate a single value. This allows code re-use and improves readability of validation checks.
+FieldVal uses checks that can be "chained" in series to validate a single value. This allows code re-use and improves readability of validation checks.
 
 ```javascript
 var my_integer = validator.get("my_integer", BasicVal.integer(true))
@@ -12,4 +12,4 @@ var my_integer = validator.get("my_integer", BasicVal.integer(true), BasicVal.mi
 
 now also checks that the integer is at least ```42```. 
 
-You can add as many checks as you like from [here](https://github.com/FieldVal/fieldval-basicval-js/), or just write your own - they're just functions that return errors.
+You can build combinations from [BasicVal](/docs/fieldval/BasicVal) or just write your own as explained [here](/docs/fieldval/Check Functions) - they're just functions that return errors.
