@@ -164,6 +164,10 @@
                         {
                             "name": "url",
                             "text": "BasicVal/TypeChecks/url/url.md"
+                        },
+                        {
+                            "name": "json",
+                            "text": "BasicVal/TypeChecks/json/json.md"
                         }
                     ]
                 },

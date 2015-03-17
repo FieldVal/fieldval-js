@@ -139,6 +139,12 @@ var BasicVal = (function(){
                     error: 105,
                     error_message: "Cannot contain "+disallowed
                 };
+            },
+            invalid_json: function() {
+                return {
+                    error: 118,
+                    error_message: "Invalid JSON"
+                };
             }
         },
         equal_to: function(match, flags){
@@ -687,6 +693,33 @@ var BasicVal = (function(){
                     return FieldVal.create_error(BasicVal.errors.invalid_url, flags);
                 } 
             };
+            if(flags){
+                flags.check = check;
+                return flags;
+            }
+            return {
+                check: check
+            };
+        },
+        json: function(required, flags) {
+            flags = BasicVal.merge_required_and_flags(required, flags);
+            var check = function(value, emit) {
+                console.log(arguments);
+                var string_error = BasicVal.string(flags).check(value);
+                if(string_error!==undefined) return string_error;
+
+                var parsed_value = undefined;
+                try {
+                    parsed_value = JSON.parse(value);
+                } catch(e) {
+                    return FieldVal.create_error(BasicVal.errors.invalid_json, flags);
+                }
+
+                if (parsed_value !== undefined) {
+                    emit(parsed_value);
+                }
+
+            }
             if(flags){
                 flags.check = check;
                 return flags;
