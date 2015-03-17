@@ -30,7 +30,7 @@
             "name": "Browser Usage",
             "code": [
                 {
-                    "contents": "<script type=\"text/javascript\" src=\"/PATH_TO/fieldval.js\"></script>script>\n<script type=\"text/javascript\">\n\nvar validator = new FieldVal({\n\t\"my_key\": 37\n})\n\nvar my_key = validator.get(\"my_key\", BasicVal.integer(true), BasicVal.minimum(40));\n\nconsole.log(validator.end());\n\n</script>"
+                    "contents": "<script type=\"text/javascript\" src=\"/PATH_TO/fieldval.js\"></script>\n<script type=\"text/javascript\">\n\nvar validator = new FieldVal({\n\t\"my_key\": 37\n})\n\nvar my_key = validator.get(\"my_key\", BasicVal.integer(true), BasicVal.minimum(40));\n\nconsole.log(validator.end());\n\n</script>"
                 }
             ],
             "text": "<p>To use FieldVal in the browser as demonstrated above, include a script tag for the <code>fieldval.js</code> file.</p>\n",
