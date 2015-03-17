@@ -649,4 +649,23 @@ describe('BasicVal', function() {
             assert.deepEqual({"invalid":{"my_string":{"error_message":"Incorrect field type. Expected string, but received number.","error":2,"expected":"string","received":"number"}},"error_message":"One or more errors.","error":5}, my_validator.end())
         })
     })
+
+    describe('no_whitespace()', function() {
+
+        it('should return an error when value has whitespaces', function() {
+            var value = 'there are whitespaces';
+            var error = bval.no_whitespace().check(value);
+            assert.deepEqual(error, {
+                error: 116,
+                error_message: "Contains whitespace."
+            });
+        })
+
+        it('should return null when value has no whitespaces', function() {
+            var value = 'no_whitespaces';
+            var error = bval.no_whitespace().check(value);
+            assert.deepEqual(error, undefined);
+        })
+
+    })
 })
