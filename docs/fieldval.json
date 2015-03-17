@@ -220,6 +220,10 @@
                         {
                             "name": "url",
                             "text": "<p><code>BasicVal.url([required],[flags])</code></p>\n<p>Checks if the value is first a string, and then a url.</p>\n"
+                        },
+                        {
+                            "name": "json",
+                            "text": "<p><code>BasicVal.json([required],[flags])</code></p>\n<p>Checks if the value is first a string, and then a valid json.</p>\n"
                         }
                     ]
                 },

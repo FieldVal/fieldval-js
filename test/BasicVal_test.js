@@ -661,10 +661,31 @@ describe('BasicVal', function() {
             });
         })
 
-        it('should return null when value has no whitespaces', function() {
+        it('should return undefined when value has no whitespaces', function() {
             var value = 'no_whitespaces';
             var error = bval.no_whitespace().check(value);
             assert.deepEqual(error, undefined);
+        })
+
+    })
+
+    describe('json()', function() {
+        it('should return an error when value is invalid json', function() {
+            var value = '{invalid_json:123}';
+            var error = bval.json().check(value);
+            assert.deepEqual(error, {
+                error: 118,
+                error_message: "Invalid JSON"
+            })
+        })
+
+        it('should return undefined when value is valid json', function() {
+            var value = "true";
+            var error = bval.json().check(value, function(new_value) {
+                value = new_value
+            });
+            assert.equal(value, true);
+            assert.deepEqual(error, undefined)
         })
 
     })
