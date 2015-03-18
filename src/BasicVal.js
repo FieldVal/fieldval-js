@@ -156,15 +156,24 @@ var BasicVal = (function(){
             };
         },
         merge_required_and_flags: function(required, flags){
+            var new_flags = {};
             if((typeof required)==="object"){
                 flags = required;
+                required = undefined;
             } else {
                 if(!flags){
                     flags = {};
                 }
-                flags.required = required;
             }
-            return flags;
+            for(var i in flags){
+                if(flags.hasOwnProperty(i)){
+                    new_flags[i] = flags[i];
+                }
+            }
+            if(required!==undefined){
+                new_flags.required = required;
+            }
+            return new_flags;
         },
         integer: function(required, flags){
             return FieldVal.type("integer",BasicVal.merge_required_and_flags(required, flags));
