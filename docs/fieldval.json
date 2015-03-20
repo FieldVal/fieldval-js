@@ -11,8 +11,8 @@
             "type": "js",
             "runnable": true,
             "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js",
-            "runnable_contents": "var data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\nvar validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true)());\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\ndocument.write(\"<pre>\"+JSON.stringify(validator.end(),null,4)+\"</pre>\");",
-            "contents": "var validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true)());\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\nconsole.log(validator.end());"
+            "runnable_contents": "var data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\nvar validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true));\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\ndocument.write(\"<pre>\"+JSON.stringify(validator.end(),null,4)+\"</pre>\");",
+            "contents": "var validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true));\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\nconsole.log(validator.end());"
         }
     ],
     "text": "<p>FieldVal is a Javascript library that allows you to easily create readable and structured error reports for any data.</p>\n<p>It works on both the front end in the browser and on the back end using Node.</p>\n<p>FieldVal comes with a collection of checks called BasicVal. These are standard checks such as email, numeric limits etc., but you can write your own FieldVal checks with simple functions.</p>\n<p>To start validating, pass your data to a new instance of <code>FieldVal</code>.</p>\n<p>Then use <code>.get(key_name, checks...)</code> to retrieve values whilst simultaneously building an error report.</p>\n<p>When you&#39;ve finished validating, use <code>.end()</code> to retrieve the error report or null if there were no errors.</p>\n<h4 id=\"run-the-code-example-to-the-right\">Run the code example to the right</h4>\n<p>Try out FieldVal using CodePen by clicking the &quot;Run on Codepen&quot; button below the example.</p>\n<p>Try changing the data provided to <code>FieldVal</code> to see how the error changes.</p>\n",
@@ -30,7 +30,7 @@
             "name": "Browser Usage",
             "code": [
                 {
-                    "contents": "<script type=\"text/javascript\" src=\"/PATH_TO/fieldval.js\"></script>script>\n<script type=\"text/javascript\">\n\nvar validator = new FieldVal({\n\t\"my_key\": 37\n})\n\nvar my_key = validator.get(\"my_key\", BasicVal.integer(true), BasicVal.minimum(40));\n\nconsole.log(validator.end());\n\n</script>"
+                    "contents": "<script type=\"text/javascript\" src=\"/PATH_TO/fieldval.js\"></script>\n<script type=\"text/javascript\">\n\nvar validator = new FieldVal({\n\t\"my_key\": 37\n})\n\nvar my_key = validator.get(\"my_key\", BasicVal.integer(true), BasicVal.minimum(40));\n\nconsole.log(validator.end());\n\n</script>"
                 }
             ],
             "text": "<p>To use FieldVal in the browser as demonstrated above, include a script tag for the <code>fieldval.js</code> file.</p>\n",
@@ -90,7 +90,7 @@
                     "name": "Validating nested objects",
                     "code": [
                         {
-                            "contents": "var validator = new FieldVal(val);\nvalidator.get(\"name\", BasicVal.string(true));\nvalidator.get(\"email\", BasicVal.email(true)());\nvalidator.get(\"enquiry\", BasicVal.object(true), function(enquiry){\n    var inner_validator = new FieldVal(enquiry);\n    inner_validator.get(\"type\", BasicVal.string(true), BasicVal.one_of([\"One\",\"Two\"]))\n    inner_validator.get(\"message\", BasicVal.string(true))\n    return inner_validator.end();\n});\n\nvalidator.end();"
+                            "contents": "var validator = new FieldVal(val);\nvalidator.get(\"name\", BasicVal.string(true));\nvalidator.get(\"email\", BasicVal.email(true));\nvalidator.get(\"enquiry\", BasicVal.object(true), function(enquiry){\n    var inner_validator = new FieldVal(enquiry);\n    inner_validator.get(\"type\", BasicVal.string(true), BasicVal.one_of([\"One\",\"Two\"]))\n    inner_validator.get(\"message\", BasicVal.string(true))\n    return inner_validator.end();\n});\n\nvalidator.end();"
                         }
                     ],
                     "text": "<p>Nested objects can be validated using an inner_validator in a <a href=\"/docs/fieldval/Check%20Functions\">custom check function</a> that is validating the object.</p>\n"

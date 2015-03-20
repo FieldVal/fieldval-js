@@ -464,7 +464,6 @@ var FieldVal = (function(){
      * to prevent multiple instances of FieldVal (due to being 
      * a dependency) having not-strictly-equal constants. */
     FieldVal.ASYNC = -1;//Used to indicate async functions
-    FieldVal.REQUIRED_ERROR = Math.sqrt;
     FieldVal.NOT_REQUIRED_BUT_MISSING = Math.floor;
 
     FieldVal.FIELD_MISSING = 1;
@@ -606,41 +605,19 @@ var FieldVal = (function(){
                 }
                 shared_options.had_error = true;
 
-                if (response === FieldVal.REQUIRED_ERROR) {
-
-                    if (shared_options.field_name!==undefined) {
-                        shared_options.validator.error(shared_options.field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, flags));
-                        use_check_done();
-                        return;
-                    } else {
-                        if (shared_options.existing_validator) {
-                        
-                            shared_options.validator.error(
-                                FieldVal.create_error(FieldVal.MISSING_ERROR, flags)
-                            );
-                            use_check_done();
-                            return;
-                        } else {
-                            shared_options.return_missing = true;
-                            use_check_done();
-                            return;
-                        }
-                    }
-                } else if (response === FieldVal.NOT_REQUIRED_BUT_MISSING) {
+                if (response === FieldVal.NOT_REQUIRED_BUT_MISSING) {
                     //NOT_REQUIRED_BUT_MISSING means "don't process proceeding checks, but don't throw an error"
                     use_check_done();
                 } else {
 
-                    if (shared_options.existing_validator) {
-                        if (shared_options.field_name!==undefined) {
-                            shared_options.validator.invalid(shared_options.field_name, response);
-                        } else {
-                            shared_options.validator.error(response);
-                        }
+                    if (shared_options.field_name!==undefined) {
+                        shared_options.validator.error(shared_options.field_name, response);
                         use_check_done();
+                        return;
                     } else {
                         shared_options.validator.error(response);
                         use_check_done();
+                        return;
                     }
                 }
             } else {
@@ -691,7 +668,6 @@ var FieldVal = (function(){
             },
             options: options,
             stop: false,
-            return_missing: false,
             had_error: false
         };
 
@@ -724,12 +700,6 @@ var FieldVal = (function(){
                 }
             }
 
-            if (shared_options.return_missing) {
-                finish(FieldVal.REQUIRED_ERROR);
-                shared_options.validator.async_call_ended();
-                return;
-            }
-
             if(!shared_options.existing_validator){
                 finish(shared_options.validator.end());
                 shared_options.validator.async_call_ended();
@@ -753,21 +723,30 @@ var FieldVal = (function(){
         }
     };
 
+    FieldVal.merge_flags_and_checks = function(flags, check){
+        var new_flags = {};
+        if(flags){
+            for(var i in flags){
+                if(flags.hasOwnProperty(i)){
+                    new_flags[i] = flags[i];
+                }
+            }
+        }
+        new_flags.check = check;
+        return new_flags;
+    }
+
     FieldVal.required = function (required, flags) {//required defaults to true
         var check = function (value) {
             if (value === null || value === undefined) {
                 if (required || required === undefined) {
-                    return FieldVal.REQUIRED_ERROR;
+                    return FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
                 }
 
                 return FieldVal.NOT_REQUIRED_BUT_MISSING;
             }
         };
-        if (flags !== undefined) {
-            flags.check = check;
-            return flags;
-        }
-        return check;
+        return FieldVal.merge_flags_and_checks(flags,check);
     };
 
     FieldVal.type = function (desired_type, flags) {
@@ -776,7 +755,7 @@ var FieldVal = (function(){
 
         var check = function (value, emit) {
 
-            var required_error = FieldVal.required(required)(value);
+            var required_error = FieldVal.required(required, flags || {}).check(value);
 
             if (required_error) {
                 return required_error;
@@ -796,12 +775,7 @@ var FieldVal = (function(){
             }
         };
 
-        if (flags !== undefined) {
-            flags.check = check;
-            return flags;
-        }
-
-        return check;
+        return FieldVal.merge_flags_and_checks(flags,check);
     };
 
     FieldVal.create_error = function (default_error, flags) {
@@ -1357,15 +1331,24 @@ var FieldVal = (function(){
             };
         },
         merge_required_and_flags: function(required, flags){
+            var new_flags = {};
             if((typeof required)==="object"){
                 flags = required;
+                required = undefined;
             } else {
                 if(!flags){
                     flags = {};
                 }
-                flags.required = required;
             }
-            return flags;
+            for(var i in flags){
+                if(flags.hasOwnProperty(i)){
+                    new_flags[i] = flags[i];
+                }
+            }
+            if(required!==undefined){
+                new_flags.required = required;
+            }
+            return new_flags;
         },
         integer: function(required, flags){
             return FieldVal.type("integer",BasicVal.merge_required_and_flags(required, flags));
@@ -1401,7 +1384,7 @@ var FieldVal = (function(){
                 }
                 if (value.length === 0) {
                     if(required || required===undefined){
-                        return FieldVal.REQUIRED_ERROR;
+                        return FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
                     } else {
                         return FieldVal.NOT_REQUIRED_BUT_MISSING;
                     }
@@ -1460,7 +1443,7 @@ var FieldVal = (function(){
         no_whitespace: function(flags) {
             var check = function(value) {
                 if (/\s/.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags, max_len);
+                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags);
                 }
             };
             if(flags){
@@ -1688,9 +1671,7 @@ var FieldVal = (function(){
                     if(res===FieldVal.ASYNC){
                         throw new Error(".each used with async checks, use .each_async.");
                     }
-                    if (res === FieldVal.REQUIRED_ERROR){
-                        validator.missing("" + i);
-                    } else if (res) {
+                    if (res) {
                         validator.invalid("" + i, res);
                     }
                 };

@@ -156,15 +156,24 @@ var BasicVal = (function(){
             };
         },
         merge_required_and_flags: function(required, flags){
+            var new_flags = {};
             if((typeof required)==="object"){
                 flags = required;
+                required = undefined;
             } else {
                 if(!flags){
                     flags = {};
                 }
-                flags.required = required;
             }
-            return flags;
+            for(var i in flags){
+                if(flags.hasOwnProperty(i)){
+                    new_flags[i] = flags[i];
+                }
+            }
+            if(required!==undefined){
+                new_flags.required = required;
+            }
+            return new_flags;
         },
         integer: function(required, flags){
             return FieldVal.type("integer",BasicVal.merge_required_and_flags(required, flags));
@@ -200,7 +209,7 @@ var BasicVal = (function(){
                 }
                 if (value.length === 0) {
                     if(required || required===undefined){
-                        return FieldVal.REQUIRED_ERROR;
+                        return FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
                     } else {
                         return FieldVal.NOT_REQUIRED_BUT_MISSING;
                     }
@@ -259,7 +268,7 @@ var BasicVal = (function(){
         no_whitespace: function(flags) {
             var check = function(value) {
                 if (/\s/.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags, max_len);
+                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags);
                 }
             };
             if(flags){
@@ -487,9 +496,7 @@ var BasicVal = (function(){
                     if(res===FieldVal.ASYNC){
                         throw new Error(".each used with async checks, use .each_async.");
                     }
-                    if (res === FieldVal.REQUIRED_ERROR){
-                        validator.missing("" + i);
-                    } else if (res) {
+                    if (res) {
                         validator.invalid("" + i, res);
                     }
                 };

@@ -5,7 +5,7 @@ var data = {
 }
 
 var validator = new FieldVal(data);
-validator.get("my_email", BasicVal.email(true)());
+validator.get("my_email", BasicVal.email(true));
 validator.get("my_integer", BasicVal.integer(true));
 validator.get("multiple_of_three", BasicVal.integer(true), function(val){
   if(val % 3 !== 0){
