@@ -346,11 +346,14 @@ describe('FieldVal', function() {
             assert.equal(true, called_emit);
         })
 
-        it('should return a missing error (FieldVal.REQUIRED_ERROR) (without validator)', function() {
+        it('should return a missing error (without validator)', function() {
             var output = FieldVal.use_checks(undefined, [
                 BasicVal.string(true)
             ]);
-            assert.deepEqual(FieldVal.REQUIRED_ERROR, output);
+            assert.deepEqual({
+                "error_message":"Field missing.",
+                "error":1
+            }, output);
         })
 
         it('should allow omitting the options argument', function() {
@@ -377,7 +380,7 @@ describe('FieldVal', function() {
             assert.deepEqual(null, output);
         })
 
-        it('should return a missing error (FieldVal.REQUIRED_ERROR) (with validator, without field name)', function() {
+        it('should return a missing error (with validator, without field name)', function() {
             var validator = new FieldVal();
             var output = FieldVal.use_checks(undefined, [
                 BasicVal.string(true)
@@ -911,26 +914,26 @@ describe('FieldVal', function() {
         })
     })
     describe('required()', function() {
-        it('should return FieldVal.REQUIRED_ERROR if missing and required', function() {
-            var output = FieldVal.required(true)(undefined);
-            assert.strictEqual(FieldVal.REQUIRED_ERROR, output);
+        it('should return a missing error if missing and required', function() {
+            var output = FieldVal.required(true).check(undefined);
+            assert.deepEqual({"error_message":"Field missing.","error":1}, output);
         })
-        it('should return FieldVal.REQUIRED_ERROR if missing and required defaults to true', function() {
-            var output = FieldVal.required()(undefined);
-            assert.strictEqual(FieldVal.REQUIRED_ERROR, output);
+        it('should return a missing error if missing and required defaults to true', function() {
+            var output = FieldVal.required().check(undefined);
+            assert.deepEqual({"error_message":"Field missing.","error":1}, output);
         })
         it('should return FieldVal.NOT_REQUIRED_BUT_MISSING if missing, but not required', function() {
-            var output = FieldVal.required(false)(undefined);
-            assert.strictEqual(FieldVal.NOT_REQUIRED_BUT_MISSING, output);
+            var output = FieldVal.required(false).check(undefined);
+            assert.deepEqual(FieldVal.NOT_REQUIRED_BUT_MISSING, output);
         })
         it('should use flags', function() {
             var output = FieldVal.required(true,{}).check(undefined);
-            assert.strictEqual(FieldVal.REQUIRED_ERROR, output);
+            assert.deepEqual({"error_message":"Field missing.","error":1}, output);
         })
     })
     describe('type()', function() {
         it('should return an error for an invalid type', function() {
-            var output = FieldVal.type('string')(15);
+            var output = FieldVal.type('string').check(15);
             assert.deepEqual({
                 'error_message': 'Incorrect field type. Expected string, but received number.',
                 'error': 2,
@@ -978,7 +981,7 @@ describe('FieldVal', function() {
 
         it('should a required error for an undefined value', function() {
             var output = FieldVal.type('string',{required:true}).check(undefined);
-            assert.deepEqual(FieldVal.REQUIRED_ERROR, output);
+            assert.deepEqual({"error_message":"Field missing.","error":1}, output);
         })
 
         it('should use a provided emit function', function() {

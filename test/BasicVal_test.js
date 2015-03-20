@@ -87,8 +87,8 @@ describe('BasicVal', function() {
             )
 
             var val_error = my_validator.end();
-            assert.equal(15, my_value);
             assert.strictEqual(null, val_error);
+            assert.equal(15, my_value);
         })
 
         it('should return any errors thrown by the iterator', function() {
@@ -590,7 +590,7 @@ describe('BasicVal', function() {
 
     describe('number()', function() {
 
-        it('should return a number when an number is requested and the value is a number string and parse flag is true', function() {
+        it('should return a number when a number is requested and the value is a number string and parse flag is true', function() {
             var my_validator = new FieldVal({
                 "my_number": "43.5"
             })
@@ -598,12 +598,53 @@ describe('BasicVal', function() {
             assert.strictEqual(null, my_validator.end());
         })
 
-        it('should create an error when an number is requested and the value is a number string, but parse flag is not set to true', function() {
+        it('should create an error when a number is requested and the value is a number string, but parse flag is not set to true', function() {
             var my_validator = new FieldVal({
                 "my_number": "43.5"
             })
             assert.strictEqual(undefined, my_validator.get("my_number", bval.number(true)));
-            assert.deepEqual({"invalid":{"my_number":{"error_message":"Incorrect field type. Expected number, but received string.","error":2,"expected":"number","received":"string"}},"error_message":"One or more errors.","error":5}, my_validator.end());
+            assert.deepEqual({
+                "invalid":{
+                    "my_number":{
+                        "error_message":"Incorrect field type. Expected number, but received string.",
+                        "error":2,
+                        "expected":"number",
+                        "received":"string"
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error":5
+            }, my_validator.end());
+        })
+
+        it('should create an error when a number is requested, but the value is non-numeric string', function() {
+            var my_validator = new FieldVal({
+                "my_number_a": "abc",
+                "my_number_b": "def"
+            })
+
+            var bval_number_check = bval.number(true);
+            assert.strictEqual(undefined, my_validator.get("my_number_a", bval_number_check));
+            assert.strictEqual(undefined, my_validator.get("my_number_b", bval_number_check));
+            
+            assert.deepEqual({
+                "invalid":{
+                    "my_number_a":{
+                        "error_message":"Incorrect field type. Expected number, but received string.",
+                        "error":2,
+                        "expected":"number",
+                        "received":"string"
+                    },
+                    "my_number_b":{
+                        "error_message":"Incorrect field type. Expected number, but received string.",
+                        "error":2,
+                        "expected":"number",
+                        "received":"string"
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error":5
+            }, my_validator.end());
         })
 
         it('should create a custom error when one is provided (number)', function() {
@@ -647,6 +688,22 @@ describe('BasicVal', function() {
             })
             assert.strictEqual(undefined, my_validator.get("my_string", bval.string(true)));
             assert.deepEqual({"invalid":{"my_string":{"error_message":"Incorrect field type. Expected string, but received number.","error":2,"expected":"string","received":"number"}},"error_message":"One or more errors.","error":5}, my_validator.end())
+        })
+
+        it('should return a missing error when checking an empty string', function() {
+            var my_validator = new FieldVal({
+                "my_string": ""
+            })
+            assert.strictEqual(undefined, my_validator.get("my_string", bval.string(true)));
+            assert.deepEqual({"invalid":{"my_string":{"error_message":"Field missing.","error":1}},"error_message":"One or more errors.","error":5}, my_validator.end())
+        })
+
+        it('should return a missing error when checking a string of only whitespaces', function() {
+            var my_validator = new FieldVal({
+                "my_string": "  "
+            })
+            assert.strictEqual(undefined, my_validator.get("my_string", bval.string(true)));
+            assert.deepEqual({"invalid":{"my_string":{"error_message":"Field missing.","error":1}},"error_message":"One or more errors.","error":5}, my_validator.end())
         })
     })
 
