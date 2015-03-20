@@ -209,7 +209,7 @@ var BasicVal = (function(){
                 }
                 if (value.length === 0) {
                     if(required || required===undefined){
-                        return FieldVal.REQUIRED_ERROR;
+                        return FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
                     } else {
                         return FieldVal.NOT_REQUIRED_BUT_MISSING;
                     }
@@ -496,9 +496,7 @@ var BasicVal = (function(){
                     if(res===FieldVal.ASYNC){
                         throw new Error(".each used with async checks, use .each_async.");
                     }
-                    if (res === FieldVal.REQUIRED_ERROR){
-                        validator.missing("" + i);
-                    } else if (res) {
+                    if (res) {
                         validator.invalid("" + i, res);
                     }
                 };
