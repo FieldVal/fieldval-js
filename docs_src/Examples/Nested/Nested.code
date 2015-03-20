@@ -1,6 +1,6 @@
 var validator = new FieldVal(val);
 validator.get("name", BasicVal.string(true));
-validator.get("email", BasicVal.email(true)());
+validator.get("email", BasicVal.email(true));
 validator.get("enquiry", BasicVal.object(true), function(enquiry){
     var inner_validator = new FieldVal(enquiry);
     inner_validator.get("type", BasicVal.string(true), BasicVal.one_of(["One","Two"]))
