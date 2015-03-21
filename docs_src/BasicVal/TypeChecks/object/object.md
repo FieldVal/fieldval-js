@@ -1,3 +1,3 @@
-```BasicVal.object([required], [flags])```
+```BasicVal.object([required], [options])```
 
 Checks if the value is an object.

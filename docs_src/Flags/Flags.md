@@ -1,1 +1,0 @@
-Flags are used to both pass values to a check and also to indicate to a FieldVal validator how to use the check.
