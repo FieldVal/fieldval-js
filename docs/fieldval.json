@@ -4,7 +4,7 @@
         {
             "name": "FieldVal Error Structure",
             "type": "js",
-            "contents": "//YOUR INPUT\nvar data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\n//FIELDVAL OUTPUT\n{\n    \"invalid\": {\n        \"my_email\": {\n            \"error\": 107,\n            \"error_message\": \"Invalid email address format.\"\n        },\n        \"my_integer\": {\n            \"error_message\": \"Incorrect field type. Expected integer.\",\n            \"error\": 2,\n            \"expected\": \"integer\",\n            \"received\": \"string\"\n        },\n        \"multiple_of_three\": {\n            \"error_message\": \"Not a multiple of three\",\n            \"error\": 1000\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
+            "contents": "//YOUR INPUT\nvar data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\n//FIELDVAL OUTPUT\n{\n    \"invalid\": {\n        \"my_email\": {\n            \"error\": 107,\n            \"error_message\": \"Invalid email address format.\"\n        },\n        \"my_integer\": {\n            \"error_message\": \"Incorrect field type. Expected number, but received string.\",\n            \"error\": 2,\n            \"expected\": \"integer\",\n            \"received\": \"string\"\n        },\n        \"multiple_of_three\": {\n            \"error_message\": \"Not a multiple of three\",\n            \"error\": 1000\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
         },
         {
             "name": "Code",
@@ -81,7 +81,7 @@
                     "name": "Validating single value",
                     "code": [
                         {
-                            "contents": "//CODE\nvar value = \"abc\";\nBasicVal.integer().check(value);\n\n//OUTPUT\n{\n\terror_message: 'Incorrect field type. Expected integer.',\n \terror: 2,\n  \texpected: 'integer',\n  \treceived: 'string' \n}"
+                            "contents": "//CODE\nvar value = \"abc\";\nBasicVal.integer().check(value);\n\n//OUTPUT\n{\n\terror_message: 'Incorrect field type. Expected integer, but received string.',\n \terror: 2,\n  \texpected: 'integer',\n  \treceived: 'string' \n}"
                         }
                     ],
                     "text": "<p>It is possible to use <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> check functions on a single value.</p>\n<p><code>.check()</code> is documented in a <a href=\"/docs/fieldval/Check%20Functions\">Check Functions</a> section.</p>\n"
