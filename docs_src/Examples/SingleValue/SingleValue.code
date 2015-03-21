@@ -4,7 +4,7 @@ BasicVal.integer().check(value);
 
 //OUTPUT
 {
-	error_message: 'Incorrect field type. Expected integer.',
+	error_message: 'Incorrect field type. Expected integer, but received string.',
  	error: 2,
   	expected: 'integer',
   	received: 'string' 

@@ -13,7 +13,7 @@ var data = {
             "error_message": "Invalid email address format."
         },
         "my_integer": {
-            "error_message": "Incorrect field type. Expected integer.",
+            "error_message": "Incorrect field type. Expected number, but received string.",
             "error": 2,
             "expected": "integer",
             "received": "string"
