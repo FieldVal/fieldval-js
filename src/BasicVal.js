@@ -141,62 +141,62 @@ var BasicVal = (function(){
                 };
             }
         },
-        equal_to: function(match, flags){
+        equal_to: function(match, options){
             var check = function(value) {
                 if (value!==match) {
-                    return FieldVal.create_error(BasicVal.errors.not_equal, flags, match);
+                    return FieldVal.create_error(BasicVal.errors.not_equal, options, match);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        merge_required_and_flags: function(required, flags){
-            var new_flags = {};
+        merge_required_and_options: function(required, options){
+            var new_options = {};
             if((typeof required)==="object"){
-                flags = required;
+                options = required;
                 required = undefined;
             } else {
-                if(!flags){
-                    flags = {};
+                if(!options){
+                    options = {};
                 }
             }
-            for(var i in flags){
-                if(flags.hasOwnProperty(i)){
-                    new_flags[i] = flags[i];
+            for(var i in options){
+                if(options.hasOwnProperty(i)){
+                    new_options[i] = options[i];
                 }
             }
             if(required!==undefined){
-                new_flags.required = required;
+                new_options.required = required;
             }
-            return new_flags;
+            return new_options;
         },
-        integer: function(required, flags){
-            return FieldVal.type("integer",BasicVal.merge_required_and_flags(required, flags));
+        integer: function(required, options){
+            return FieldVal.type("integer",BasicVal.merge_required_and_options(required, options));
         },
-        number: function(required, flags){
-            return FieldVal.type("number",BasicVal.merge_required_and_flags(required, flags));
+        number: function(required, options){
+            return FieldVal.type("number",BasicVal.merge_required_and_options(required, options));
         },
-        array: function(required, flags){
-            return FieldVal.type("array",BasicVal.merge_required_and_flags(required, flags));
+        array: function(required, options){
+            return FieldVal.type("array",BasicVal.merge_required_and_options(required, options));
         },
-        object: function(required, flags){
-            return FieldVal.type("object",BasicVal.merge_required_and_flags(required, flags));
+        object: function(required, options){
+            return FieldVal.type("object",BasicVal.merge_required_and_options(required, options));
         },
-        boolean: function(required, flags){
-            return FieldVal.type("boolean",BasicVal.merge_required_and_flags(required, flags));
+        boolean: function(required, options){
+            return FieldVal.type("boolean",BasicVal.merge_required_and_options(required, options));
         },
-        string: function(required, flags){
-            flags = BasicVal.merge_required_and_flags(required, flags);
+        string: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
             var check = function(value, emit) {
 
-                var core_check = FieldVal.type("string",flags);
+                var core_check = FieldVal.type("string",options);
                 if(typeof core_check === 'object'){
-                    //Passing flags turns the check into an object
+                    //Passing options turns the check into an object
                     core_check = core_check.check;
                 }
 
@@ -204,146 +204,146 @@ var BasicVal = (function(){
                 var error = core_check(value,emit);
                 if(error) return error;
 
-                if(!flags || flags.trim!==false){//If not explicitly false
+                if(!options || options.trim!==false){//If not explicitly false
                     value = value.trim();
                 }
                 if (value.length === 0) {
                     if(required || required===undefined){
-                        return FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
+                        return FieldVal.create_error(FieldVal.MISSING_ERROR, options);
                     } else {
                         return FieldVal.NOT_REQUIRED_BUT_MISSING;
                     }
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        length: function(len, flags) {
+        length: function(len, options) {
             var check = function(value) {
                 if (value.length!==len) {
-                    return FieldVal.create_error(BasicVal.errors.incorrect_length, flags, len);
+                    return FieldVal.create_error(BasicVal.errors.incorrect_length, options, len);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        min_length: function(min_len, flags) {
+        min_length: function(min_len, options) {
             var check = function(value) {
                 if (value.length < min_len) {
-                    return FieldVal.create_error(BasicVal.errors.too_short, flags, min_len);
+                    return FieldVal.create_error(BasicVal.errors.too_short, options, min_len);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        max_length: function(max_len, flags) {
+        max_length: function(max_len, options) {
             var check = function(value) {
                 if (value.length > max_len) {
-                    return FieldVal.create_error(BasicVal.errors.too_long, flags, max_len);
+                    return FieldVal.create_error(BasicVal.errors.too_long, options, max_len);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        no_whitespace: function(flags) {
+        no_whitespace: function(options) {
             var check = function(value) {
                 if (/\s/.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, flags);
+                    return FieldVal.create_error(BasicVal.errors.contains_whitespace, options);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        minimum: function(min_val, flags) {
+        minimum: function(min_val, options) {
             var check = function(value) {
                 if (value < min_val) {
-                    return FieldVal.create_error(BasicVal.errors.too_small, flags, min_val);
+                    return FieldVal.create_error(BasicVal.errors.too_small, options, min_val);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        maximum: function(max_val, flags) {
+        maximum: function(max_val, options) {
             var check = function(value) {
                 if (value > max_val) {
-                    return FieldVal.create_error(BasicVal.errors.too_large, flags, max_val);
+                    return FieldVal.create_error(BasicVal.errors.too_large, options, max_val);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        range: function(min_val, max_val, flags) {
+        range: function(min_val, max_val, options) {
             //Effectively combines minimum and maximum
             var check = function(value){
                 if (value < min_val) {
-                    return FieldVal.create_error(BasicVal.errors.too_small, flags, min_val);
+                    return FieldVal.create_error(BasicVal.errors.too_small, options, min_val);
                 } else if (value > max_val) {
-                    return FieldVal.create_error(BasicVal.errors.too_large, flags, max_val);
+                    return FieldVal.create_error(BasicVal.errors.too_large, options, max_val);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        does_not_contain: function(characters, flags){
+        does_not_contain: function(characters, options){
             if(!Array.isArray(characters)){
                 characters = [characters];
             }
             var check = function(value) {
                 for(var i = 0; i < characters.length; i++){
                     if(value.indexOf(characters[i])!==-1){
-                        return FieldVal.create_error(BasicVal.errors.should_not_contain, flags, characters);
+                        return FieldVal.create_error(BasicVal.errors.should_not_contain, options, characters);
                     }
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        one_of: function(array, flags) {
+        one_of: function(array, options) {
             var valid_values = [];
             if(Array.isArray(array)){
                 for(var i = 0; i < array.length; i++){
@@ -363,18 +363,18 @@ var BasicVal = (function(){
             }
             var check = function(value) {
                 if (valid_values.indexOf(value) === -1) {
-                    return FieldVal.create_error(BasicVal.errors.not_in_list, flags);
+                    return FieldVal.create_error(BasicVal.errors.not_in_list, options);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        not_one_of: function(array, flags) {
+        not_one_of: function(array, options) {
             var valid_values = [];
             if(Object.prototype.toString.call(array) === '[object Array]'){
                 for(var i = 0; i < array.length; i++){
@@ -394,89 +394,89 @@ var BasicVal = (function(){
             }
             var check = function(value) {
                 if (valid_values.indexOf(value) !== -1) {
-                    return FieldVal.create_error(BasicVal.errors.value_in_list, flags);
+                    return FieldVal.create_error(BasicVal.errors.value_in_list, options);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        not_empty: function(trim, flags) {
+        not_empty: function(trim, options) {
             var check = function(value) {
                 if (trim) {
                     if (value.trim().length === 0) {
-                        if(typeof flags.error){
+                        if(typeof options.error){
                         }
-                        return FieldVal.create_error(BasicVal.errors.cannot_be_empty, flags);
+                        return FieldVal.create_error(BasicVal.errors.cannot_be_empty, options);
                     }
                 } else {
                     if (value.length === 0) {
-                        return FieldVal.create_error(BasicVal.errors.cannot_be_empty, flags);
+                        return FieldVal.create_error(BasicVal.errors.cannot_be_empty, options);
                     }
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        prefix: function(prefix, flags) {
+        prefix: function(prefix, options) {
             var check = function(value) {
                 if (value.length >= prefix.length) {
                     if (value.substring(0, prefix.length) != prefix) {
-                        return FieldVal.create_error(BasicVal.errors.no_prefix, flags, prefix);
+                        return FieldVal.create_error(BasicVal.errors.no_prefix, options, prefix);
                     }
                 } else {
-                    return FieldVal.create_error(BasicVal.errors.no_prefix, flags, prefix);
+                    return FieldVal.create_error(BasicVal.errors.no_prefix, options, prefix);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        start_with_letter: function(flags) {
+        start_with_letter: function(options) {
             var check = function(value) {
                 if (value.length > 0) {
                     var char_code = value.charCodeAt(0);
                     if( !((char_code >= 65 && char_code <= 90) || (char_code >= 97 && char_code <= 122))){
-                        return FieldVal.create_error(BasicVal.errors.must_start_with_letter, flags);
+                        return FieldVal.create_error(BasicVal.errors.must_start_with_letter, options);
                     }
                 } else {
-                    return FieldVal.create_error(BasicVal.errors.must_start_with_letter, flags);
+                    return FieldVal.create_error(BasicVal.errors.must_start_with_letter, options);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        suffix: function(suffix, flags) {
+        suffix: function(suffix, options) {
             var check = function(value) {
                 if (value.length >= suffix.length) {
                     if (value.substring(value.length-suffix.length, value.length) != suffix) {
-                        return FieldVal.create_error(BasicVal.errors.no_suffix, flags, suffix);
+                        return FieldVal.create_error(BasicVal.errors.no_suffix, options, suffix);
                     }
                 } else {
-                    return FieldVal.create_error(BasicVal.errors.no_suffix, flags, suffix);
+                    return FieldVal.create_error(BasicVal.errors.no_suffix, options, suffix);
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
@@ -484,7 +484,7 @@ var BasicVal = (function(){
         },
         date: DateVal.date,
         date_format: DateVal.date_format,
-        each: function(on_each, flags) {
+        each: function(on_each, options) {
             var check = function(array, stop) {
                 var validator = new FieldVal(null);
                 var iterator = function(i){
@@ -516,15 +516,15 @@ var BasicVal = (function(){
                     return error;
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        each_async: function(on_each, flags) {
+        each_async: function(on_each, options) {
             var check = function(array, emit, callback) {
 
                 var is_array = Array.isArray(array);
@@ -575,15 +575,15 @@ var BasicVal = (function(){
                 };
                 do_possible();
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        multiple: function(possibles, flags){
+        multiple: function(possibles, options){
 
             possibles = possibles || [];
             if(possibles.length===0){
@@ -608,17 +608,17 @@ var BasicVal = (function(){
                         return null;
                     }
                 }
-                return FieldVal.create_error(BasicVal.errors.no_valid_option, flags);
+                return FieldVal.create_error(BasicVal.errors.no_valid_option, options);
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        multiple_async: function(possibles, flags){
+        multiple_async: function(possibles, options){
 
             possibles = possibles || [];
             if(possibles.length===0){
@@ -636,7 +636,7 @@ var BasicVal = (function(){
                 var do_possible = function(){
                     i++;
                     if(i>possibles.length){
-                        callback(FieldVal.create_error(BasicVal.errors.no_valid_option, flags));
+                        callback(FieldVal.create_error(BasicVal.errors.no_valid_option, options));
                         return;
                     }
                     var option = possibles[i-1];
@@ -656,47 +656,47 @@ var BasicVal = (function(){
                 do_possible();
                 return to_return;
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        email: function(required, flags){
-            flags = BasicVal.merge_required_and_flags(required, flags);
+        email: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
             var check = function(value) {
-                var string_error = BasicVal.string(flags).check(value);
+                var string_error = BasicVal.string(options).check(value);
                 if(string_error!==undefined) return string_error;
 
                 var re = BasicVal.email_regex;
                 if(!re.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.invalid_email, flags);
+                    return FieldVal.create_error(BasicVal.errors.invalid_email, options);
                 } 
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
             };
         },
-        url: function(required, flags){
-            flags = BasicVal.merge_required_and_flags(required, flags);
+        url: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
             var check = function(value) {
-                var string_error = BasicVal.string(flags).check(value);
+                var string_error = BasicVal.string(options).check(value);
                 if(string_error!==undefined) return string_error;
                 
                 var re = BasicVal.url_regex;
                 if(!re.test(value)){
-                    return FieldVal.create_error(BasicVal.errors.invalid_url, flags);
+                    return FieldVal.create_error(BasicVal.errors.invalid_url, options);
                 } 
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check

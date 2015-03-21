@@ -1,4 +1,4 @@
-```BasicVal.each(on_each, [flags])```
+```BasicVal.each(on_each, [options])```
 
 Iterates through the provided array and calls the ```on_each``` function on each array's value.
 

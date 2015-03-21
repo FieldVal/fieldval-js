@@ -22,9 +22,9 @@ var DateVal = (function(){
                 };
             }
         },
-    	date_format: function(flags){
+    	date_format: function(options){
 
-            flags = flags || {};
+            options = options || {};
 
             var check = function(format, emit) {
 
@@ -49,10 +49,10 @@ var DateVal = (function(){
                 }
 
                 if(error){
-                    return FieldVal.create_error(DateVal.errors.invalid_date_format_string, flags);
+                    return FieldVal.create_error(DateVal.errors.invalid_date_format_string, options);
                 } else {
                     
-                    if (flags.emit == DateVal.EMIT_STRING) {
+                    if (options.emit == DateVal.EMIT_STRING) {
                         emit(format);
                     } else {
                         emit(format_array);
@@ -60,9 +60,9 @@ var DateVal = (function(){
 
                 }
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check
@@ -124,9 +124,9 @@ var DateVal = (function(){
             }
             return value;
         },
-    	date: function(format, flags){
+    	date: function(format, options){
 
-    		flags = flags || {};
+    		options = options || {};
 
             var format_array;
 
@@ -219,32 +219,32 @@ var DateVal = (function(){
                 }
 
                 if(error || component_index<format_array.length-1){
-                    return FieldVal.create_error(DateVal.errors.invalid_date_format, flags);
+                    return FieldVal.create_error(DateVal.errors.invalid_date_format, options);
                 }
 
                 if(values.hour!==undefined && (values.hour < 0 || values.hour>23)){
-                	return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                	return FieldVal.create_error(DateVal.errors.invalid_date, options);
                 }
                 if(values.minute!==undefined && (values.minute < 0 || values.minute>59)){
-                	return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                	return FieldVal.create_error(DateVal.errors.invalid_date, options);
                 }
                 if(values.second!==undefined && (values.second < 0 || values.second>59)){
-                	return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                	return FieldVal.create_error(DateVal.errors.invalid_date, options);
                 }
 
                 if(values.month!==undefined){
                     var month = values.month;
                     if(month>12){
-                        return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                        return FieldVal.create_error(DateVal.errors.invalid_date, options);
                     } else if(month<1){
-                        return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                        return FieldVal.create_error(DateVal.errors.invalid_date, options);
                     }
 
                     if(values.day){
                         var day = values.day;
 
                         if(day<1){
-                            return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                            return FieldVal.create_error(DateVal.errors.invalid_date, options);
                         }
 
                         if(values.year){
@@ -252,11 +252,11 @@ var DateVal = (function(){
                             if(month==2){
                                 if(year%400===0 || (year%100!==0 && year%4===0)){
                                     if(day>29){
-                                        return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                        return FieldVal.create_error(DateVal.errors.invalid_date, options);
                                     }
                                 } else {
                                     if(day>28){
-                                        return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                        return FieldVal.create_error(DateVal.errors.invalid_date, options);
                                     }
                                 }
                             }
@@ -264,15 +264,15 @@ var DateVal = (function(){
         
                         if(month===4 || month===6 || month===9 || month===11){
                             if(day > 30){
-                                return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                return FieldVal.create_error(DateVal.errors.invalid_date, options);
                             }
                         } else if(month===2){
                             if(day > 29){
-                                return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                return FieldVal.create_error(DateVal.errors.invalid_date, options);
                             }
                         } else {
                             if(day > 31){
-                                return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                                return FieldVal.create_error(DateVal.errors.invalid_date, options);
                             }
                         }
                     }
@@ -280,19 +280,19 @@ var DateVal = (function(){
                     //Don't have month, but days shouldn't be greater than 31 anyway
                     if(values.day){
                         if(values.day > 31){
-                            return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                            return FieldVal.create_error(DateVal.errors.invalid_date, options);
                         } else if(values.day < 1){
-                            return FieldVal.create_error(DateVal.errors.invalid_date, flags);
+                            return FieldVal.create_error(DateVal.errors.invalid_date, options);
                         }
                     }
                 }
 
-                if(flags.emit){
-                	if(flags.emit === DateVal.EMIT_COMPONENT_ARRAY){
+                if(options.emit){
+                	if(options.emit === DateVal.EMIT_COMPONENT_ARRAY){
                 		emit(value_array);
-                	} else if(flags.emit === DateVal.EMIT_OBJECT){
+                	} else if(options.emit === DateVal.EMIT_OBJECT){
                         emit(values);
-                    } else if(flags.emit === DateVal.EMIT_DATE){
+                    } else if(options.emit === DateVal.EMIT_DATE){
                         var date = new Date(0);//Start with Jan 1st 1970
                         date.setUTCFullYear(0);
 
@@ -322,9 +322,9 @@ var DateVal = (function(){
                 //SUCCESS
                 return;
             };
-            if(flags){
-                flags.check = check;
-                return flags;
+            if(options){
+                options.check = check;
+                return options;
             }
             return {
                 check: check

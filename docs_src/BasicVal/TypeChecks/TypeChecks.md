@@ -2,7 +2,7 @@ BasicVal's built-in type checks should be used to check that a value is of a par
 
 The first parameter is usually a boolean indicating whether the field is required or not. The default is ```true```. 
 
-Whether or not the field is required can also be specified in the flags parameter, which is an object. Such a flags object would look like:
+Whether or not the field is required can also be specified in the ```options``` parameter, which is an object. Such an ```options``` object would look like:
 
 ```{required: true}```.
 
