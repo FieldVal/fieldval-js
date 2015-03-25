@@ -817,10 +817,11 @@ var FieldVal = (function(){
 
     var DateVal = {
     	errors: {
-            invalid_date_format: function() {
+            invalid_date_format: function(format) {
                 return {
                     error: 111,
-                    error_message: "Invalid date format."
+                    error_message: "Invalid date format.",
+                    format: format
                 };
             },
             invalid_date: function() {
@@ -1033,7 +1034,7 @@ var FieldVal = (function(){
                 }
 
                 if(error || component_index<format_array.length-1){
-                    return FieldVal.create_error(DateVal.errors.invalid_date_format, options);
+                    return FieldVal.create_error(DateVal.errors.invalid_date_format, options, format);
                 }
 
                 if(values.hour!==undefined && (values.hour < 0 || values.hour>23)){
@@ -1211,25 +1212,29 @@ var FieldVal = (function(){
             too_short: function(min_len) {
                 return {
                     error: 100,
-                    error_message: "Length is less than " + min_len
+                    error_message: "Length is less than " + min_len,
+                    min_length: min_len
                 };
             },
             too_long: function(max_len) {
                 return {
                     error: 101,
-                    error_message: "Length is greater than " + max_len
+                    error_message: "Length is greater than " + max_len,
+                    max_length: max_len
                 };
             },
             too_small: function(min_val) {
                 return {
                     error: 102,
-                    error_message: "Value is less than " + min_val
+                    error_message: "Value is less than " + min_val,
+                    minimum: min_val
                 };
             },
             too_large: function(max_val) {
                 return {
                     error: 103,
-                    error_message: "Value is greater than " + max_val
+                    error_message: "Value is greater than " + max_val,
+                    maximum: max_val
                 };
             },
             not_in_list: function() {
@@ -1247,7 +1252,8 @@ var FieldVal = (function(){
             no_prefix: function(prefix) {
                 return {
                     error: 106,
-                    error_message: "Value does not have prefix: " + prefix
+                    error_message: "Value does not have prefix: " + prefix,
+                    prefix: prefix
                 };
             },
             invalid_email: function() {
@@ -1265,13 +1271,15 @@ var FieldVal = (function(){
             incorrect_length: function(len){
                 return {
                     error: 109,
-                    error_message: "Length is not equal to " + len
+                    error_message: "Length is not equal to " + len,
+                    length: len
                 };
             },
             no_suffix: function(suffix) {
                 return {
                     error: 110,
-                    error_message: "Value does not have suffix: " + suffix
+                    error_message: "Value does not have suffix: " + suffix,
+                    suffix: suffix
                 };
             },
             //111 in DateVal
@@ -1280,7 +1288,7 @@ var FieldVal = (function(){
                 return {
                     error: 113,
                     error_message: "Not equal to " + match + ".",
-
+                    equal: match
                 };
             },
             //114 in DateVal
@@ -1312,7 +1320,8 @@ var FieldVal = (function(){
                 var disallowed = characters.join(",");
                 return {
                     error: 105,
-                    error_message: "Cannot contain "+disallowed
+                    error_message: "Cannot contain "+disallowed,
+                    cannot_contain: characters
                 };
             }
         },
