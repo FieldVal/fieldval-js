@@ -3,10 +3,11 @@ var DateVal = (function(){
 
     var DateVal = {
     	errors: {
-            invalid_date_format: function() {
+            invalid_date_format: function(format) {
                 return {
                     error: 111,
-                    error_message: "Invalid date format."
+                    error_message: "Invalid date format.",
+                    format: format
                 };
             },
             invalid_date: function() {
@@ -219,7 +220,7 @@ var DateVal = (function(){
                 }
 
                 if(error || component_index<format_array.length-1){
-                    return FieldVal.create_error(DateVal.errors.invalid_date_format, options);
+                    return FieldVal.create_error(DateVal.errors.invalid_date_format, options, format);
                 }
 
                 if(values.hour!==undefined && (values.hour < 0 || values.hour>23)){

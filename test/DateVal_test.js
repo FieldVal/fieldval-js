@@ -54,52 +54,64 @@ describe('DateVal', function() {
             assert.equal(undefined, my_validator.get("my_date_8", BasicVal.string(true), BasicVal.date("dd/MM/yyyy")));
             assert.equal(undefined, my_validator.get("my_date_9", BasicVal.string(true), BasicVal.date("dd/MM/yyyy hh:mm:ss")));
             assert.equal(undefined, my_validator.get("my_date_10", BasicVal.string(true), BasicVal.date("yyyy-MM-dd")));
-            assert.deepEqual({
+            var actual = my_validator.end();
+            var expected = {
                 "invalid": {
                     "my_date_1": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "dd/MM/yyyy"
                     },
                     "my_date_2": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "d/M/yy"
                     },
                     "my_date_3": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "d-M-yy"
                     },
                     "my_date_4": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "d:M"
                     },
                     "my_date_5": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "yyyy MM dd"
                     },
                     "my_date_6": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "MM/dd/yy"
                     },
                     "my_date_7": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "dd/MM/yy"
                     },
                     "my_date_8": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "dd/MM/yyyy"
                     },
                     "my_date_9": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "dd/MM/yyyy hh:mm:ss"
                     },
                     "my_date_10": {
                         "error": 111,
-                        "error_message": "Invalid date format."
+                        "error_message": "Invalid date format.",
+                        "format": "yyyy-MM-dd"
                     }
                 },
                 "error_message": "One or more errors.",
                 "error": 5
-            }, my_validator.end());
+            };
+            assert.deepEqual(expected, actual);
         }) 
     })
 

@@ -277,7 +277,8 @@ describe('BasicVal', function() {
                 "invalid":{
                     "my_value":{
                         "error":102,
-                        "error_message":"Value is less than 10"
+                        "error_message":"Value is less than 10",
+                        "minimum": 10
                     }
                 },
                 "error_message":"One or more errors.",
@@ -313,7 +314,8 @@ describe('BasicVal', function() {
                 "invalid":{
                     "my_value":{
                         "error":103,
-                        "error_message":"Value is greater than 10"
+                        "error_message":"Value is greater than 10",
+                        "maximum": 10
                     }
                 },
                 "error_message":"One or more errors.",
@@ -341,7 +343,8 @@ describe('BasicVal', function() {
                 "invalid":{
                     "my_value":{
                         "error":105,
-                        "error_message":"Cannot contain A,C,F"
+                        "error_message":"Cannot contain A,C,F",
+                        "cannot_contain": ["A","C","F"]
                     }
                 },
                 "error_message":"One or more errors.",
@@ -368,7 +371,7 @@ describe('BasicVal', function() {
             assert.strictEqual(null, my_validator.end());
         })
 
-        it('should create an error when the value is below the specified value', function() {
+        it('should create an error when the value\'s length is below the specified value', function() {
             var my_validator = new FieldVal({
                 "my_value": "ABCD"
             })
@@ -377,7 +380,8 @@ describe('BasicVal', function() {
                 "invalid":{
                     "my_value":{
                         "error":100,
-                        "error_message":"Length is less than 5"
+                        "error_message":"Length is less than 5",
+                        "min_length": 5
                     }
                 },
                 "error_message":"One or more errors.",
