@@ -32,6 +32,8 @@ var FieldVal = (function(){
             //Provided a (potentially undefined) existing error
 
             if(existing_error){
+                //Is not null
+                
                 var key_error;
                 if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
                     //The existing_error is a key error

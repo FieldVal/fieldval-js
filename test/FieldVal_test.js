@@ -64,7 +64,7 @@ describe('FieldVal', function() {
             }
         })
 
-        it('should be able to continue from a previous validator', function(done) {
+        it('should be able to continue from a previous validator that had errors', function(done) {
             var my_data = {
                 'valid_one_key': "AB",
                 'my_invalid_key': 15,
@@ -160,7 +160,29 @@ describe('FieldVal', function() {
             });
         })
 
-        it('', function(done) {
+        
+        it('should be able to continue from a previous validator that didn\'t have errors', function(done) {
+            var my_data = {
+                'valid_one_key': "AB",
+                'valid_two_key': 25
+            };
+            var validator_one = new FieldVal(my_data);
+
+            validator_one.get('valid_one_key', BasicVal.string(true));
+            validator_one.get('valid_two_key', BasicVal.integer(true), BasicVal.minimum(20));
+
+            validator_one.end(function(error_one){
+
+                var validator_two = new FieldVal(my_data, error_one);
+                var error_two = validator_two.end();
+
+                assert.deepEqual(error_two, null);
+
+                done();
+            });
+        })
+
+        it('should throw an exception when async checks are used with .get', function(done) {
             var validator = new FieldVal({
                 'my_value': 13
             })
