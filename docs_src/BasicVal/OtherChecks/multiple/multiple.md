@@ -1,4 +1,4 @@
-```BasicVal.multiple(possibles, [flags])```
+```BasicVal.multiple(possibles, [options])```
 
 Validates the value with multiple checks. Only one of the checks need to pass for the value to be valid.
 

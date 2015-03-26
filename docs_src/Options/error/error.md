@@ -1,0 +1,1 @@
+The ```error``` option overrides the standard error for [BasicVal](/docs/fieldval/BasicVal) checks.

@@ -32,6 +32,8 @@ var FieldVal = (function(){
             //Provided a (potentially undefined) existing error
 
             if(existing_error){
+                //Is not null
+                
                 var key_error;
                 if(existing_error.error===FieldVal.ONE_OR_MORE_ERRORS){
                     //The existing_error is a key error
@@ -311,16 +313,16 @@ var FieldVal = (function(){
         return this_error;
     };
 
-    FieldVal.prototype.missing = function (field_name, flags) {
+    FieldVal.prototype.missing = function (field_name, options) {
         var fv = this;
 
-        return fv.error(field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, flags));
+        return fv.error(field_name, FieldVal.create_error(FieldVal.MISSING_ERROR, options));
     };
 
-    FieldVal.prototype.unrecognized = function (field_name, flags) {
+    FieldVal.prototype.unrecognized = function (field_name, options) {
         var fv = this;
 
-        return fv.error(field_name, FieldVal.create_error(FieldVal.UNRECOGNIZED_ERROR, flags));
+        return fv.error(field_name, FieldVal.create_error(FieldVal.UNRECOGNIZED_ERROR, options));
     };
 
     FieldVal.prototype.recognized = function (field_name) {
@@ -499,11 +501,11 @@ var FieldVal = (function(){
         };
     };
 
-    FieldVal.get_value_and_type = function (value, desired_type, flags) {
-        if (!flags) {
-            flags = {};
+    FieldVal.get_value_and_type = function (value, desired_type, options) {
+        if (!options) {
+            options = {};
         }
-        var parse = flags.parse !== undefined ? flags.parse : false;
+        var parse = options.parse !== undefined ? options.parse : false;
 
         if (typeof value !== 'string' || parse) {
             if (desired_type === "integer") {
@@ -549,7 +551,7 @@ var FieldVal = (function(){
 
         var this_check_function;
         var stop_on_error = true;//Default to true
-        var flags = {};
+        var options = {};
         var i = 0;
 
         if ((typeof this_check) === 'object') {
@@ -585,10 +587,10 @@ var FieldVal = (function(){
                 }
                 return FieldVal.ASYNC;
             } else {
-                flags = this_check;
-                this_check_function = flags;
-                if (flags && (flags.stop_on_error !== undefined)) {
-                    stop_on_error = flags.stop_on_error;
+                options = this_check;
+                this_check_function = options;
+                if (options && (options.stop_on_error !== undefined)) {
+                    stop_on_error = options.stop_on_error;
                 }
             }
         } else if(typeof this_check === 'function') {
@@ -723,89 +725,89 @@ var FieldVal = (function(){
         }
     };
 
-    FieldVal.merge_flags_and_checks = function(flags, check){
-        var new_flags = {};
-        if(flags){
-            for(var i in flags){
-                if(flags.hasOwnProperty(i)){
-                    new_flags[i] = flags[i];
+    FieldVal.merge_options_and_checks = function(options, check){
+        var new_options = {};
+        if(options){
+            for(var i in options){
+                if(options.hasOwnProperty(i)){
+                    new_options[i] = options[i];
                 }
             }
         }
-        new_flags.check = check;
-        return new_flags;
-    }
+        new_options.check = check;
+        return new_options;
+    };
 
-    FieldVal.required = function (required, flags) {//required defaults to true
+    FieldVal.required = function (required, options) {//required defaults to true
         var check = function (value) {
             if (value === null || value === undefined) {
                 if (required || required === undefined) {
-                    return FieldVal.create_error(FieldVal.MISSING_ERROR, flags);
+                    return FieldVal.create_error(FieldVal.MISSING_ERROR, options);
                 }
 
                 return FieldVal.NOT_REQUIRED_BUT_MISSING;
             }
         };
-        return FieldVal.merge_flags_and_checks(flags,check);
+        return FieldVal.merge_options_and_checks(options,check);
     };
 
-    FieldVal.type = function (desired_type, flags) {
+    FieldVal.type = function (desired_type, options) {
 
-        var required = (flags && flags.required !== undefined) ? flags.required : true;
+        var required = (options && options.required !== undefined) ? options.required : true;
 
         var check = function (value, emit) {
 
-            var required_error = FieldVal.required(required, flags || {}).check(value);
+            var required_error = FieldVal.required(required, options || {}).check(value);
 
             if (required_error) {
                 return required_error;
             }
 
-            var value_and_type = FieldVal.get_value_and_type(value, desired_type, flags);
+            var value_and_type = FieldVal.get_value_and_type(value, desired_type, options);
 
             var inner_desired_type = value_and_type.desired_type;
             var type = value_and_type.type;
             value = value_and_type.value;
 
             if (type !== inner_desired_type) {
-                return FieldVal.create_error(FieldVal.INCORRECT_TYPE_ERROR, flags, inner_desired_type, type);
+                return FieldVal.create_error(FieldVal.INCORRECT_TYPE_ERROR, options, inner_desired_type, type);
             }
             if (emit) {
                 emit(value);
             }
         };
 
-        return FieldVal.merge_flags_and_checks(flags,check);
+        return FieldVal.merge_options_and_checks(options,check);
     };
 
-    FieldVal.create_error = function (default_error, flags) {
-        if (!flags) {
+    FieldVal.create_error = function (default_error, options) {
+        if (!options) {
             return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
         }
         if (default_error === FieldVal.MISSING_ERROR) {
-            var missing_error_type = typeof flags.missing_error;
+            var missing_error_type = typeof options.missing_error;
 
             /* istanbul ignore else */
             if (missing_error_type === 'function') {
-                return flags.missing_error.apply(null, Array.prototype.slice.call(arguments, 2));
+                return options.missing_error.apply(null, Array.prototype.slice.call(arguments, 2));
             } else if (missing_error_type === 'object') {
-                return flags.missing_error;
+                return options.missing_error;
             } else if (missing_error_type === 'string') {
                 return {
-                    error_message: flags.missing_error
+                    error_message: options.missing_error
                 };
             }
         } else {
-            var error_type = typeof flags.error;
+            var error_type = typeof options.error;
 
             /* istanbul ignore else */
             if (error_type === 'function') {
-                return flags.error.apply(null, Array.prototype.slice.call(arguments, 2));
+                return options.error.apply(null, Array.prototype.slice.call(arguments, 2));
             } else if (error_type === 'object') {
-                return flags.error;
+                return options.error;
             } else if (error_type === 'string') {
                 return {
-                    error_message: flags.error
+                    error_message: options.error
                 };
             }
         }

@@ -1,3 +1,3 @@
-```BasicVal.length(desired_length, [flags])```
+```BasicVal.length(desired_length, [options])```
 
 Checks if the value has desired length.

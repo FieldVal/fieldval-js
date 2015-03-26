@@ -1,4 +1,4 @@
-```BasicVal.date(format, [flags])```
+```BasicVal.date(format, [options])```
 
 Checks if the string value is a valid date in a specified format.
 
@@ -22,7 +22,7 @@ Valid separators:
 - ```/```
 - ```:```
 
-Optional flags.emit options
+Optional options.emit options
 ```DateVal.EMIT_COMPONENT_ARRAY``` emits an array with date component values in the right order
 ```DateVal.EMIT_OBJECT``` emits an object in a following format:
 ```

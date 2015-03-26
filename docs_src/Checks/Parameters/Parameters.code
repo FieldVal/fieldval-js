@@ -1,4 +1,4 @@
-var minimum = function(min_val, flags) {
+var minimum = function(min_val, options) {
 
     var check = function(value) {
         if (value < min_val) {
@@ -9,10 +9,10 @@ var minimum = function(min_val, flags) {
         }
     }
 
-    if(flags){
-        //The check becomes part of the flag object, which is returned
-        flags.check = check;
-        return flags
+    if(options){
+        //The check becomes part of the options object, which is returned
+        options.check = check;
+        return options
     }
 
     return check;

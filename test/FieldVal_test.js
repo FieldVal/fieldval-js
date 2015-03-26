@@ -64,7 +64,7 @@ describe('FieldVal', function() {
             }
         })
 
-        it('should be able to continue from a previous validator', function(done) {
+        it('should be able to continue from a previous validator that had errors', function(done) {
             var my_data = {
                 'valid_one_key': "AB",
                 'my_invalid_key': 15,
@@ -115,7 +115,8 @@ describe('FieldVal', function() {
                         },
                         "my_invalid_key": {
                             "error": 102,
-                            "error_message": "Value is less than 20"
+                            "error_message": "Value is less than 20",
+                            "minimum": 20
                         },
                         "my_missing_key": {
                             "error_message": "Field missing.",
@@ -129,7 +130,8 @@ describe('FieldVal', function() {
                                 },
                                 "inner_my_invalid_key": {
                                     "error": 102,
-                                    "error_message": "Value is less than 20"
+                                    "error_message": "Value is less than 20",
+                                    "minimum": 20
                                 },
                                 "inner_my_missing_key": {
                                     "error_message": "Field missing.",
@@ -137,7 +139,8 @@ describe('FieldVal', function() {
                                 },
                                 "inner_valid_one_key": {
                                     "error": 106,
-                                    "error_message": "Value does not have prefix: DEF"
+                                    "error_message": "Value does not have prefix: DEF",
+                                    "prefix": "DEF"
                                 }
                             },
                             "error_message": "One or more errors.",
@@ -145,7 +148,8 @@ describe('FieldVal', function() {
                         },
                         "valid_one_key": {
                             "error": 106,
-                            "error_message": "Value does not have prefix: ABC"
+                            "error_message": "Value does not have prefix: ABC",
+                            "prefix": "ABC"
                         }
                     },
                     "error_message": "One or more errors.",
@@ -156,7 +160,29 @@ describe('FieldVal', function() {
             });
         })
 
-        it('', function(done) {
+        
+        it('should be able to continue from a previous validator that didn\'t have errors', function(done) {
+            var my_data = {
+                'valid_one_key': "AB",
+                'valid_two_key': 25
+            };
+            var validator_one = new FieldVal(my_data);
+
+            validator_one.get('valid_one_key', BasicVal.string(true));
+            validator_one.get('valid_two_key', BasicVal.integer(true), BasicVal.minimum(20));
+
+            validator_one.end(function(error_one){
+
+                var validator_two = new FieldVal(my_data, error_one);
+                var error_two = validator_two.end();
+
+                assert.deepEqual(error_two, null);
+
+                done();
+            });
+        })
+
+        it('should throw an exception when async checks are used with .get', function(done) {
             var validator = new FieldVal({
                 'my_value': 13
             })
@@ -318,7 +344,8 @@ describe('FieldVal', function() {
             ]);
             assert.deepEqual({
                 'error':102,
-                'error_message':'Value is less than 30'
+                'error_message':'Value is less than 30',
+                'minimum': 30
             }, output);
         })
 
@@ -417,8 +444,9 @@ describe('FieldVal', function() {
             assert.equal(did_respond, true);
             assert.strictEqual(null, output);
             assert.deepEqual({
-                'error':102,
-                'error_message':'Value is less than 30'
+                'error': 102,
+                'error_message':'Value is less than 30',
+                'minimum': 30
             },validator.end())
         })
 
@@ -447,7 +475,8 @@ describe('FieldVal', function() {
                 'invalid': {
                     'my_field_name' :{
                         'error':102,
-                        'error_message':'Value is less than 30'
+                        'error_message':'Value is less than 30',
+                        'minimum': 30
                     }
                 },
                 'error_message':'One or more errors.',
@@ -682,7 +711,8 @@ describe('FieldVal', function() {
                             },
                             {
                                 'error':102,
-                                'error_message':'Value is less than 30'
+                                'error_message':'Value is less than 30',
+                                'minimum': 30
                             }]
                         }
                     },
@@ -780,7 +810,8 @@ describe('FieldVal', function() {
             ]);
             assert.deepEqual({
                 'error':103,
-                'error_message':'Value is greater than 20'
+                'error_message':'Value is greater than 20',
+                'maximum': 20
             }, output);
         })
 
@@ -798,11 +829,13 @@ describe('FieldVal', function() {
                 'error_message':'Multiple errors.',
                 'errors':[
                     {
-                        'error':102,
-                        'error_message':'Value is less than 30'
+                        'error': 102,
+                        'error_message':'Value is less than 30',
+                        'minimum': 30
                     },{
-                        'error':103,
-                        'error_message':'Value is greater than 20'
+                        'error': 103,
+                        'error_message':'Value is greater than 20',
+                        'maximum': 20
                     }
                 ]
             }, output);
