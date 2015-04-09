@@ -342,7 +342,7 @@ describe('BasicVal', function() {
             assert.deepEqual({
                 "invalid":{
                     "my_value":{
-                        "error":105,
+                        "error":119,
                         "error_message":"Cannot contain A,C,F",
                         "cannot_contain": ["A","C","F"]
                     }
@@ -589,6 +589,53 @@ describe('BasicVal', function() {
             assert.equal("http://127.0.0.1/images/example.jpg", my_validator.get("my_url_7", bval.string(true), bval.url()));
             assert.equal("https://127.0.0.1/images/example.jpg", my_validator.get("my_url_8", bval.string(true), bval.url()));
             assert.strictEqual(null, my_validator.end());
+        })
+    })
+
+    describe('domain()', function() {
+
+        it('should return domain strings when strings of valid syntax are present', function() {
+            var my_validator = new FieldVal({
+                "my_url_1": "http://example.com",
+                "my_url_2": "https://example.com",
+                "my_url_3": "http://www.example.com",
+                "my_url_4": "https://www.example.com/",
+                "my_url_5": "http://www.example.com/path/",
+                "my_url_6": "http://www.example.com/path/resource.type",
+                "my_url_7": "http://127.0.0.1/images/example.jpg",
+                "my_url_8": "https://127.0.0.1/images/example.jpg"
+            })
+
+            assert.equal("http://example.com", my_validator.get("my_url_1", bval.string(true), bval.domain()));
+            assert.equal("https://example.com", my_validator.get("my_url_2", bval.string(true), bval.domain()));
+            assert.equal("http://www.example.com", my_validator.get("my_url_3", bval.string(true), bval.domain()));
+            assert.equal("https://www.example.com/", my_validator.get("my_url_4", bval.string(true), bval.domain()))
+            assert.equal(undefined, my_validator.get("my_url_5", bval.string(true), bval.domain()));
+            assert.equal(undefined, my_validator.get("my_url_6", bval.string(true), bval.domain()));
+            assert.equal(undefined, my_validator.get("my_url_7", bval.string(true), bval.domain()));
+            assert.equal(undefined, my_validator.get("my_url_8", bval.string(true), bval.domain()));
+            assert.deepEqual(my_validator.end(), {
+                "invalid": {
+                    "my_url_5": {
+                        "error":120,
+                        "error_message": "Invalid domain format."
+                    },
+                    "my_url_6": {
+                        "error":120,
+                        "error_message": "Invalid domain format."
+                    },
+                    "my_url_7": {
+                        "error":120,
+                        "error_message": "Invalid domain format."
+                    },
+                    "my_url_8": {
+                        "error":120,
+                        "error_message": "Invalid domain format."
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error":5
+            });
         })
     })
 
