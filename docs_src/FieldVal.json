@@ -142,6 +142,10 @@
                             "text": "BasicVal/TypeChecks/boolean/boolean.md"
                         },
                         {
+                            "name": "domain",
+                            "text": "BasicVal/TypeChecks/domain/domain.md"
+                        },
+                        {
                             "name": "email",
                             "text": "BasicVal/TypeChecks/email/email.md"
                         },

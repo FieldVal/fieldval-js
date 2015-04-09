@@ -136,16 +136,22 @@ var BasicVal = (function(){
             },
             value_in_list: function() {
                 return {
-                    error: 104,
+                    error: 118,
                     error_message: "Value not allowed"
                 };
             },
             should_not_contain: function(characters) {
                 var disallowed = characters.join(",");
                 return {
-                    error: 105,
+                    error: 119,
                     error_message: "Cannot contain "+disallowed,
                     cannot_contain: characters
+                };
+            },
+            invalid_domain: function() {
+                return {
+                    error: 120,
+                    error_message: "Invalid domain format."
                 };
             }
         },
@@ -710,11 +716,31 @@ var BasicVal = (function(){
                 check: check
             };
         },
+        domain: function(required, options){
+            options = BasicVal.merge_required_and_options(required, options);
+            var check = function(value) {
+                var string_error = BasicVal.string(options).check(value);
+                if(string_error!==undefined) return string_error;
+                
+                var re = BasicVal.domain_regex;
+                if(!re.test(value)){
+                    return FieldVal.create_error(BasicVal.errors.invalid_domain, options);
+                } 
+            };
+            if(options){
+                options.check = check;
+                return options;
+            }
+            return {
+                check: check
+            };
+        },
         required: FieldVal.required
     };
 
     BasicVal.email_regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     BasicVal.url_regex = /^(https?):\/\/(((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])))(:[1-9][0-9]+)?(\/)?([\/?].+)?$/;
+    BasicVal.domain_regex = /^(https?):\/\/(((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])))(:[1-9][0-9]+)?(\/)?$/;
 
     return BasicVal;
 }).call();
