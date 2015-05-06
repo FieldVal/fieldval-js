@@ -423,7 +423,7 @@ describe('BasicVal', function() {
 
             var shorter, longer, output;
 
-            output = my_validator.get("my_string", /*bval.string(true), */bval.multiple(
+            output = my_validator.get("my_string", bval.string(true), bval.multiple(
                 [
                     [
                         bval.max_length(3), function(value){
@@ -432,15 +432,16 @@ describe('BasicVal', function() {
                     ]
                     ,
                     [
-                        bval.min_length(6), function(value){
+                        bval.min_length(6), function(value, emit){
                             longer = value;
+                            emit(value.toLowerCase());
                         }
                     ]
                 ]
             ))
 
             //Up to 3 characters, or 6+
-            assert.equal("ABCDEFG", output);
+            assert.equal("abcdefg", output);
             assert.equal(null, shorter);
             assert.equal("ABCDEFG", longer);
             assert.strictEqual(null, my_validator.end());

@@ -1784,12 +1784,15 @@ var FieldVal = (function(){
             
             var check = function(value, emit){
                 for(var i = 0; i < possibles.length; i++){
-                    var option = possibles[i];
+                    var array_of_checks = possibles[i];
             
                     var emitted_value;
-                    var option_error = FieldVal.use_checks(value, option, null, null, function(emitted){
-                        emitted_value = emitted;
+                    var option_error = FieldVal.use_checks(value, array_of_checks, {
+                        emit: function(emitted){
+                            emitted_value = emitted;
+                        }
                     });
+                    
                     if(option_error===FieldVal.ASYNC){
                         throw new Error(".multiple used with async checks, use .multiple_async.");
                     }
