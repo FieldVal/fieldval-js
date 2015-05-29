@@ -64,6 +64,29 @@ describe('FieldVal', function() {
             }
         })
 
+        it('should respect the ignore_unrecognized option', function() {
+            var validator_one = new FieldVal({
+                'my_unrecognized_key': 42
+            },{
+                ignore_unrecognized: true
+            });
+            assert.strictEqual(validator_one.end(),null);
+
+            var validator_two = new FieldVal({
+                'my_unrecognized_key': 42
+            });
+            assert.deepEqual(validator_two.end(),{
+                "invalid":{
+                    "my_unrecognized_key":{
+                        "error_message": "Unrecognized field.",
+                        "error": 3
+                    }
+                },
+                "error_message": 'One or more errors.',
+                "error": 5
+            });
+        })
+
         it('should be able to continue from a previous validator that had errors', function(done) {
             var my_data = {
                 'valid_one_key': "AB",
@@ -92,14 +115,19 @@ describe('FieldVal', function() {
 
             validator_one.end(function(error_one){
 
-                var validator_two = new FieldVal(my_data, error_one);
+                var validator_two = new FieldVal(my_data, {
+                    "error": error_one
+                });
+
                 //Make this key invalid on validator_two
                 validator_two.get('valid_one_key', BasicVal.string(true), BasicVal.prefix("ABC"))
                 validator_two.get("my_initially_unrecognized_key", BasicVal.boolean(true));
 
                 validator_two.get('my_object', BasicVal.object(true), function(val){
                     var inner_error_one = FieldVal.get_error("my_object", error_one);
-                    var inner_validator_two = new FieldVal(val, inner_error_one);
+                    var inner_validator_two = new FieldVal(val, {
+                        "error": inner_error_one
+                    });
                     inner_validator_two.get("inner_valid_one_key", BasicVal.string(true), BasicVal.prefix("DEF"));
                     inner_validator_two.get("inner_my_initially_unrecognized_key", BasicVal.boolean(true));
                     return inner_validator_two.end();
@@ -173,7 +201,9 @@ describe('FieldVal', function() {
 
             validator_one.end(function(error_one){
 
-                var validator_two = new FieldVal(my_data, error_one);
+                var validator_two = new FieldVal(my_data, {
+                    "error": error_one
+                });
                 var error_two = validator_two.end();
 
                 assert.deepEqual(error_two, null);
@@ -1286,7 +1316,10 @@ describe('FieldVal', function() {
         it('return a new FieldVal instance if dug into an existing error if the key exists', function() {
             
             var validator = new FieldVal(
-                get_example_data(), get_example_error()
+                get_example_data(),
+                {
+                    "error": get_example_error()
+                }
             );
 
             var dug = validator.dig('first_inner','second_inner');
@@ -1372,7 +1405,9 @@ describe('FieldVal', function() {
         it('should return no error if constructed with null existing error', function() {
             var validator = new FieldVal({
                 my_field: 123
-            },null);
+            },{
+                "error": null
+            });
             assert.strictEqual(null, validator.end());
         })
 
