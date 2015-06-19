@@ -1,6 +1,6 @@
 ```BasicVal.each(on_each, [options])```
 
-Iterates through the provided array and calls the ```on_each``` function on each array's value.
+Iterates through the provided array or object and calls the ```on_each``` function on each array's value.
 
 ```on_each(value, index, emit)```
 
