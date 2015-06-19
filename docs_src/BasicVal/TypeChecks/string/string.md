@@ -1,3 +1,3 @@
-```BasicVal.string([required], [flags])```
+```BasicVal.string([required], [options])```
 
 Checks if the value is a string.

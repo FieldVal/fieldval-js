@@ -87,8 +87,8 @@ describe('BasicVal', function() {
             )
 
             var val_error = my_validator.end();
-            assert.equal(15, my_value);
             assert.strictEqual(null, val_error);
+            assert.equal(15, my_value);
         })
 
         it('should return any errors thrown by the iterator', function() {
@@ -277,7 +277,8 @@ describe('BasicVal', function() {
                 "invalid":{
                     "my_value":{
                         "error":102,
-                        "error_message":"Value is less than 10"
+                        "error_message":"Value is less than 10",
+                        "minimum": 10
                     }
                 },
                 "error_message":"One or more errors.",
@@ -313,7 +314,8 @@ describe('BasicVal', function() {
                 "invalid":{
                     "my_value":{
                         "error":103,
-                        "error_message":"Value is greater than 10"
+                        "error_message":"Value is greater than 10",
+                        "maximum": 10
                     }
                 },
                 "error_message":"One or more errors.",
@@ -340,8 +342,9 @@ describe('BasicVal', function() {
             assert.deepEqual({
                 "invalid":{
                     "my_value":{
-                        "error":105,
-                        "error_message":"Cannot contain A,C,F"
+                        "error":119,
+                        "error_message":"Cannot contain A,C,F",
+                        "cannot_contain": ["A","C","F"]
                     }
                 },
                 "error_message":"One or more errors.",
@@ -368,7 +371,7 @@ describe('BasicVal', function() {
             assert.strictEqual(null, my_validator.end());
         })
 
-        it('should create an error when the value is below the specified value', function() {
+        it('should create an error when the value\'s length is below the specified value', function() {
             var my_validator = new FieldVal({
                 "my_value": "ABCD"
             })
@@ -377,7 +380,8 @@ describe('BasicVal', function() {
                 "invalid":{
                     "my_value":{
                         "error":100,
-                        "error_message":"Length is less than 5"
+                        "error_message":"Length is less than 5",
+                        "min_length": 5
                     }
                 },
                 "error_message":"One or more errors.",
@@ -419,7 +423,7 @@ describe('BasicVal', function() {
 
             var shorter, longer, output;
 
-            output = my_validator.get("my_string", /*bval.string(true), */bval.multiple(
+            output = my_validator.get("my_string", bval.string(true), bval.multiple(
                 [
                     [
                         bval.max_length(3), function(value){
@@ -428,15 +432,16 @@ describe('BasicVal', function() {
                     ]
                     ,
                     [
-                        bval.min_length(6), function(value){
+                        bval.min_length(6), function(value, emit){
                             longer = value;
+                            emit(value.toLowerCase());
                         }
                     ]
                 ]
             ))
 
             //Up to 3 characters, or 6+
-            assert.equal("ABCDEFG", output);
+            assert.equal("abcdefg", output);
             assert.equal(null, shorter);
             assert.equal("ABCDEFG", longer);
             assert.strictEqual(null, my_validator.end());
@@ -588,9 +593,56 @@ describe('BasicVal', function() {
         })
     })
 
+    describe('domain()', function() {
+
+        it('should return domain strings when strings of valid syntax are present', function() {
+            var my_validator = new FieldVal({
+                "my_url_1": "http://example.com",
+                "my_url_2": "https://example.com",
+                "my_url_3": "http://www.example.com",
+                "my_url_4": "https://www.example.com/",
+                "my_url_5": "http://www.example.com/path/",
+                "my_url_6": "http://www.example.com/path/resource.type",
+                "my_url_7": "http://127.0.0.1/images/example.jpg",
+                "my_url_8": "https://127.0.0.1/images/example.jpg"
+            })
+
+            assert.equal("http://example.com", my_validator.get("my_url_1", bval.string(true), bval.domain()));
+            assert.equal("https://example.com", my_validator.get("my_url_2", bval.string(true), bval.domain()));
+            assert.equal("http://www.example.com", my_validator.get("my_url_3", bval.string(true), bval.domain()));
+            assert.equal("https://www.example.com/", my_validator.get("my_url_4", bval.string(true), bval.domain()))
+            assert.equal(undefined, my_validator.get("my_url_5", bval.string(true), bval.domain()));
+            assert.equal(undefined, my_validator.get("my_url_6", bval.string(true), bval.domain()));
+            assert.equal(undefined, my_validator.get("my_url_7", bval.string(true), bval.domain()));
+            assert.equal(undefined, my_validator.get("my_url_8", bval.string(true), bval.domain()));
+            assert.deepEqual(my_validator.end(), {
+                "invalid": {
+                    "my_url_5": {
+                        "error":120,
+                        "error_message": "Invalid domain format."
+                    },
+                    "my_url_6": {
+                        "error":120,
+                        "error_message": "Invalid domain format."
+                    },
+                    "my_url_7": {
+                        "error":120,
+                        "error_message": "Invalid domain format."
+                    },
+                    "my_url_8": {
+                        "error":120,
+                        "error_message": "Invalid domain format."
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error":5
+            });
+        })
+    })
+
     describe('number()', function() {
 
-        it('should return a number when an number is requested and the value is a number string and parse flag is true', function() {
+        it('should return a number when a number is requested and the value is a number string and parse flag is true', function() {
             var my_validator = new FieldVal({
                 "my_number": "43.5"
             })
@@ -598,12 +650,53 @@ describe('BasicVal', function() {
             assert.strictEqual(null, my_validator.end());
         })
 
-        it('should create an error when an number is requested and the value is a number string, but parse flag is not set to true', function() {
+        it('should create an error when a number is requested and the value is a number string, but parse flag is not set to true', function() {
             var my_validator = new FieldVal({
                 "my_number": "43.5"
             })
             assert.strictEqual(undefined, my_validator.get("my_number", bval.number(true)));
-            assert.deepEqual({"invalid":{"my_number":{"error_message":"Incorrect field type. Expected number, but received string.","error":2,"expected":"number","received":"string"}},"error_message":"One or more errors.","error":5}, my_validator.end());
+            assert.deepEqual({
+                "invalid":{
+                    "my_number":{
+                        "error_message":"Incorrect field type. Expected number, but received string.",
+                        "error":2,
+                        "expected":"number",
+                        "received":"string"
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error":5
+            }, my_validator.end());
+        })
+
+        it('should create an error when a number is requested, but the value is non-numeric string', function() {
+            var my_validator = new FieldVal({
+                "my_number_a": "abc",
+                "my_number_b": "def"
+            })
+
+            var bval_number_check = bval.number(true);
+            assert.strictEqual(undefined, my_validator.get("my_number_a", bval_number_check));
+            assert.strictEqual(undefined, my_validator.get("my_number_b", bval_number_check));
+            
+            assert.deepEqual({
+                "invalid":{
+                    "my_number_a":{
+                        "error_message":"Incorrect field type. Expected number, but received string.",
+                        "error":2,
+                        "expected":"number",
+                        "received":"string"
+                    },
+                    "my_number_b":{
+                        "error_message":"Incorrect field type. Expected number, but received string.",
+                        "error":2,
+                        "expected":"number",
+                        "received":"string"
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error":5
+            }, my_validator.end());
         })
 
         it('should create a custom error when one is provided (number)', function() {
@@ -647,6 +740,22 @@ describe('BasicVal', function() {
             })
             assert.strictEqual(undefined, my_validator.get("my_string", bval.string(true)));
             assert.deepEqual({"invalid":{"my_string":{"error_message":"Incorrect field type. Expected string, but received number.","error":2,"expected":"string","received":"number"}},"error_message":"One or more errors.","error":5}, my_validator.end())
+        })
+
+        it('should return a missing error when checking an empty string', function() {
+            var my_validator = new FieldVal({
+                "my_string": ""
+            })
+            assert.strictEqual(undefined, my_validator.get("my_string", bval.string(true)));
+            assert.deepEqual({"invalid":{"my_string":{"error_message":"Field missing.","error":1}},"error_message":"One or more errors.","error":5}, my_validator.end())
+        })
+
+        it('should return a missing error when checking a string of only whitespaces', function() {
+            var my_validator = new FieldVal({
+                "my_string": "  "
+            })
+            assert.strictEqual(undefined, my_validator.get("my_string", bval.string(true)));
+            assert.deepEqual({"invalid":{"my_string":{"error_message":"Field missing.","error":1}},"error_message":"One or more errors.","error":5}, my_validator.end())
         })
     })
 

@@ -1,4 +1,4 @@
-```BasicVal.each_async(on_each, [flags])```
+```BasicVal.each_async(on_each, [options])```
 
 Iterates through the provided array and calls the ```on_each``` function on each array's value. The ```on_each``` function for ```each_async``` uses a callback to provide its response.
 

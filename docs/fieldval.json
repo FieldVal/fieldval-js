@@ -4,15 +4,15 @@
         {
             "name": "FieldVal Error Structure",
             "type": "js",
-            "contents": "//YOUR INPUT\nvar data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\n//FIELDVAL OUTPUT\n{\n    \"invalid\": {\n        \"my_email\": {\n            \"error\": 107,\n            \"error_message\": \"Invalid email address format.\"\n        },\n        \"my_integer\": {\n            \"error_message\": \"Incorrect field type. Expected integer.\",\n            \"error\": 2,\n            \"expected\": \"integer\",\n            \"received\": \"string\"\n        },\n        \"multiple_of_three\": {\n            \"error_message\": \"Not a multiple of three\",\n            \"error\": 1000\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
+            "contents": "//YOUR INPUT\nvar data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\n//FIELDVAL OUTPUT\n{\n    \"invalid\": {\n        \"my_email\": {\n            \"error\": 107,\n            \"error_message\": \"Invalid email address format.\"\n        },\n        \"my_integer\": {\n            \"error_message\": \"Incorrect field type. Expected number, but received string.\",\n            \"error\": 2,\n            \"expected\": \"integer\",\n            \"received\": \"string\"\n        },\n        \"multiple_of_three\": {\n            \"error_message\": \"Not a multiple of three\",\n            \"error\": 1000\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
         },
         {
             "name": "Code",
             "type": "js",
             "runnable": true,
             "js_external": "__CURRENT_DOMAIN__/demo_files/fieldval.js",
-            "runnable_contents": "var data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\nvar validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true)());\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\ndocument.write(\"<pre>\"+JSON.stringify(validator.end(),null,4)+\"</pre>\");",
-            "contents": "var validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true)());\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\nconsole.log(validator.end());"
+            "runnable_contents": "var data = {\n\t\"my_email\": \"almost@@example.com\",\n    \"my_integer\": \"clearly not an integer\",\n    \"multiple_of_three\": 8\n}\n\nvar validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true));\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\ndocument.write(\"<pre>\"+JSON.stringify(validator.end(),null,4)+\"</pre>\");",
+            "contents": "var validator = new FieldVal(data);\nvalidator.get(\"my_email\", BasicVal.email(true));\nvalidator.get(\"my_integer\", BasicVal.integer(true));\nvalidator.get(\"multiple_of_three\", BasicVal.integer(true), function(val){\n  if(val % 3 !== 0){\n    return {\n      \"error_message\": \"Not a multiple of three\",\n      \"error\": 1000\n    }\n  }\n});\n\nconsole.log(validator.end());"
         }
     ],
     "text": "<p>FieldVal is a Javascript library that allows you to easily create readable and structured error reports for any data.</p>\n<p>It works on both the front end in the browser and on the back end using Node.</p>\n<p>FieldVal comes with a collection of checks called BasicVal. These are standard checks such as email, numeric limits etc., but you can write your own FieldVal checks with simple functions.</p>\n<p>To start validating, pass your data to a new instance of <code>FieldVal</code>.</p>\n<p>Then use <code>.get(key_name, checks...)</code> to retrieve values whilst simultaneously building an error report.</p>\n<p>When you&#39;ve finished validating, use <code>.end()</code> to retrieve the error report or null if there were no errors.</p>\n<h4 id=\"run-the-code-example-to-the-right\">Run the code example to the right</h4>\n<p>Try out FieldVal using CodePen by clicking the &quot;Run on Codepen&quot; button below the example.</p>\n<p>Try changing the data provided to <code>FieldVal</code> to see how the error changes.</p>\n",
@@ -81,7 +81,7 @@
                     "name": "Validating single value",
                     "code": [
                         {
-                            "contents": "//CODE\nvar value = \"abc\";\nBasicVal.integer().check(value);\n\n//OUTPUT\n{\n\terror_message: 'Incorrect field type. Expected integer.',\n \terror: 2,\n  \texpected: 'integer',\n  \treceived: 'string' \n}"
+                            "contents": "//CODE\nvar value = \"abc\";\nBasicVal.integer().check(value);\n\n//OUTPUT\n{\n\terror_message: 'Incorrect field type. Expected integer, but received string.',\n \terror: 2,\n  \texpected: 'integer',\n  \treceived: 'string' \n}"
                         }
                     ],
                     "text": "<p>It is possible to use <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> check functions on a single value.</p>\n<p><code>.check()</code> is documented in a <a href=\"/docs/fieldval/Check%20Functions\">Check Functions</a> section.</p>\n"
@@ -90,7 +90,7 @@
                     "name": "Validating nested objects",
                     "code": [
                         {
-                            "contents": "var validator = new FieldVal(val);\nvalidator.get(\"name\", BasicVal.string(true));\nvalidator.get(\"email\", BasicVal.email(true)());\nvalidator.get(\"enquiry\", BasicVal.object(true), function(enquiry){\n    var inner_validator = new FieldVal(enquiry);\n    inner_validator.get(\"type\", BasicVal.string(true), BasicVal.one_of([\"One\",\"Two\"]))\n    inner_validator.get(\"message\", BasicVal.string(true))\n    return inner_validator.end();\n});\n\nvalidator.end();"
+                            "contents": "var validator = new FieldVal(val);\nvalidator.get(\"name\", BasicVal.string(true));\nvalidator.get(\"email\", BasicVal.email(true));\nvalidator.get(\"enquiry\", BasicVal.object(true), function(enquiry){\n    var inner_validator = new FieldVal(enquiry);\n    inner_validator.get(\"type\", BasicVal.string(true), BasicVal.one_of([\"One\",\"Two\"]))\n    inner_validator.get(\"message\", BasicVal.string(true))\n    return inner_validator.end();\n});\n\nvalidator.end();"
                         }
                     ],
                     "text": "<p>Nested objects can be validated using an inner_validator in a <a href=\"/docs/fieldval/Check%20Functions\">custom check function</a> that is validating the object.</p>\n"
@@ -152,10 +152,10 @@
                     "name": "Parameters",
                     "code": [
                         {
-                            "contents": "var minimum = function(min_val, flags) {\n\n    var check = function(value) {\n        if (value < min_val) {\n            return {\n\t            error: 1000,\n\t            error_message: \"Value was below \" + min_val\n\t        }\n        }\n    }\n\n    if(flags){\n        //The check becomes part of the flag object, which is returned\n        flags.check = check;\n        return flags\n    }\n\n    return check;\n}\n\nvar check = minimum(14);"
+                            "contents": "var minimum = function(min_val, options) {\n\n    var check = function(value) {\n        if (value < min_val) {\n            return {\n\t            error: 1000,\n\t            error_message: \"Value was below \" + min_val\n\t        }\n        }\n    }\n\n    if(options){\n        //The check becomes part of the options object, which is returned\n        options.check = check;\n        return options\n    }\n\n    return check;\n}\n\nvar check = minimum(14);"
                         }
                     ],
-                    "text": "<p>A check function must take a value and return an error. To make reusable checks that can be configured for each use using parameters, you must create a wrapper for the check.</p>\n<p>The example provided is a function that performs the same action as BasicVal.minimum.</p>\n<p><code>check</code> is now a function that will return an error if the value is less than <code>14</code>. This is because minimum is a wrapper that creates a function with access to the configuration parameters (<code>14</code> as <code>min_val</code> in this case).</p>\n<p><a href=\"/docs/fieldval/Flags\">Flags</a> are additional parameters. If <code>flags</code> is set then the check becomes a property of the <code>flags</code> object. The FieldVal library can use both an object that contains a <code>check</code> property and also a function directly.</p>\n"
+                    "text": "<p>A check function must take a value and return an error. To make reusable checks that can be configured for each use using parameters, you must create a wrapper for the check.</p>\n<p>The example provided is a function that performs the same action as BasicVal.minimum.</p>\n<p><code>check</code> is now a function that will return an error if the value is less than <code>14</code>. This is because minimum is a wrapper that creates a function with access to the configuration parameters (<code>14</code> as <code>min_val</code> in this case).</p>\n<p><a href=\"/docs/fieldval/Options\">Options</a> are additional parameters. If <code>options</code> is set then the check becomes a property of the <code>options</code> object. The FieldVal library can use both an object that contains a <code>check</code> property and also a function directly.</p>\n"
                 },
                 {
                     "name": "emit",
@@ -183,43 +183,47 @@
         },
         {
             "name": "BasicVal",
-            "text": "<p>BasicVal is a set of standard FieldVal <a href=\"/docs/fieldval/Check%20Functions\">check functions</a>. Checks accept <a href=\"/docs/fieldval/Flags\">flags</a> as arguments and return typical FieldVal <a href=\"/docs/fieldval/Errors\">errors</a>.</p>\n<p>BasicVal can be found at <code>FieldVal.BasicVal</code>.</p>\n",
+            "text": "<p>BasicVal is a set of standard FieldVal <a href=\"/docs/fieldval/Check%20Functions\">check functions</a>. Checks accept <a href=\"/docs/fieldval/Options\">options</a> as arguments and return typical FieldVal <a href=\"/docs/fieldval/Errors\">errors</a>.</p>\n<p>BasicVal can be found at <code>FieldVal.BasicVal</code>.</p>\n",
             "sections": [
                 {
                     "name": "Type Checks",
-                    "text": "<p>BasicVal&#39;s built-in type checks should be used to check that a value is of a particular type.</p>\n<p>The first parameter is usually a boolean indicating whether the field is required or not. The default is <code>true</code>. </p>\n<p>Whether or not the field is required can also be specified in the flags parameter, which is an object. Such a flags object would look like:</p>\n<p><code>{required: true}</code>.</p>\n<p>Some type checks such as <code>number</code> and <code>integer</code> can optionally be used to parse the value into the expected type if it is valid. This option is set via a flag:</p>\n<p><code>{parse: true}</code></p>\n<p>If a value is parsed, it is automatically emitted, meaning that all subsequent checks (and retrieval using .get), will receive the parsed value.</p>\n",
+                    "text": "<p>BasicVal&#39;s built-in type checks should be used to check that a value is of a particular type.</p>\n<p>The first parameter is usually a boolean indicating whether the field is required or not. The default is <code>true</code>. </p>\n<p>Whether or not the field is required can also be specified in the <code>options</code> parameter, which is an object. Such an <code>options</code> object would look like:</p>\n<p><code>{required: true}</code>.</p>\n<p>Some type checks such as <code>number</code> and <code>integer</code> can optionally be used to parse the value into the expected type if it is valid. This option is set via a flag:</p>\n<p><code>{parse: true}</code></p>\n<p>If a value is parsed, it is automatically emitted, meaning that all subsequent checks (and retrieval using .get), will receive the parsed value.</p>\n",
                     "sections": [
                         {
                             "name": "array",
-                            "text": "<p><code>BasicVal.array([required], [flags])</code></p>\n<p>Checks if the value is an array.</p>\n"
+                            "text": "<p><code>BasicVal.array([required], [options])</code></p>\n<p>Checks if the value is an array.</p>\n"
                         },
                         {
                             "name": "boolean",
-                            "text": "<p><code>BasicVal.boolean([required], [flags])</code></p>\n<p>Checks if the value is a boolean.</p>\n<p>Set <code>{parse: true}</code> in the flags object to attempt to parse the value.</p>\n<p>If the value is either &quot;true&quot; or &quot;false&quot; as a string, it will be parsed to the corresponding boolean.</p>\n"
+                            "text": "<p><code>BasicVal.boolean([required], [options])</code></p>\n<p>Checks if the value is a boolean.</p>\n<p>Set <code>{parse: true}</code> in the <code>options</code> object to attempt to parse the value.</p>\n<p>If the value is either &quot;true&quot; or &quot;false&quot; as a string, it will be parsed to the corresponding boolean.</p>\n"
+                        },
+                        {
+                            "name": "domain",
+                            "text": "<p><code>BasicVal.domain([required],[options])</code></p>\n<p>Checks if the value is first a string, and then a domain.</p>\n"
                         },
                         {
                             "name": "email",
-                            "text": "<p><code>BasicVal.email([required], [flags])</code></p>\n<p>Checks if the value is first a string, and then an email.</p>\n"
+                            "text": "<p><code>BasicVal.email([required], [options])</code></p>\n<p>Checks if the value is first a string, and then an email.</p>\n"
                         },
                         {
                             "name": "integer",
-                            "text": "<p><code>BasicVal.integer([required], [flags])</code></p>\n<p>Checks if the value is an integer.</p>\n<p>Set <code>{parse: true}</code> in the flags object to attempt to parse the value.</p>\n"
+                            "text": "<p><code>BasicVal.integer([required], [options])</code></p>\n<p>Checks if the value is an integer.</p>\n<p>Set <code>{parse: true}</code> in the <code>options</code> object to attempt to parse the value.</p>\n"
                         },
                         {
                             "name": "number",
-                            "text": "<p><code>BasicVal.number([required], [flags])</code></p>\n<p>Checks if the value is a number, including floats.</p>\n<p>Set <code>{parse: true}</code> in the flags object to attempt to parse the value.</p>\n"
+                            "text": "<p><code>BasicVal.number([required], [options])</code></p>\n<p>Checks if the value is a number, including floats.</p>\n<p>Set <code>{parse: true}</code> in the <code>options</code> object to attempt to parse the value.</p>\n"
                         },
                         {
                             "name": "object",
-                            "text": "<p><code>BasicVal.object([required], [flags])</code></p>\n<p>Checks if the value is an object.</p>\n"
+                            "text": "<p><code>BasicVal.object([required], [options])</code></p>\n<p>Checks if the value is an object.</p>\n"
                         },
                         {
                             "name": "string",
-                            "text": "<p><code>BasicVal.string([required], [flags])</code></p>\n<p>Checks if the value is a string.</p>\n"
+                            "text": "<p><code>BasicVal.string([required], [options])</code></p>\n<p>Checks if the value is a string.</p>\n"
                         },
                         {
                             "name": "url",
-                            "text": "<p><code>BasicVal.url([required],[flags])</code></p>\n<p>Checks if the value is first a string, and then a url.</p>\n"
+                            "text": "<p><code>BasicVal.url([required],[options])</code></p>\n<p>Checks if the value is first a string, and then a url.</p>\n"
                         }
                     ]
                 },
@@ -228,15 +232,15 @@
                     "sections": [
                         {
                             "name": "date",
-                            "text": "<p><code>BasicVal.date(format, [flags])</code></p>\n<p>Checks if the string value is a valid date in a specified format.</p>\n<p>Valid date components are;</p>\n<ul>\n<li><code>yyyy</code> 4 digit year (i.e 2015)</li>\n<li><code>yy</code> 2 digit year (i.e. 15)</li>\n<li><code>MM</code> months (i.e. 01)</li>\n<li><code>M</code> months without zero padding (i.e. 1)</li>\n<li><code>dd</code> days (i.e. 01)</li>\n<li><code>d</code> days without zero padding (i.e. 1)</li>\n<li><code>hh</code> hours (i.e. 08)</li>\n<li><code>h</code> hours without zero padding (i.e. 8)</li>\n<li><code>mm</code> minutes (i.e. 23)</li>\n<li><code>m</code> minutes without zero padding (i.e. 2)</li>\n<li><code>ss</code> seconds (i.e. 49)</li>\n<li><code>s</code> seconds without zero padding (i.e. 02)</li>\n</ul>\n<p>Valid separators:</p>\n<ul>\n<li><code> </code> (whitespace)</li>\n<li><code>-</code></li>\n<li><code>/</code></li>\n<li><code>:</code></li>\n</ul>\n<p>Optional flags.emit options\n<code>DateVal.EMIT_COMPONENT_ARRAY</code> emits an array with date component values in the right order\n<code>DateVal.EMIT_OBJECT</code> emits an object in a following format:</p>\n<pre><code>{\n    year: 2014,\n    month: 12,\n    day: 12,\n    hour: 23,\n    minute: 49,\n    second: 58\n}\n</code></pre><p><code>DateVal.EMIT_DATE</code> emits a standard JavaScript Date object</p>\n"
+                            "text": "<p><code>BasicVal.date(format, [options])</code></p>\n<p>Checks if the string value is a valid date in a specified format.</p>\n<p>Valid date components are;</p>\n<ul>\n<li><code>yyyy</code> 4 digit year (i.e 2015)</li>\n<li><code>yy</code> 2 digit year (i.e. 15)</li>\n<li><code>MM</code> months (i.e. 01)</li>\n<li><code>M</code> months without zero padding (i.e. 1)</li>\n<li><code>dd</code> days (i.e. 01)</li>\n<li><code>d</code> days without zero padding (i.e. 1)</li>\n<li><code>hh</code> hours (i.e. 08)</li>\n<li><code>h</code> hours without zero padding (i.e. 8)</li>\n<li><code>mm</code> minutes (i.e. 23)</li>\n<li><code>m</code> minutes without zero padding (i.e. 2)</li>\n<li><code>ss</code> seconds (i.e. 49)</li>\n<li><code>s</code> seconds without zero padding (i.e. 02)</li>\n</ul>\n<p>Valid separators:</p>\n<ul>\n<li><code> </code> (whitespace)</li>\n<li><code>-</code></li>\n<li><code>/</code></li>\n<li><code>:</code></li>\n</ul>\n<p>Optional options.emit options\n<code>DateVal.EMIT_COMPONENT_ARRAY</code> emits an array with date component values in the right order\n<code>DateVal.EMIT_OBJECT</code> emits an object in a following format:</p>\n<pre><code>{\n    year: 2014,\n    month: 12,\n    day: 12,\n    hour: 23,\n    minute: 49,\n    second: 58\n}\n</code></pre><p><code>DateVal.EMIT_DATE</code> emits a standard JavaScript Date object</p>\n"
                         },
                         {
                             "name": "date_format",
-                            "text": "<p><code>BasicVal.date_format([flags])</code></p>\n<p>Checks whether a specified string value is a valid date format.</p>\n"
+                            "text": "<p><code>BasicVal.date_format([options])</code></p>\n<p>Checks whether a specified string value is a valid date format.</p>\n"
                         },
                         {
                             "name": "does_not_contain",
-                            "text": "<p><code>BasicVal.does_not_contain(characters, [flags])</code></p>\n<p>Checks if strings does not contain any of the provided characters. <code>characters</code> can be either one character or a list of characters.</p>\n"
+                            "text": "<p><code>BasicVal.does_not_contain(characters, [options])</code></p>\n<p>Checks if strings does not contain any of the provided characters. <code>characters</code> can be either one character or a list of characters.</p>\n"
                         },
                         {
                             "name": "each",
@@ -247,7 +251,7 @@
                                     "contents": "//CODE\nvar validator = new FieldVal({\n\tan_array: [44, 56, 3]\n});\n\nvalidator.get(\n\t'an_array',\n\tBasicVal.array(true),\n\tBasicVal.each(function(val,index,emit){\n\t\tvar error = BasicVal.integer().check(val); \n\t\tif(error)return error;\n\t\treturn BasicVal.minimum(40).check(val);\n\t})\n)\n\nconsole.log(JSON.stringify(validator.end(), null, 4));\n\n//OUTPUT\n{\n    \"invalid\": {\n        \"an_array\": {\n            \"invalid\": {\n                \"2\": {\n                    \"error\": 102,\n                    \"error_message\": \"Value is less than 40\"\n                }\n            },\n            \"error_message\": \"One or more errors.\",\n            \"error\": 5\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
                                 }
                             ],
-                            "text": "<p><code>BasicVal.each(on_each, [flags])</code></p>\n<p>Iterates through the provided array and calls the <code>on_each</code> function on each array&#39;s value.</p>\n<p><code>on_each(value, index, emit)</code></p>\n<p>The provided function should return a FieldVal <a href=\"/docs/fieldval/Errors\">error</a> or null if there are no errors.</p>\n"
+                            "text": "<p><code>BasicVal.each(on_each, [options])</code></p>\n<p>Iterates through the provided array and calls the <code>on_each</code> function on each array&#39;s value.</p>\n<p><code>on_each(value, index, emit)</code></p>\n<p>The provided function should return a FieldVal <a href=\"/docs/fieldval/Errors\">error</a> or null if there are no errors.</p>\n"
                         },
                         {
                             "name": "each_async",
@@ -260,31 +264,31 @@
                                     "contents": "//CODE\nvar validator = new FieldVal({\n\tan_array: [44, 56, 3]\n});\n\nvalidator.get_async(\n\t'an_array',\n\t[\n\t\tBasicVal.array(true),\n\t\tBasicVal.each_async(function(val,index,emit,done){\n\t\t\tsetTimeout(function(){\n\t\t\t\tvar error = BasicVal.integer().check(val); \n\t\t\t\tif(error){\n\t\t\t\t\tdone(error);\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\tdone(BasicVal.minimum(40).check(val));\n\t\t\t},1);\n\t\t})\n\t]\n)\n\nvalidator.end(function(error){\n\tvar element = document.createElement(\"pre\");\n\telement.innerHTML = JSON.stringify(error, null, 4);\n\tdocument.body.appendChild(element);\n});"
                                 }
                             ],
-                            "text": "<p><code>BasicVal.each_async(on_each, [flags])</code></p>\n<p>Iterates through the provided array and calls the <code>on_each</code> function on each array&#39;s value. The <code>on_each</code> function for <code>each_async</code> uses a callback to provide its response.</p>\n<p><code>on_each(value, index, emit, done)</code></p>\n<p>The provided function should call <code>done</code> with a FieldVal <a href=\"/docs/fieldval/Errors\">error</a> or with no arguments if there are no errors.</p>\n"
+                            "text": "<p><code>BasicVal.each_async(on_each, [options])</code></p>\n<p>Iterates through the provided array and calls the <code>on_each</code> function on each array&#39;s value. The <code>on_each</code> function for <code>each_async</code> uses a callback to provide its response.</p>\n<p><code>on_each(value, index, emit, done)</code></p>\n<p>The provided function should call <code>done</code> with a FieldVal <a href=\"/docs/fieldval/Errors\">error</a> or with no arguments if there are no errors.</p>\n"
                         },
                         {
                             "name": "equal_to",
-                            "text": "<p><code>BasicVal.equal_to(desired_value, [flags])</code></p>\n<p>Checks if the value that is being validated is equal to the desired value.</p>\n"
+                            "text": "<p><code>BasicVal.equal_to(desired_value, [options])</code></p>\n<p>Checks if the value that is being validated is equal to the desired value.</p>\n"
                         },
                         {
                             "name": "length",
-                            "text": "<p><code>BasicVal.length(desired_length, [flags])</code></p>\n<p>Checks if the value has desired length.</p>\n"
+                            "text": "<p><code>BasicVal.length(desired_length, [options])</code></p>\n<p>Checks if the value has desired length.</p>\n"
                         },
                         {
                             "name": "max_length",
-                            "text": "<p><code>BasicVal.max_length(max_length, [flags])</code></p>\n<p>Checks if length of the value is less or equal to min_length.</p>\n"
+                            "text": "<p><code>BasicVal.max_length(max_length, [options])</code></p>\n<p>Checks if length of the value is less or equal to min_length.</p>\n"
                         },
                         {
                             "name": "maximum",
-                            "text": "<p><code>BasicVal.maximum(max_val, [flags])</code></p>\n<p>Checks if the value is less or equal to max_val.</p>\n"
+                            "text": "<p><code>BasicVal.maximum(max_val, [options])</code></p>\n<p>Checks if the value is less or equal to max_val.</p>\n"
                         },
                         {
                             "name": "min_length",
-                            "text": "<p><code>BasicVal.min_length(min_length, [flags])</code></p>\n<p>Checks if length of the value is greater or equal to min_length.</p>\n"
+                            "text": "<p><code>BasicVal.min_length(min_length, [options])</code></p>\n<p>Checks if length of the value is greater or equal to min_length.</p>\n"
                         },
                         {
                             "name": "minimum",
-                            "text": "<p><code>BasicVal.minimum(min_val, [flags])</code></p>\n<p>Checks if the value is greater or equal to min_val.</p>\n"
+                            "text": "<p><code>BasicVal.minimum(min_val, [options])</code></p>\n<p>Checks if the value is greater or equal to min_val.</p>\n"
                         },
                         {
                             "name": "multiple",
@@ -295,7 +299,7 @@
                                     "contents": "//CODE\nvar validator = new FieldVal({\n\tvalue: \"test\"\n});\n\nvalidator.get(\n\t'value',\n\tBasicVal.multiple([\n        BasicVal.integer(),\n        BasicVal.prefix(\"abc\")\n    ])\n)\n\nconsole.log(JSON.stringify(validator.end(), null, 4));\n\n//OUTPUT\n{\n    \"invalid\": {\n        \"value\": {\n            \"error\": 115,\n            \"error_message\": \"None of the options were valid.\"\n        }\n    },\n    \"error_message\": \"One or more errors.\",\n    \"error\": 5\n}"
                                 }
                             ],
-                            "text": "<p><code>BasicVal.multiple(possibles, [flags])</code></p>\n<p>Validates the value with multiple checks. Only one of the checks need to pass for the value to be valid.</p>\n<p><code>possibles</code> is an array of multiple checks</p>\n<p>In the example provided, a valid input would be either an integer or a string that begins with &quot;abc&quot;.</p>\n"
+                            "text": "<p><code>BasicVal.multiple(possibles, [options])</code></p>\n<p>Validates the value with multiple checks. Only one of the checks need to pass for the value to be valid.</p>\n<p><code>possibles</code> is an array of multiple checks</p>\n<p>In the example provided, a valid input would be either an integer or a string that begins with &quot;abc&quot;.</p>\n"
                         },
                         {
                             "name": "multiple_async",
@@ -308,52 +312,52 @@
                                     "contents": "var validator = new FieldVal({\n\tvalue: 15//Change to 20 to successfully pass .minimum check\n});\n\nvalidator.get_async(\n\t'value',\n\t[\n\t\tBasicVal.multiple_async([\n\t\t\t[\n\t\t\t\tBasicVal.integer(),function(val,emit,done){\n\t\t\t\t  setTimeout(function(){\n\t\t\t\t\tdone(BasicVal.minimum(20).check(val));\n\t\t\t\t  },1);\n\t\t\t\t}\n\t\t\t],\n\t\t\t[\n\t\t\t\tBasicVal.prefix(\"abc\")\n\t\t\t]\n\t\t])\n\t]\n)\n\nvalidator.end(function(error){\n\tconsole.log(error);\n});\n\n"
                                 }
                             ],
-                            "text": "<p><code>BasicVal.multiple_async(possibles, [flags])</code></p>\n<p>Validates the value with multiple checks, allowing one or more of the checks to be asynchronous. Only one of the checks need to pass for the value to be valid.</p>\n<p><code>possibles</code> is an array of multiple checks.</p>\n<p>In the example provided, a valid input would be either an integer or a string that begins with &quot;abc&quot;.</p>\n"
+                            "text": "<p><code>BasicVal.multiple_async(possibles, [options])</code></p>\n<p>Validates the value with multiple checks, allowing one or more of the checks to be asynchronous. Only one of the checks need to pass for the value to be valid.</p>\n<p><code>possibles</code> is an array of multiple checks.</p>\n<p>In the example provided, a valid input would be either an integer or a string that begins with &quot;abc&quot;.</p>\n"
                         },
                         {
                             "name": "no_whitespace",
-                            "text": "<p><code>BasicVal.no_whitespace([flags])</code></p>\n<p>Checks that there is no whitespace in the value.</p>\n"
+                            "text": "<p><code>BasicVal.no_whitespace([options])</code></p>\n<p>Checks that there is no whitespace in the value.</p>\n"
                         },
                         {
                             "name": "not_empty",
-                            "text": "<p><code>BasicVal.not_empty(trim, [flags])</code></p>\n<p>Checks if the string value is not empty. <code>trim</code> is a boolean specifying whether the string needs to be trimmed before the check.</p>\n"
+                            "text": "<p><code>BasicVal.not_empty(trim, [options])</code></p>\n<p>Checks if the string value is not empty. <code>trim</code> is a boolean specifying whether the string needs to be trimmed before the check.</p>\n"
                         },
                         {
                             "name": "not_one_of",
-                            "text": "<p><code>BasicVal.not_one_of(undesired_values, [flags])</code></p>\n<p>Checks if the value is not equal to one of the undesired_values. <code>undesired_values</code> is an array.</p>\n"
+                            "text": "<p><code>BasicVal.not_one_of(undesired_values, [options])</code></p>\n<p>Checks if the value is not equal to one of the undesired_values. <code>undesired_values</code> is an array.</p>\n"
                         },
                         {
                             "name": "one_of",
-                            "text": "<p><code>BasicVal.one_of(desired_values, [flags])</code></p>\n<p>Checks if the value is equal to one of the desired_values. <code>desired_values</code> is an array.</p>\n"
+                            "text": "<p><code>BasicVal.one_of(desired_values, [options])</code></p>\n<p>Checks if the value is equal to one of the desired_values. <code>desired_values</code> is an array.</p>\n"
                         },
                         {
                             "name": "prefix",
-                            "text": "<p><code>BasicVal.each(on_each, [flags])</code></p>\n<p>Checks if the string value starts with the <code>desired_prefix</code>.</p>\n"
+                            "text": "<p><code>BasicVal.each(on_each, [options])</code></p>\n<p>Checks if the string value starts with the <code>desired_prefix</code>.</p>\n"
                         },
                         {
                             "name": "range",
-                            "text": "<p><code>BasicVal.range(min_val, max_val, [flags])</code></p>\n<p>Combines <a href=\"/docs/fieldval/BasicVal/minimum\">minimum</a> and <a href=\"/docs/fieldval/BasicVal/maximum\">maximum</a>.</p>\n"
+                            "text": "<p><code>BasicVal.range(min_val, max_val, [options])</code></p>\n<p>Combines <a href=\"/docs/fieldval/BasicVal/minimum\">minimum</a> and <a href=\"/docs/fieldval/BasicVal/maximum\">maximum</a>.</p>\n"
                         },
                         {
                             "name": "start_with_letter",
-                            "text": "<p><code>BasicVal.start_with_letter([flags])</code></p>\n<p>Checks if the string value starts with a letter.</p>\n"
+                            "text": "<p><code>BasicVal.start_with_letter([options])</code></p>\n<p>Checks if the string value starts with a letter.</p>\n"
                         },
                         {
                             "name": "suffix",
-                            "text": "<p><code>BasicVal.suffix(desired_suffix, [flags])</code></p>\n<p>Checks if the string value ends with the <code>desired_suffix</code>.</p>\n"
+                            "text": "<p><code>BasicVal.suffix(desired_suffix, [options])</code></p>\n<p>Checks if the string value ends with the <code>desired_suffix</code>.</p>\n"
                         }
                     ]
                 }
             ]
         },
         {
-            "name": "Flags",
+            "name": "Options",
             "code": [
                 {
                     "contents": "var my_number = validator.get(\n\t\"my_number\",\n\tBasicVal.float(\n\t\t{\n\t\t\t\"required\": true\n\t\t\t\"parse\": true,\n\t\t\t\"stop_on_error\": false\n\t\t}\n\t)\n);"
                 }
             ],
-            "text": "<p>Flags are used to both pass values to a check and also to indicate to a FieldVal validator how to use the check.</p>\n",
+            "text": "<p>Options are used to both pass values to a check and also to indicate to a FieldVal validator how to use the check.</p>\n",
             "sections": [
                 {
                     "name": "stop_on_error",
@@ -377,7 +381,7 @@
                             "contents": "//CODE\nvar custom_error = {\n\terror: 1001,\n\terror_message: \"Custom integer error\"\n}\n\nBasicVal.integer(true, {\n\terror: custom_error\n}).check(\"test\")\n\n//OUTPUT\n{ error: 1001,\n  error_message: 'Custom integer error' }"
                         }
                     ],
-                    "text": "<p>The <code>error</code> flag overrides standard error for <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> checks.</p>\n"
+                    "text": "<p>The <code>error</code> option overrides the standard error for <a href=\"/docs/fieldval/BasicVal\">BasicVal</a> checks.</p>\n"
                 }
             ]
         }
