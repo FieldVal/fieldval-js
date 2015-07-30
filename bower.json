@@ -1,6 +1,6 @@
 {
 	"name": "fieldval",
-	"version": "0.4.3",
+	"version": "0.5.0",
 	"main": "fieldval.js",
 	"ignore": [
 		"coverage",

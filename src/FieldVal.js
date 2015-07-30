@@ -16,7 +16,7 @@ var FieldVal = (function(){
         return true;
     };
 
-    function FieldVal(validating, existing_error) {
+    function FieldVal(validating, options) {
         var fv = this;
 
         fv.async_waiting = 0;
@@ -28,8 +28,12 @@ var FieldVal = (function(){
         //Top level errors - added using .error() 
         fv.errors = [];
 
+        fv.options = options || {};
+        fv.ignore_unrecognized = fv.options.ignore_unrecognized;
+
+        var existing_error = fv.options.error;
         if(existing_error!==undefined){
-            //Provided a (potentially undefined) existing error
+            //Provided a (potentially null) existing error
 
             if(existing_error){
                 //Is not null
@@ -75,6 +79,7 @@ var FieldVal = (function(){
 
                 }
             } else {
+                //The existing_error is null, which means a previous validator recognized all fields
                 for(var n in validating){
                     if(validating.hasOwnProperty(n)) {
                         fv.recognized_keys[n] = true;
@@ -115,7 +120,9 @@ var FieldVal = (function(){
                 }
             }
         }
-        return new FieldVal(current_value,current_error);
+        return new FieldVal(current_value,{
+            "error": current_error
+        });
     };
 
     FieldVal.get_error = function(){
@@ -381,24 +388,26 @@ var FieldVal = (function(){
             }
         }
 
-        var auto_unrecognized = fv.get_unrecognized();
-        var i, auto_key;
-        for (i = 0; i < auto_unrecognized.length; i++) {
-            auto_key = auto_unrecognized[i];
-            returning_invalid[auto_key] = {
-                error_message: "Unrecognized field.",
-                error: FieldVal.FIELD_UNRECOGNIZED
-            };
-            has_error = true;
-        }
-
-        if (!is_empty(fv.invalid_keys)) {
-            for(var k in fv.invalid_keys){
-                if(fv.invalid_keys.hasOwnProperty(k)){
-                    returning_invalid[k] = fv.invalid_keys[k];
-                }
+        if(!fv.ignore_unrecognized){
+            var auto_unrecognized = fv.get_unrecognized();
+            var i, auto_key;
+            for (i = 0; i < auto_unrecognized.length; i++) {
+                auto_key = auto_unrecognized[i];
+                returning_invalid[auto_key] = {
+                    error_message: "Unrecognized field.",
+                    error: FieldVal.FIELD_UNRECOGNIZED
+                };
+                has_error = true;
             }
-            has_error = true;
+
+            if (!is_empty(fv.invalid_keys)) {
+                for(var k in fv.invalid_keys){
+                    if(fv.invalid_keys.hasOwnProperty(k)){
+                        returning_invalid[k] = fv.invalid_keys[k];
+                    }
+                }
+                has_error = true;
+            }
         }
 
 
