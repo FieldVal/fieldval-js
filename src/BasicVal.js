@@ -362,7 +362,7 @@ var BasicVal = (function(){
             if(Array.isArray(array)){
                 for(var i = 0; i < array.length; i++){
                     var option = array[i];
-                    if((typeof option) === 'object'){
+                    if(option!==null && (typeof option) === 'object'){
                         valid_values.push(option[0]);
                     } else {
                         valid_values.push(option);
