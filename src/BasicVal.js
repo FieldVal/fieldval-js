@@ -498,6 +498,7 @@ var BasicVal = (function(){
         },
         date: DateVal.date,
         date_format: DateVal.date_format,
+        date_format_array: DateVal.date_format_array,
         each: function(on_each, options) {
             var check = function(array, stop) {
                 var validator = new FieldVal(null);
@@ -610,7 +611,7 @@ var BasicVal = (function(){
             
                     var emitted_value;
                     var option_error = FieldVal.use_checks(value, array_of_checks, {
-                        emit: function(emitted){
+                        emit: function(emitted){// jshint ignore:line
                             emitted_value = emitted;
                         }
                     });

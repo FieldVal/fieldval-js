@@ -823,6 +823,7 @@ var FieldVal = (function(){
 
         return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
     };
+    // jshint ignore:start
     var DateVal = (function(){
     "use strict";
 
@@ -846,7 +847,32 @@ var FieldVal = (function(){
                     error: 114,
                     error_message: "Invalid date format string."
                 };
+            },
+            invalid_date_format_array: function(){
+                return {
+                    error: 121,
+                    error_message: "Invalid date format array."
+                };
             }
+        },
+        date_format_array: function(options) {
+            options = options || {};
+
+            var check = function(format, emit) {
+                for(var i = 0; i < format.length; i++){
+                    if (DateVal.date_components[format[i]] === undefined) {
+                        return FieldVal.create_error(DateVal.errors.invalid_date_format_array, options);
+                    }
+                }
+                emit(format);
+            };
+            if(options){
+                options.check = check;
+                return options;
+            }
+            return {
+                check: check
+            };
         },
     	date_format: function(options){
 
@@ -870,20 +896,14 @@ var FieldVal = (function(){
                         }
                     }
                     if(!handled){
-                        error = true;
+                        return FieldVal.create_error(DateVal.errors.invalid_date_format_string, options);
                     }
                 }
-
-                if(error){
-                    return FieldVal.create_error(DateVal.errors.invalid_date_format_string, options);
-                } else {
                     
-                    if (options.emit == DateVal.EMIT_STRING) {
-                        emit(format);
-                    } else {
-                        emit(format_array);
-                    }
-
+                if (options.emit == DateVal.EMIT_STRING) {
+                    emit(format);
+                } else {
+                    emit(format_array);
                 }
             };
             if(options){
@@ -896,6 +916,18 @@ var FieldVal = (function(){
         },
         date_with_format_array: function(date, format_array){
             //Takes a Javascript Date object
+
+            var date_format_err = FieldVal.use_checks(format_array, [
+                BasicVal.array(true),
+                BasicVal.each(function(value, index, emit){
+                    return BasicVal.string(true, {trim: false}).check(value);
+                }),
+                DateVal.date_format_array()
+            ]);
+
+            if (date_format_err !== null) {
+                throw new Error('Not a valid date format: ' + JSON.stringify(date_format_err));
+            }
 
             var date_string = "";
 
@@ -1685,6 +1717,7 @@ var FieldVal = (function(){
         },
         date: DateVal.date,
         date_format: DateVal.date_format,
+        date_format_array: DateVal.date_format_array,
         each: function(on_each, options) {
             var check = function(array, stop) {
                 var validator = new FieldVal(null);
@@ -1797,7 +1830,7 @@ var FieldVal = (function(){
             
                     var emitted_value;
                     var option_error = FieldVal.use_checks(value, array_of_checks, {
-                        emit: function(emitted){
+                        emit: function(emitted){// jshint ignore:line
                             emitted_value = emitted;
                         }
                     });
@@ -1934,6 +1967,7 @@ var FieldVal = (function(){
 
     return BasicVal;
 }).call();
+    // jshint ignore:end
     
     FieldVal.DateVal = DateVal;
     FieldVal.BasicVal = BasicVal;
