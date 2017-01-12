@@ -142,6 +142,19 @@ describe('DateVal', function() {
 
             assert.equal(null, my_validator.end());
         })
+
+        it('should throw an exception for invalid date format', function() {
+            
+            var my_validator = new FieldVal({
+                "my_format": "yyy-MM-dd hh:mm:ss"
+            })
+
+            var format_array = my_validator.get("my_format", BasicVal.string(true), BasicVal.date_format());
+
+            var test_date = new Date(Date.UTC(2014, 08, 10, 16, 05, 38));//'Wed Sep 10 2014 16:05:38 GMT+0100 (BST)');
+
+            assert.throws(function() { DateVal.date_with_format_array(test_date, format_array); }, Error);
+        })
     })
 
     describe('pad_to_valid()', function() {
