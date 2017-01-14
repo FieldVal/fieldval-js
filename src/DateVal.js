@@ -72,6 +72,10 @@ var DateVal = (function(){
         date_with_format_array: function(date, format_array){
             //Takes a Javascript Date object
 
+            if (!Array.isArray(format_array)) {
+                throw new Error('Not a valid date format');
+            }
+            
             var date_string = "";
 
             for(var i = 0; i < format_array.length; i++){
