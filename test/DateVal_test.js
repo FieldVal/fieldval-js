@@ -143,17 +143,28 @@ describe('DateVal', function() {
             assert.equal(null, my_validator.end());
         })
 
-        it('should throw an exception for invalid date format', function() {
-            
-            var my_validator = new FieldVal({
-                "my_format": "yyy-MM-dd hh:mm:ss"
-            })
-
-            var format_array = my_validator.get("my_format", BasicVal.string(true), BasicVal.date_format());
-
+        it('should throw an exception for an undefined date format', function() {
             var test_date = new Date(Date.UTC(2014, 08, 10, 16, 05, 38));//'Wed Sep 10 2014 16:05:38 GMT+0100 (BST)');
+        
+            assert.throws(function() { 
+                DateVal.date_with_format_array(test_date, undefined); 
+            }, Error);
+        })
 
-            assert.throws(function() { DateVal.date_with_format_array(test_date, format_array); }, Error);
+        it('should throw an exception for a date format array containing invalid components', function() {
+            var test_date = new Date(Date.UTC(2014, 08, 10, 16, 05, 38));//'Wed Sep 10 2014 16:05:38 GMT+0100 (BST)');
+        
+            assert.throws(function() { 
+                DateVal.date_with_format_array(test_date, ['yyyy','-','notacomponent']); 
+            }, Error);
+        })
+
+        it('should throw an exception for a date format array containing a non-string component', function() {
+            var test_date = new Date(Date.UTC(2014, 08, 10, 16, 05, 38));//'Wed Sep 10 2014 16:05:38 GMT+0100 (BST)');
+        
+            assert.throws(function() { 
+                DateVal.date_with_format_array(test_date, ['yyyy',5,'dd']); 
+            }, Error);
         })
     })
 
