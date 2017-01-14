@@ -183,6 +183,10 @@
                             "text": "BasicVal/OtherChecks/date_format/date_format.md"
                         },
                         {
+                            "name": "date_format_array",
+                            "text": "BasicVal/OtherChecks/date_format_array/date_format_array.md"
+                        },
+                        {
                             "name": "does_not_contain",
                             "text": "BasicVal/OtherChecks/does_not_contain/does_not_contain.md"
                         },

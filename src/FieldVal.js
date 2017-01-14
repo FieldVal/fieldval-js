@@ -823,8 +823,10 @@ var FieldVal = (function(){
 
         return default_error.apply(null, Array.prototype.slice.call(arguments, 2));
     };
+    // jshint ignore:start
     @import("./DateVal.js");
     @import("./BasicVal.js");
+    // jshint ignore:end
     
     FieldVal.DateVal = DateVal;
     FieldVal.BasicVal = BasicVal;
