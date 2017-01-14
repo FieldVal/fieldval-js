@@ -159,7 +159,6 @@ describe('DateVal', function() {
             }, Error);
         })
 
-
         it('should throw an exception for a date format array containing a non-string component', function() {
             var test_date = new Date(Date.UTC(2014, 08, 10, 16, 05, 38));//'Wed Sep 10 2014 16:05:38 GMT+0100 (BST)');
         
