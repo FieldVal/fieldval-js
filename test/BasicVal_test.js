@@ -490,6 +490,34 @@ describe('BasicVal', function() {
                 done();
             });
         })
+
+        it('should return an error if the value is missing', function() {
+            var my_validator = new FieldVal({
+                "my_string": "ABCDE"
+            })
+
+            //Up to 3 characters, or 6+
+            assert.strictEqual(undefined, my_validator.get("another_string", /*bval.string(true), */bval.multiple(
+                [
+                    bval.max_length(3),
+                    bval.min_length(6)
+                ]
+            )));
+            assert.deepEqual({
+                "invalid":{
+                    "another_string":{
+                        "error":115,
+                        "error_message":"None of the options were valid."
+                    },
+                    "my_string":{
+                        "error": 3,
+                        "error_message": "Unrecognized field."
+                    }
+                },
+                "error_message":"One or more errors.",
+                "error": 5
+            }, my_validator.end());
+        })
     })
 
     describe('email()', function() {
