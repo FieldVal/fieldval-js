@@ -253,6 +253,10 @@ var BasicVal = (function(){
         },
         min_length: function(min_len, options) {
             var check = function(value) {
+                if (typeof value !== 'string') {
+                    return FieldVal.create_error(BasicVal.errors.not_in_list, options, min_len);
+                }
+
                 if (value.length < min_len) {
                     return FieldVal.create_error(BasicVal.errors.too_short, options, min_len);
                 }
@@ -267,6 +271,10 @@ var BasicVal = (function(){
         },
         max_length: function(max_len, options) {
             var check = function(value) {
+                if (typeof value !== 'string') {
+                    return FieldVal.create_error(BasicVal.errors.not_in_list, options, max_len);
+                }
+
                 if (value.length > max_len) {
                     return FieldVal.create_error(BasicVal.errors.too_long, options, max_len);
                 }
