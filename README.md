@@ -15,7 +15,7 @@ Documentation and examples can be found at [http://fieldval.com](http://fieldval
 Development
 =============
 
-This project uses [gulp.js](http://gulpjs.com/) to build and [mocha](http://visionmedia.github.io/mocha/) to test.
+This project uses [gulp.js](http://gulpjs.com/) to build and [mocha](http://mochajs.org/) to test.
 
 ```bash
 npm install
