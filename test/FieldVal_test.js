@@ -541,7 +541,7 @@ describe('FieldVal', function() {
                         assert.strictEqual(emitted,undefined);
                     },
                 },
-                function(response){//calback
+                function(response){//callback
                     assert.strictEqual(null, response);
                     did_respond = true;
                 }
@@ -593,7 +593,7 @@ describe('FieldVal', function() {
                         assert.strictEqual(emitted,undefined);
                     },
                 },
-                function(response){//calback
+                function(response){//callback
                     assert.strictEqual(null, response);
                     did_respond++;
                 }
@@ -621,7 +621,7 @@ describe('FieldVal', function() {
                         assert.strictEqual(emitted,undefined);
                     },
                 },
-                function(response){//calback
+                function(response){//callback
                     assert.strictEqual(null, response);
                     did_respond++;
                 }
